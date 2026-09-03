@@ -108,7 +108,7 @@
       answer.style.height = start + "px";
       answer.style.overflow = "hidden";
       anim = answer.animate([{ height: start + "px", opacity: opening ? 0 : 1 }, { height: end + "px", opacity: opening ? 1 : 0 }],
-        { duration: 380, easing: "cubic-bezier(0.16, 1, 0.3, 1)" });
+        { duration: 560, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });
       anim.onfinish = function () {
         answer.style.height = "";
         answer.style.overflow = "";
