@@ -106,7 +106,6 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01e
 .nav.is-scrolled { border-bottom-color: var(--line); }
 .nav .wrap { display: flex; align-items: center; height: 100%; gap: 24px; }
 .brand { display: flex; align-items: center; gap: 12px; font-family: var(--serif); font-size: 21px; letter-spacing: -0.01em; }
-.brand img { width: 28px; height: 24px; }
 .nav-links { display: flex; gap: 26px; margin-left: auto; list-style: none; padding: 0; margin-top: 0; margin-bottom: 0; }
 .nav-links a { color: var(--muted); font-size: 15px; }
 .nav-links a:hover, .nav-links a[aria-current="page"] { color: var(--text); }
@@ -133,9 +132,24 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01e
 .menu-btn[aria-expanded="true"] span:nth-child(2) { opacity: 0; }
 .menu-btn[aria-expanded="true"] span:nth-child(3) { transform: translateY(-6.5px) rotate(-45deg); }
 
+/* ---------- Logo mark ----------
+   Two SVGs traced from the original artwork, both drawn in the same
+   coordinate box, so stacking them reproduces the logo exactly. Each S
+   slides in from its own side, then drifts on its own slow loop, out of
+   phase with the other, so they read as two letters leaning on each other. */
+.mark { position: relative; aspect-ratio: 876 / 741; }
+.mark-s { position: absolute; inset: 0; width: 100%; height: 100%; will-change: transform; }
+.mark-blue { animation: s-in-left 1.4s var(--ease) both, drift-a 7s 1.4s ease-in-out infinite; }
+.mark-pink { animation: s-in-right 1.4s 0.18s var(--ease) both, drift-b 7s 1.58s ease-in-out infinite; }
+@keyframes s-in-left { from { opacity: 0; transform: translate(-14%, 6%) rotate(-6deg); } to { opacity: 1; transform: none; } }
+@keyframes s-in-right { from { opacity: 0; transform: translate(14%, -6%) rotate(6deg); } to { opacity: 1; transform: none; } }
+@keyframes drift-a { 0%, 100% { transform: none; } 50% { transform: translate(-1.5%, -3.5%) rotate(-2deg); } }
+@keyframes drift-b { 0%, 100% { transform: none; } 50% { transform: translate(1.5%, 3.5%) rotate(2deg); } }
+.brand img { width: 30px; height: 25px; }
+
 /* ---------- Hero ---------- */
 .hero { padding: clamp(72px, 12vw, 140px) 0 clamp(56px, 9vw, 110px); text-align: center; }
-.hero-logo { width: clamp(72px, 10vw, 96px); margin: 0 auto 32px; }
+.hero-logo { width: clamp(120px, 16vw, 170px); margin: 0 auto 32px; }
 .hero h1 { font-size: clamp(44px, 7.5vw, 84px); line-height: 1.02; margin-bottom: 20px; }
 .hero h1 .blue { color: var(--blue); }
 .hero h1 .pink { color: var(--pink); }
@@ -202,6 +216,32 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01e
 
 .empty { color: var(--muted); padding: 32px 24px; border: 1px dashed var(--line-strong); border-radius: var(--radius); margin: 0; }
 .empty a { text-decoration: underline; text-underline-offset: 3px; }
+
+/* ---------- Calendar ---------- */
+.calendar { margin-top: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 8px 36px; align-items: start; transition: background-color var(--slow) var(--ease); }
+.cal-head { display: flex; align-items: center; justify-content: space-between; grid-column: 1; }
+.cal-title { font-size: 20px; }
+.cal-nav { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 18px; color: var(--muted); display: grid; place-items: center; transition: border-color var(--mid) var(--ease), color var(--mid) var(--ease); }
+.cal-nav:hover { border-color: var(--text); color: var(--text); }
+.cal-grid { grid-column: 1; display: grid; grid-template-columns: repeat(7, 1fr); gap: 4px; margin-top: 10px; }
+.cal-dow { font-size: 11px; letter-spacing: 0.08em; color: var(--muted); text-align: center; padding: 4px 0 6px; }
+.cal-day, .cal-pad { aspect-ratio: 1; display: grid; place-items: center; position: relative; border-radius: 10px; font-size: 14px; border: 0; background: transparent; color: var(--text); font: inherit; }
+.cal-day b { font-weight: 400; }
+.cal-day.today b { font-weight: 600; text-decoration: underline; text-underline-offset: 3px; text-decoration-color: var(--line-strong); }
+.cal-day.has { cursor: pointer; transition: background-color var(--mid) var(--ease); }
+.cal-day.has::after { content: ""; position: absolute; bottom: 5px; left: 50%; width: 5px; height: 5px; margin-left: -2.5px; border-radius: 50%; background: var(--blue); }
+.cal-day.has.past::after { background: var(--pink); }
+.cal-day.has.up { background: var(--tint-blue); }
+.cal-day.has.past { background: var(--tint-pink); }
+.cal-day.has:hover { background: var(--line); }
+.cal-list { grid-column: 2; grid-row: 1 / 3; list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 4px; }
+.cal-item { display: flex; align-items: center; gap: 10px; width: 100%; text-align: left; padding: 10px 12px; border-radius: 10px; border: 0; background: transparent; cursor: pointer; font: inherit; color: var(--text); transition: background-color var(--mid) var(--ease); }
+.cal-item:hover { background: var(--line); }
+.cal-item .d { color: var(--muted); font-size: 14px; min-width: 52px; }
+.cal-none { color: var(--muted); padding: 10px 12px; font-size: 15px; }
+.cal-legend { grid-column: 1 / -1; margin: 8px 0 0; font-size: 13px; color: var(--muted); display: flex; gap: 16px; align-items: center; }
+.dot { display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: var(--blue); margin-right: 6px; flex: none; }
+.dot.past { background: var(--pink); }
 
 /* ---------- Members ---------- */
 .members { display: grid; gap: 12px; grid-template-columns: repeat(auto-fill, minmax(200px, 1fr)); }
@@ -282,7 +322,10 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01e
 @keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 .lb-inner { background: var(--surface); color: var(--text); border-radius: 20px; overflow: hidden; display: grid; grid-template-columns: 1.4fr 1fr; border: 1px solid var(--line); }
 .lb-photos { position: relative; background: var(--bg); aspect-ratio: 4 / 3; }
-.lb-photos img { width: 100%; height: 100%; object-fit: contain; position: absolute; inset: 0; opacity: 0; transition: opacity var(--slow) var(--ease); }
+.lightbox.no-photos .lb-photos { display: none; }
+.lightbox.no-photos .lb-inner { grid-template-columns: 1fr; }
+.lightbox.no-photos { max-width: 520px; }
+.lb-photos img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; opacity: 0; transition: opacity var(--slow) var(--ease); }
 .lb-photos img.on { opacity: 1; }
 .lb-arrow {
   position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%;
@@ -327,7 +370,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01e
 /* ---------- About teaser ---------- */
 .about-teaser { display: grid; grid-template-columns: 1fr 1.2fr; gap: 56px; align-items: center; }
 .about-teaser .art { border-radius: 20px; background: var(--surface); border: 1px solid var(--line); padding: 40px; display: grid; place-items: center; aspect-ratio: 1; }
-.about-teaser .art img { width: 55%; }
+.about-teaser .art .mark { width: 55%; }
 .about-teaser p { color: var(--muted); font-size: 18px; }
 .about-teaser h2 { font-size: clamp(30px, 4.6vw, 44px); margin-bottom: 12px; }
 
@@ -372,6 +415,8 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01e
   .about-teaser .art { aspect-ratio: 16 / 9; }
   .lb-inner { grid-template-columns: 1fr; }
   .card.wide { grid-template-columns: 1fr; gap: 16px; }
+  .calendar { grid-template-columns: 1fr; gap: 8px; padding: 18px; }
+  .cal-list { grid-column: 1; grid-row: auto; margin-top: 12px; border-top: 1px solid var(--line); padding-top: 8px; }
   .card.wide .date-col { flex-direction: row; align-items: baseline; gap: 12px; }
   .card.wide .date-col b { font-size: 48px; }
 }
