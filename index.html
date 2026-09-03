@@ -59,6 +59,20 @@
     </div>
   </section>
 
+  <!-- About teaser -->
+  <section class="section" id="about">
+    <div class="wrap">
+      <div class="about-teaser">
+        <div class="art reveal"><img src="/assets/logo.svg" alt=""></div>
+        <div class="reveal" data-delay="1">
+          <h2>What Silly Spaces is</h2>
+          <!-- Two or three sentences about Silly Spaces go here. -->
+          <a class="btn-link" href="/about.html">Read the full description</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Upcoming events -->
   <section class="section" id="upcoming">
     <div class="wrap">
@@ -116,6 +130,12 @@
         <div class="field">
           <label for="name">Name</label>
           <input id="name" name="name" type="text" required autocomplete="name" placeholder="What should we call you">
+        </div>
+        <div class="field">
+          <label for="attended">Which event did you come to? <small>optional</small></label>
+          <select id="attended" name="attended">
+            <option value="">Haven't been yet</option>
+          </select>
         </div>
         <div class="field">
           <label for="phone">Phone <small>optional</small></label>
@@ -192,20 +212,6 @@
       <button class="lb-close" type="button" aria-label="Close">&times;</button>
     </div>
   </dialog>
-
-  <!-- About teaser -->
-  <section class="section" id="about">
-    <div class="wrap">
-      <div class="about-teaser">
-        <div class="art reveal"><img src="/assets/logo.svg" alt=""></div>
-        <div class="reveal" data-delay="1">
-          <h2>What Silly Spaces is</h2>
-          <!-- Two or three sentences about Silly Spaces go here. -->
-          <a class="btn-link" href="/about.html">Read the full description</a>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- FAQ -->
   <section class="section" id="faq">
