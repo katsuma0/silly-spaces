@@ -1,29 +1,30 @@
 <!DOCTYPE html>
 <html lang="en-CA">
 <head>
+  <title>Footy in da City · Silly Spaces</title>
+  <meta name="description" content="Footy in da City, August 4, 2026. A Silly Spaces event.">
+  <link rel="canonical" href="https://sillyspaces.com/events/2026-08-04-footy.html">
+  <meta property="og:title" content="Footy in da City · Silly Spaces">
+  <meta property="og:url" content="https://sillyspaces.com/events/2026-08-04-footy.html">
+  <meta name="twitter:title" content="Footy in da City · Silly Spaces">
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>About · Silly Spaces</title>
-  <meta name="description" content="About Silly Spaces.">
-  <link rel="canonical" href="https://sillyspaces.com/about.html">
   <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
   <meta property="og:type" content="website">
   <meta property="og:site_name" content="Silly Spaces">
-  <meta property="og:title" content="About Silly Spaces">
   <meta property="og:description" content="Invisible strings made visible.">
-  <meta property="og:url" content="https://sillyspaces.com/about.html">
   <meta property="og:image" content="https://sillyspaces.com/assets/og.png">
   <meta property="og:image:width" content="1200">
   <meta property="og:image:height" content="630">
   <meta property="og:image:alt" content="Silly Spaces logo">
   <meta name="twitter:card" content="summary_large_image">
-  <meta name="twitter:title" content="About Silly Spaces">
   <meta name="twitter:image" content="https://sillyspaces.com/assets/og.png">
   <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
   <link rel="icon" href="/assets/icon-512.png" type="image/png" sizes="512x512">
   <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
   <script>
+    // Apply the saved theme before first paint so the page never flashes white in dark mode.
     try { var t = localStorage.getItem("ss-theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -43,7 +44,7 @@
       <li><a href="/#join">Join</a></li>
       <li><a href="/#past">Past events</a></li>
       <li><a href="/#faq">FAQ</a></li>
-      <li><a href="/about.html" aria-current="page">About</a></li>
+      <li><a href="/about.html">About</a></li>
     </ul>
     <button class="theme-toggle" type="button" aria-label="Switch to dark mode">
       <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
@@ -54,26 +55,36 @@
 </header>
 
 <main id="main">
-  <section class="section">
+  <section class="section event-page">
     <div class="wrap">
-      <article class="prose">
-        <div style="margin-left:0" class="mark hero-logo reveal" role="img" aria-label="Silly Spaces logo">
-        <span class="mark-s mark-blue"><img src="/assets/logo-blue.svg" alt="" width="876" height="741"></span>
-        <span class="mark-s mark-pink"><img src="/assets/logo-pink.svg" alt="" width="876" height="741"></span>
-      </div>
-        <a class="back-link reveal" href="/">Back to the homepage</a>
-        <h1 class="reveal">About Silly Spaces</h1>
-        <p class="lede reveal" data-delay="1">Invisible strings made visible. Our silly spaces aim to connect people who might otherwise never meet. Through silly ideas in interesting places, we aim to make people feel safe enough to break the ice with another. What’s more of of an ice breaker than doing something “silly” with another?</p>
-        <p class="reveal" data-delay="2">It’s not really about forcing friendship but meeting diverse, different people and seeing what comes of it. Building friendship in it of itself is scary &amp; inconvenient and silly spaces are also most definitely that. But in the fun way, where you learn something new with a small group of people and provide your own little spark to whatever silly little thing it is that we do. If the idea is silly, everyone is a newbie and we all in turn can make mistakes and learn together.</p>
-        <p class="reveal" data-delay="3">The goal is to build a network of safe people that can make it to the spaces and have a laugh together doing unique things every time. But who knows, whatever happens happens. :)</p>
-
-        <div class="hero-cta reveal" style="justify-content:flex-start;margin-top:36px">
-          <a class="btn btn-primary" href="/#join">Join Silly Spaces</a>
-          <a class="btn btn-ghost" href="/#upcoming">Upcoming events</a>
+      <div class="prose">
+        <a class="back-link reveal" href="/#past">Back to past events</a>
+        <p class="eyebrow reveal">August 4, 2026</p>
+        <h1 class="reveal">Footy in da City</h1>
+        <div class="reveal" data-delay="1">
+        <p class="lede">What? Chalk up a soccer field and play.</p>
+        <p>Why? The streets are where legends are born.</p>
         </div>
-      </article>
+      </div>
+      <p class="empty reveal" data-delay="2">No photos yet.</p>
     </div>
   </section>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Event photos" data-title="Footy in da City" data-when="August 4, 2026" data-desc="What? Chalk up a soccer field and play. Why? The streets are where legends are born.">
+    <div class="lb-inner">
+      <div class="lb-photos">
+        <button class="lb-arrow prev" type="button" aria-label="Previous photo">&#8249;</button>
+        <button class="lb-arrow next" type="button" aria-label="Next photo">&#8250;</button>
+        <div class="lb-dots"></div>
+      </div>
+      <div class="lb-text">
+        <h3></h3>
+        <span class="when"></span>
+        <p></p>
+      </div>
+      <button class="lb-close" type="button" aria-label="Close">&times;</button>
+    </div>
+  </dialog>
 </main>
 
 <footer class="socials" id="contact">
@@ -119,6 +130,6 @@
   </div>
 </footer>
 
-<script src="/js/main.js?v=3f59e760\"></script>
+<script src="/js/main.js"></script>
 </body>
 </html>

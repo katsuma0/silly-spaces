@@ -40,7 +40,7 @@ Line one is the title, line two is the date in any wording, everything after tha
 python3 build.py
 ```
 
-It rewrites the gallery in `index.html` and prints what it found. Commit and open a PR. Photos show in filename order and the first one is the cover, so rename to `01.jpg`, `02.jpg` if the order matters. iPhone HEIC files won't show in a browser, export them as JPG first. Keep each under about 500 KB, the page loads them all.
+It rewrites the gallery in `index.html`, writes one page per event into `events/` (title, date, the text from `event.txt` as paragraphs, and a photo grid), refreshes `sitemap.xml`, and prints what it found. The event pages take their nav and footer from `index.html`, so edit those there. Run it after any change to `style.css` or `main.js` too, so the version stamp on their links updates. Commit and open a PR. Photos show in filename order and the first one is the cover, so rename to `01.jpg`, `02.jpg` if the order matters. iPhone HEIC files won't show in a browser, export them as JPG first. Keep each under about 500 KB, the page loads them all.
 
 ## Adding an upcoming event
 
