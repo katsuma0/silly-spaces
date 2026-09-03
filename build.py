@@ -14,6 +14,9 @@ and the first one is the cover. Then run:
 
     python3 build.py
 
+An event with no photos yet still shows, with a blank cover, so the
+description and the join form dropdown pick it up right away.
+
 Nothing outside the gallery markers in index.html is touched.
 """
 from html import escape
@@ -46,8 +49,7 @@ def read_event(folder):
     if skipped:
         print(f"note  {folder.name}: {len(skipped)} HEIC file(s) ignored, convert them to JPG")
     if not photos:
-        print(f"skip  {folder.name}: no photos")
-        return None
+        print(f"note  {folder.name}: no photos yet, showing a blank cover")
     return {"title": title, "when": when, "desc": desc,
             "photos": [f"/assets/photos/{folder.name}/{p.name}" for p in photos]}
 
@@ -55,9 +57,10 @@ def read_event(folder):
 def render(ev, i):
     delay = f' data-delay="{min(i, 5)}"' if i else ""
     n = len(ev["photos"])
-    count = "1 photo" if n == 1 else f"{n} photos"
+    count = "No photos yet" if n == 0 else "1 photo" if n == 1 else f"{n} photos"
+    cover = ev["photos"][0] if ev["photos"] else "/assets/photos/blank.svg"
     return f"""        <button class="gallery-item reveal" type="button"{delay} data-photos="{escape(','.join(ev['photos']))}" data-desc="{escape(ev['desc'])}">
-          <div class="ph"><img src="{escape(ev['photos'][0])}" alt="" loading="lazy"></div>
+          <div class="ph"><img src="{escape(cover)}" alt="" loading="lazy"></div>
           <div class="body">
             <h3>{escape(ev['title'])}</h3>
             <span class="when">{escape(ev['when'])}</span>
