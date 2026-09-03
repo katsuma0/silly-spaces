@@ -17,6 +17,9 @@
     // Apply the saved theme before first paint so the page never flashes white in dark mode.
     try { var t = localStorage.getItem("ss-theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
   </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&display=swap">
   <link rel="stylesheet" href="/css/style.css">
 </head>
 <body>
@@ -57,42 +60,27 @@
   </section>
 
   <!-- Upcoming events -->
-  <section class="section alt" id="upcoming">
+  <section class="section" id="upcoming">
     <div class="wrap">
       <div class="section-head reveal">
+        <p class="eyebrow">Next up</p>
         <h2>Upcoming events</h2>
-        <p>Everything is walk-in friendly. Come alone, most people do.</p>
+        <p>Walk-in friendly. Come alone, most people do.</p>
       </div>
       <div class="grid">
-        <article class="card reveal" data-date="2026-09-20" data-delay="1">
-          <div class="date-chip"><b>20</b><small>Sep</small></div>
-          <h3>Board games at the library</h3>
-          <div class="meta">
-            <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>2:00 to 5:00 pm</span>
-            <span><svg viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Markham Village Library</span>
+        <article class="card wide reveal" data-date="2026-09-20" data-delay="1">
+          <div class="date-col">
+            <b>20</b>
+            <span>Sunday, September</span>
           </div>
-          <p>We bring the games. Catan, Codenames, a couple of dumb party games. No experience needed, someone will teach you.</p>
-          <div class="actions"><span class="tag free">Free</span><span class="tag">All ages</span></div>
-        </article>
-        <article class="card reveal" data-date="2026-10-04" data-delay="2">
-          <div class="date-chip"><b>04</b><small>Oct</small></div>
-          <h3>Fall walk, Toogood Pond</h3>
-          <div class="meta">
-            <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>10:30 am</span>
-            <span><svg viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Unionville, meet at the gazebo</span>
+          <div class="body">
+            <h3>Finger painting at the waterfront</h3>
+            <div class="meta">
+              <span><svg viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Toronto waterfront</span>
+            </div>
+            <p>Paint, paper, and the lake. We bring everything, you bring hands. Meeting spot and time go out to the list the week before.</p>
+            <div class="actions"><span class="tag free">Free</span><span class="tag">Outdoors</span><span class="tag">All ages</span></div>
           </div>
-          <p>One loop around the pond, then coffee on Main Street. About 90 minutes total. Dogs welcome if they're friendly.</p>
-          <div class="actions"><span class="tag free">Free</span><span class="tag">Outdoors</span></div>
-        </article>
-        <article class="card reveal" data-date="2026-10-24" data-delay="3">
-          <div class="date-chip"><b>24</b><small>Oct</small></div>
-          <h3>Bad costume potluck</h3>
-          <div class="meta">
-            <span><svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>6:30 pm</span>
-            <span><svg viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>Community room, Milliken Mills</span>
-          </div>
-          <p>Bring a dish and the worst costume you can put together in ten minutes. Prize for the laziest effort.</p>
-          <div class="actions"><span class="tag pink">$5 for the room</span><span class="tag">Potluck</span></div>
         </article>
       </div>
       <p class="empty reveal" id="no-events" hidden>Nothing on the calendar right now. <a href="#join">Join the list</a> and you'll hear first.</p>
@@ -104,28 +92,25 @@
   <section class="section" id="members">
     <div class="wrap">
       <div class="section-head reveal">
+        <p class="eyebrow">People</p>
         <h2>Silly Spaces members</h2>
         <p>The people who keep showing up. Your name goes here after your first event.</p>
       </div>
       <div class="members">
-        <div class="member reveal"><div class="avatar">AK</div><strong>Aisha K.</strong><span>Since 2025</span></div>
-        <div class="member reveal" data-delay="1"><div class="avatar">DL</div><strong>Daniel L.</strong><span>Since 2025</span></div>
-        <div class="member reveal" data-delay="1"><div class="avatar">MP</div><strong>Maya P.</strong><span>Since 2025</span></div>
-        <div class="member reveal" data-delay="2"><div class="avatar">JC</div><strong>Jordan C.</strong><span>Since 2026</span></div>
-        <div class="member reveal" data-delay="2"><div class="avatar">SN</div><strong>Sam N.</strong><span>Since 2026</span></div>
-        <div class="member reveal" data-delay="3"><div class="avatar">RT</div><strong>Riya T.</strong><span>Since 2026</span></div>
-        <div class="member reveal" data-delay="3"><div class="avatar">EW</div><strong>Ethan W.</strong><span>Since 2026</span></div>
-        <div class="member reveal" data-delay="4"><div class="avatar">PH</div><strong>Priya H.</strong><span>Since 2026</span></div>
-        <div class="member reveal" data-delay="4"><div class="avatar">LM</div><strong>Leo M.</strong><span>Since 2026</span></div>
-        <a class="member you reveal" data-delay="5" href="#join"><div class="avatar">+</div><strong>You</strong><span>Join below</span></a>
+        <div class="member reveal"><div class="avatar">EM</div><strong>Eric M.</strong></div>
+        <div class="member reveal" data-delay="1"><div class="avatar">KO</div><strong>Katsuma O.</strong></div>
+        <div class="member reveal" data-delay="2"><div class="avatar">DW</div><strong>Darren W.</strong></div>
+        <div class="member reveal" data-delay="3"><div class="avatar">RT</div><strong>Rachel T.</strong></div>
+        <a class="member you reveal" data-delay="4" href="#join"><div class="avatar">+</div><strong>You</strong></a>
       </div>
     </div>
   </section>
 
   <!-- Join -->
-  <section class="section alt" id="join">
+  <section class="section" id="join">
     <div class="wrap">
       <div class="section-head reveal">
+        <p class="eyebrow">Join</p>
         <h2>Join Silly Spaces</h2>
         <p>Just a name is enough. Phone and email are optional.</p>
       </div>
@@ -161,62 +146,36 @@
   <section class="section" id="past">
     <div class="wrap">
       <div class="section-head reveal">
+        <p class="eyebrow">Archive</p>
         <h2>Past events</h2>
         <p>Tap one to see the photos and what happened.</p>
       </div>
       <div class="gallery">
-        <button class="gallery-item reveal" type="button" data-photos="/assets/photos/p1.svg,/assets/photos/p2.svg,/assets/photos/p3.svg" data-desc="First one ever. Twelve people, one long table at a Tim Hortons on Highway 7 because nobody had a better idea. Two of them are still friends who text every day. We learned that name tags help and that nobody wants to do an icebreaker.">
+        <button class="gallery-item reveal" type="button" data-photos="/assets/photos/p1.svg,/assets/photos/p3.svg" data-desc="Pickup soccer. Teams picked on the spot, score forgotten by the end.">
           <div class="ph"><img src="/assets/photos/p1.svg" alt="" loading="lazy"></div>
           <div class="body">
-            <h3>Coffee and strangers</h3>
-            <span class="when">March 2026 · Markham</span>
-            <p>First one ever. Twelve people, one long table at a Tim Hortons on Highway 7 because nobody had a better idea.</p>
-            <span class="count">3 photos</span>
-          </div>
-        </button>
-        <button class="gallery-item reveal" type="button" data-delay="1" data-photos="/assets/photos/p2.svg,/assets/photos/p4.svg" data-desc="Bring a shirt, get some thread, sew a patch on it badly. Twenty people came, about half had never held a needle. Nobody's patch was straight. Everybody left wearing it anyway.">
-          <div class="ph"><img src="/assets/photos/p2.svg" alt="" loading="lazy"></div>
-          <div class="body">
-            <h3>Visible mending night</h3>
-            <span class="when">April 2026 · Unionville</span>
-            <p>Bring a shirt, get some thread, sew a patch on it badly. About half had never held a needle.</p>
+            <h3>Soccer</h3>
+            <span class="when">2026</span>
+            <p>Pickup soccer. Teams picked on the spot, score forgotten by the end.</p>
             <span class="count">2 photos</span>
           </div>
         </button>
-        <button class="gallery-item reveal" type="button" data-delay="2" data-photos="/assets/photos/p3.svg,/assets/photos/p5.svg,/assets/photos/p6.svg,/assets/photos/p1.svg" data-desc="Milliken Park, a Saturday afternoon, four blankets and too much food. Someone brought a frisbee, someone brought a speaker, someone brought their grandmother. It rained for ten minutes and nobody left.">
+        <button class="gallery-item reveal" type="button" data-delay="1" data-photos="/assets/photos/p3.svg,/assets/photos/p5.svg" data-desc="A walk, then somewhere to sit after. The talking happens on its own when everyone is facing the same way.">
           <div class="ph"><img src="/assets/photos/p3.svg" alt="" loading="lazy"></div>
           <div class="body">
-            <h3>Picnic at Milliken Park</h3>
-            <span class="when">June 2026 · Scarborough</span>
-            <p>Four blankets and too much food. It rained for ten minutes and nobody left.</p>
-            <span class="count">4 photos</span>
-          </div>
-        </button>
-        <button class="gallery-item reveal" type="button" data-delay="3" data-photos="/assets/photos/p4.svg,/assets/photos/p6.svg" data-desc="Six teams, forty questions, one round entirely about Canadian snacks. The winning team was three people who had met an hour earlier. Prize was a box of Timbits and they split it fairly.">
-          <div class="ph"><img src="/assets/photos/p4.svg" alt="" loading="lazy"></div>
-          <div class="body">
-            <h3>Trivia at the pub</h3>
-            <span class="when">July 2026 · Markham</span>
-            <p>Six teams, forty questions, one round entirely about Canadian snacks.</p>
+            <h3>Walk</h3>
+            <span class="when">2026</span>
+            <p>A walk, then somewhere to sit after.</p>
             <span class="count">2 photos</span>
           </div>
         </button>
-        <button class="gallery-item reveal" type="button" data-delay="4" data-photos="/assets/photos/p5.svg,/assets/photos/p3.svg,/assets/photos/p2.svg" data-desc="Sunset walk along the Rouge, then ice cream. Eighteen people. We got slightly lost near the parking lot, which is the closest thing we have to a tradition.">
-          <div class="ph"><img src="/assets/photos/p5.svg" alt="" loading="lazy"></div>
+        <button class="gallery-item reveal" type="button" data-delay="2" data-photos="/assets/photos/p2.svg,/assets/photos/p4.svg" data-desc="A train ride out and back. The ride there is the event, the destination is an excuse.">
+          <div class="ph"><img src="/assets/photos/p2.svg" alt="" loading="lazy"></div>
           <div class="body">
-            <h3>Rouge trail sunset walk</h3>
-            <span class="when">August 2026 · Rouge National Urban Park</span>
-            <p>Sunset walk along the Rouge, then ice cream. We got slightly lost near the parking lot.</p>
-            <span class="count">3 photos</span>
-          </div>
-        </button>
-        <button class="gallery-item reveal" type="button" data-delay="5" data-photos="/assets/photos/p6.svg" data-desc="Everyone brought one dish from wherever their family is from. Fourteen dishes, one long table, zero leftovers. Recipes got traded on napkins.">
-          <div class="ph"><img src="/assets/photos/p6.svg" alt="" loading="lazy"></div>
-          <div class="body">
-            <h3>Family recipe potluck</h3>
-            <span class="when">August 2026 · Markham</span>
-            <p>Fourteen dishes, one long table, zero leftovers.</p>
-            <span class="count">1 photo</span>
+            <h3>Train</h3>
+            <span class="when">2026</span>
+            <p>A train ride out and back. The ride there is the event.</p>
+            <span class="count">2 photos</span>
           </div>
         </button>
       </div>
@@ -240,7 +199,7 @@
   </dialog>
 
   <!-- About teaser -->
-  <section class="section alt" id="about">
+  <section class="section" id="about">
     <div class="wrap">
       <div class="about-teaser">
         <div class="art reveal"><img src="/assets/logo.svg" alt=""></div>
@@ -258,6 +217,7 @@
   <section class="section" id="faq">
     <div class="wrap">
       <div class="section-head reveal">
+        <p class="eyebrow">FAQ</p>
         <h2>Questions people ask</h2>
       </div>
       <div class="faq reveal">
@@ -299,6 +259,7 @@
 <footer class="socials" id="contact">
   <div class="wrap">
     <div class="section-head reveal">
+      <p class="eyebrow">Socials</p>
       <h2>Find us</h2>
       <p>Photos go on Instagram first. Everything else lands in email.</p>
     </div>
