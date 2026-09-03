@@ -109,7 +109,22 @@ def render(ev, i):
         </button>"""
 
 
+def stamp_assets():
+    """Put a short hash of style.css and main.js on their URLs in every page,
+    so a browser that cached the old file fetches the new one after a deploy."""
+    import hashlib
+    for f in ["css/style.css", "js/main.js"]:
+        h = hashlib.md5((ROOT / f).read_bytes()).hexdigest()[:8]
+        for page in ROOT.glob("*.html"):
+            t = page.read_text(encoding="utf-8")
+            t2 = re.sub(r"(/%s)(\?v=[0-9a-f]+)?\"" % re.escape(f), r"\1?v=%s\"" % h, t)
+            if t2 != t:
+                page.write_text(t2, encoding="utf-8")
+    print("stamped css/js versions into the pages")
+
+
 def main():
+    stamp_assets()
     folders = sorted((d for d in PHOTOS.iterdir() if d.is_dir()), reverse=True)
     events = [e for e in (read_event(d) for d in folders) if e]
     html = INDEX.read_text(encoding="utf-8")

@@ -49,6 +49,23 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeMenu(); });
   }
 
+  /* ---- Hero logo: the two letters ease apart a touch as the hero
+     scrolls out of view. --p is 0 at the top and 1 once the hero is gone. ---- */
+  var heroMark = document.querySelector(".hero .mark");
+  var hero = document.querySelector(".hero");
+  if (heroMark && hero && !reduce) {
+    var ticking = false;
+    function setP() {
+      var p = Math.min(1, Math.max(0, window.scrollY / (hero.offsetHeight * 0.7 || 1)));
+      heroMark.style.setProperty("--p", p.toFixed(3));
+      ticking = false;
+    }
+    window.addEventListener("scroll", function () {
+      if (!ticking) { ticking = true; requestAnimationFrame(setP); }
+    }, { passive: true });
+    setP();
+  }
+
   /* ---- Scroll reveal ---- */
   var revealEls = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window && !reduce) {
@@ -174,6 +191,25 @@
   });
   var emptyMsg = document.getElementById("no-events");
   if (emptyMsg) emptyMsg.hidden = shown > 0;
+
+  /* ---- Calendar toggle: closed by default so Upcoming stays one card ---- */
+  var calToggle = document.querySelector(".cal-toggle");
+  var calBox = document.getElementById("calendar");
+  if (calToggle && calBox) {
+    var calAnim = null;
+    calToggle.addEventListener("click", function () {
+      var opening = calBox.hidden;
+      if (calAnim) calAnim.cancel();
+      calToggle.setAttribute("aria-expanded", String(opening));
+      calToggle.textContent = opening ? "Hide the calendar" : "Show the calendar";
+      if (reduce) { calBox.hidden = !opening; return; }
+      if (opening) calBox.hidden = false;
+      var end = opening ? calBox.scrollHeight : 0, start = opening ? 0 : calBox.offsetHeight;
+      calAnim = calBox.animate([{ height: start + "px", opacity: opening ? 0 : 1 }, { height: end + "px", opacity: opening ? 1 : 0 }],
+        { duration: 560, easing: "cubic-bezier(0.22, 1, 0.36, 1)" });
+      calAnim.onfinish = function () { if (!opening) calBox.hidden = true; calAnim = null; };
+    });
+  }
 
   /* ---- Calendar: one month at a time, built from the event cards and the
      gallery, so it needs no data of its own. Dots mark days with events;
