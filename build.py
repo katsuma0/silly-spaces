@@ -99,13 +99,15 @@ def render(ev, i):
     n = len(ev["photos"])
     count = "No photos yet" if n == 0 else "1 photo" if n == 1 else f"{n} photos"
     cover = ev["photos"][0] if ev["photos"] else "/assets/photos/blank.svg"
+    # every line of event.txt is its own line on the card, nothing is cut off
+    lines = "\n".join(f"            <p>{escape(t)}</p>" for t in ev["paras"]) or "            <p></p>"
     date = f' data-date="{ev["date"]}"' if ev["date"] else ""
     return f"""        <a class="gallery-item reveal" href="/events/{ev['slug']}.html"{delay}{date}>
           <div class="ph"><img src="{escape(cover)}" alt="" loading="lazy"></div>
           <div class="body">
             <h3>{escape(ev['title'])}</h3>
             <span class="when">{escape(ev['when'])}</span>
-            <p>{escape(ev['desc'])}</p>
+{lines}
             <span class="count">{count}</span>
           </div>
         </a>"""
@@ -164,7 +166,7 @@ def render_event_page(ev, nav, foot, head):
     </div>
   </section>
 
-  <dialog class="lightbox" id="lightbox" aria-label="Event photos" data-title="{escape(ev['title'])}" data-when="{escape(ev['when'])}" data-desc="{escape(ev['desc'])}">
+  <dialog class="lightbox" id="lightbox" aria-label="Event photos" data-title="{escape(ev['title'])}" data-when="{escape(ev['when'])}" data-desc="{escape(chr(10).join(ev['paras']))}">
     <div class="lb-inner">
       <div class="lb-photos">
         <button class="lb-arrow prev" type="button" aria-label="Previous photo">&#8249;</button>
