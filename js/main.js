@@ -149,7 +149,8 @@
           dots.appendChild(document.createElement("i"));
         });
         lb.querySelectorAll(".lb-arrow").forEach(function (a) { a.hidden = imgs.length < 2; });
-        show(0);
+        lb.classList.toggle("no-photos", imgs.length === 0);
+        if (imgs.length) show(0);
         lb.showModal();
       });
     });
