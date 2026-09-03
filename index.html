@@ -58,23 +58,7 @@
       <div class="hero-cta">
         <a class="btn btn-primary" href="#join">Join Silly Spaces</a>
         <a class="btn btn-ghost" href="#upcoming">See what's coming up</a>
-      </div>
-    </div>
-  </section>
-
-  <!-- About teaser -->
-  <section class="section" id="about">
-    <div class="wrap">
-      <div class="about-teaser">
-        <div class="art reveal"><div class="mark" role="img" aria-label="Silly Spaces logo">
-        <img class="mark-s mark-blue" src="/assets/logo-blue.svg" alt="" width="876" height="741">
-        <img class="mark-s mark-pink" src="/assets/logo-pink.svg" alt="" width="876" height="741">
-      </div></div>
-        <div class="reveal" data-delay="1">
-          <h2>What Silly Spaces is</h2>
-          <!-- Two or three sentences about Silly Spaces go here. -->
-          <a class="btn-link" href="/about.html">Read the full description</a>
-        </div>
+        <a class="btn btn-ghost" href="/about.html">About</a>
       </div>
     </div>
   </section>
@@ -99,6 +83,16 @@
         </article>
       </div>
       <p class="empty reveal" id="no-events" hidden>Nothing on the calendar right now. <a href="#join">Join the list</a> and you'll hear first.</p>
+      <div class="calendar reveal" id="calendar" aria-label="Event calendar">
+        <div class="cal-head">
+          <button type="button" class="cal-nav" data-dir="-1" aria-label="Previous month">&#8249;</button>
+          <h3 class="cal-title"></h3>
+          <button type="button" class="cal-nav" data-dir="1" aria-label="Next month">&#8250;</button>
+        </div>
+        <div class="cal-grid" role="grid"></div>
+        <ul class="cal-list"></ul>
+        <p class="cal-legend"><span class="dot up"></span>Upcoming <span class="dot past"></span>Past</p>
+      </div>
       <div class="section-foot reveal"><a class="btn-link" href="#join">Want a heads up on new events? Join the list</a></div>
     </div>
   </section>
@@ -171,7 +165,7 @@
       </div>
       <div class="gallery">
         <!-- gallery:start -->
-        <button class="gallery-item reveal" type="button" data-photos="" data-desc="What? Fingerpainting the waterfront on one big canvas. Why? To reclaim a lost art form held hostage by toddlers.">
+        <button class="gallery-item reveal" type="button" data-date="2026-08-29" data-photos="" data-desc="What? Fingerpainting the waterfront on one big canvas. Why? To reclaim a lost art form held hostage by toddlers.">
           <div class="ph"><img src="/assets/photos/blank.svg" alt="" loading="lazy"></div>
           <div class="body">
             <h3>Finger painting the waterfront</h3>
@@ -180,7 +174,7 @@
             <span class="count">No photos yet</span>
           </div>
         </button>
-        <button class="gallery-item reveal" type="button" data-delay="1" data-photos="" data-desc="What? Chalk up a soccer field and play. Why? The streets are where legends are born.">
+        <button class="gallery-item reveal" type="button" data-delay="1" data-date="2026-08-04" data-photos="" data-desc="What? Chalk up a soccer field and play. Why? The streets are where legends are born.">
           <div class="ph"><img src="/assets/photos/blank.svg" alt="" loading="lazy"></div>
           <div class="body">
             <h3>Footy in da City</h3>
@@ -189,7 +183,7 @@
             <span class="count">No photos yet</span>
           </div>
         </button>
-        <button class="gallery-item reveal" type="button" data-delay="2" data-photos="/assets/photos/2026-07-09-humrpferftc/01-cn-tower.jpg,/assets/photos/2026-07-09-humrpferftc/02-markham-station.jpg,/assets/photos/2026-07-09-humrpferftc/03-rain.jpg,/assets/photos/2026-07-09-humrpferftc/04-trail.jpg,/assets/photos/2026-07-09-humrpferftc/05-white-head-school.jpg" data-desc="What? A phone-less expedition. Why? Historic Unfertilized Mosquito Research Phoneless Fun Expedition Race For The Cure.">
+        <button class="gallery-item reveal" type="button" data-delay="2" data-date="2026-07-09" data-photos="/assets/photos/2026-07-09-humrpferftc/01-cn-tower.jpg,/assets/photos/2026-07-09-humrpferftc/02-markham-station.jpg,/assets/photos/2026-07-09-humrpferftc/03-rain.jpg,/assets/photos/2026-07-09-humrpferftc/04-trail.jpg,/assets/photos/2026-07-09-humrpferftc/05-white-head-school.jpg" data-desc="What? A phone-less expedition. Why? Historic Unfertilized Mosquito Research Phoneless Fun Expedition Race For The Cure.">
           <div class="ph"><img src="/assets/photos/2026-07-09-humrpferftc/01-cn-tower.jpg" alt="" loading="lazy"></div>
           <div class="body">
             <h3>H.U.M.R.P.F.E.R.F.T.C.</h3>
@@ -198,7 +192,7 @@
             <span class="count">5 photos</span>
           </div>
         </button>
-        <button class="gallery-item reveal" type="button" data-delay="3" data-photos="" data-desc="What? Play board games on the train. Why? There’s no way of knowing.">
+        <button class="gallery-item reveal" type="button" data-delay="3" data-date="2026-06-27" data-photos="" data-desc="What? Play board games on the train. Why? There’s no way of knowing.">
           <div class="ph"><img src="/assets/photos/blank.svg" alt="" loading="lazy"></div>
           <div class="body">
             <h3>Train A’Board</h3>

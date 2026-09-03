@@ -26,6 +26,7 @@ Nothing outside the gallery markers in index.html is touched.
 """
 from html import escape
 from pathlib import Path
+import re
 import sys
 
 try:
@@ -85,7 +86,9 @@ def read_event(folder):
         print(f"note  {folder.name}: {len(skipped)} HEIC file(s) ignored, convert them to JPG")
     if not photos:
         print(f"note  {folder.name}: no photos yet, showing a blank cover")
-    return {"title": title, "when": when, "desc": desc,
+    # a folder named 2026-07-09-something gives the calendar its date
+    m = re.match(r"(\d{4}-\d{2}-\d{2})", folder.name)
+    return {"title": title, "when": when, "desc": desc, "date": m.group(1) if m else "",
             "photos": [f"/assets/photos/{folder.name}/{p.name}" for p in photos]}
 
 
@@ -94,7 +97,8 @@ def render(ev, i):
     n = len(ev["photos"])
     count = "No photos yet" if n == 0 else "1 photo" if n == 1 else f"{n} photos"
     cover = ev["photos"][0] if ev["photos"] else "/assets/photos/blank.svg"
-    return f"""        <button class="gallery-item reveal" type="button"{delay} data-photos="{escape(','.join(ev['photos']))}" data-desc="{escape(ev['desc'])}">
+    date = f' data-date="{ev["date"]}"' if ev["date"] else ""
+    return f"""        <button class="gallery-item reveal" type="button"{delay}{date} data-photos="{escape(','.join(ev['photos']))}" data-desc="{escape(ev['desc'])}">
           <div class="ph"><img src="{escape(cover)}" alt="" loading="lazy"></div>
           <div class="body">
             <h3>{escape(ev['title'])}</h3>

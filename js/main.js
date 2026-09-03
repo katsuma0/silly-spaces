@@ -145,7 +145,7 @@
         imgs.forEach(function (src) {
           var im = document.createElement("img");
           im.src = src; im.alt = title.textContent;
-          photosWrap.insertBefore(im, photosWrap.firstChild);
+          photosWrap.appendChild(im);
           dots.appendChild(document.createElement("i"));
         });
         lb.querySelectorAll(".lb-arrow").forEach(function (a) { a.hidden = imgs.length < 2; });
@@ -174,6 +174,72 @@
   });
   var emptyMsg = document.getElementById("no-events");
   if (emptyMsg) emptyMsg.hidden = shown > 0;
+
+  /* ---- Calendar: one month at a time, built from the event cards and the
+     gallery, so it needs no data of its own. Dots mark days with events;
+     the list under the grid names them and jumps to the card or opens
+     the photos. ---- */
+  var cal = document.getElementById("calendar");
+  if (cal) {
+    var events = [];
+    document.querySelectorAll("#upcoming .card[data-date]").forEach(function (c) {
+      events.push({ date: c.getAttribute("data-date"), title: c.querySelector("h3").textContent.trim(), kind: "up", el: c });
+    });
+    document.querySelectorAll("#past .gallery-item[data-date]").forEach(function (g) {
+      events.push({ date: g.getAttribute("data-date"), title: g.querySelector("h3").textContent.trim(), kind: "past", el: g });
+    });
+    var byDay = {};
+    events.forEach(function (e) { (byDay[e.date] = byDay[e.date] || []).push(e); });
+    var now = new Date();
+    var view = new Date(now.getFullYear(), now.getMonth(), 1);
+    var grid = cal.querySelector(".cal-grid"), list = cal.querySelector(".cal-list"), title = cal.querySelector(".cal-title");
+    var months = ["January", "February", "March", "April", "May", "June", "July", "August", "September", "October", "November", "December"];
+    function pad(n) { return (n < 10 ? "0" : "") + n; }
+    function iso(y, m, d) { return y + "-" + pad(m + 1) + "-" + pad(d); }
+    function render() {
+      var y = view.getFullYear(), m = view.getMonth();
+      title.textContent = months[m] + " " + y;
+      grid.innerHTML = "";
+      ["S", "M", "T", "W", "T", "F", "S"].forEach(function (d) {
+        var h = document.createElement("span"); h.className = "cal-dow"; h.textContent = d; grid.appendChild(h);
+      });
+      var first = new Date(y, m, 1).getDay(), days = new Date(y, m + 1, 0).getDate();
+      for (var i = 0; i < first; i++) { var pad_ = document.createElement("span"); pad_.className = "cal-pad"; grid.appendChild(pad_); }
+      var todayKey = iso(now.getFullYear(), now.getMonth(), now.getDate());
+      for (var d = 1; d <= days; d++) {
+        var key = iso(y, m, d), evs = byDay[key] || [];
+        var cell = document.createElement(evs.length ? "button" : "span");
+        cell.className = "cal-day" + (key === todayKey ? " today" : "") + (evs.length ? " has " + evs[0].kind : "");
+        if (evs.length) { cell.type = "button"; cell.setAttribute("aria-label", evs.map(function (e) { return e.title; }).join(", ")); }
+        cell.innerHTML = "<b>" + d + "</b>";
+        if (evs.length) {
+          cell.addEventListener("click", (function (ev) { return function () { open(ev); }; })(evs[0]));
+        }
+        grid.appendChild(cell);
+      }
+      list.innerHTML = "";
+      var monthEvents = events.filter(function (e) { return e.date.slice(0, 7) === y + "-" + pad(m + 1); })
+        .sort(function (a, b) { return a.date < b.date ? -1 : 1; });
+      if (!monthEvents.length) {
+        var li = document.createElement("li"); li.className = "cal-none"; li.textContent = "Nothing this month."; list.appendChild(li);
+      }
+      monthEvents.forEach(function (e) {
+        var li = document.createElement("li"), btn = document.createElement("button");
+        btn.type = "button"; btn.className = "cal-item " + e.kind;
+        btn.innerHTML = "<span class=\"dot " + e.kind + "\"></span><span class=\"d\">" + months[m].slice(0, 3) + " " + parseInt(e.date.slice(8), 10) + "</span> " + e.title;
+        btn.addEventListener("click", function () { open(e); });
+        li.appendChild(btn); list.appendChild(li);
+      });
+    }
+    function open(e) {
+      if (e.kind === "past") { e.el.click(); }
+      else { e.el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" }); }
+    }
+    cal.querySelectorAll(".cal-nav").forEach(function (b) {
+      b.addEventListener("click", function () { view.setMonth(view.getMonth() + parseInt(b.getAttribute("data-dir"), 10)); render(); });
+    });
+    render();
+  }
 
   /* ---- Join form: fill the "which event" dropdown from the page itself,
      upcoming cards first, then the past events gallery, so it never
