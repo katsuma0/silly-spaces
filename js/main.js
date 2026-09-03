@@ -173,4 +173,25 @@
   });
   var emptyMsg = document.getElementById("no-events");
   if (emptyMsg) emptyMsg.hidden = shown > 0;
+
+  /* ---- Join form: fill the "which event" dropdown from the page itself,
+     upcoming cards first, then the past events gallery, so it never
+     needs editing by hand. Runs after the date filter above. ---- */
+  var attended = document.getElementById("attended");
+  if (attended) {
+    function addGroup(label, nodes) {
+      var names = Array.prototype.map.call(nodes, function (n) { return n.textContent.trim(); }).filter(Boolean);
+      if (!names.length) return;
+      var g = document.createElement("optgroup");
+      g.label = label;
+      names.forEach(function (name) {
+        var o = document.createElement("option");
+        o.value = name; o.textContent = name;
+        g.appendChild(o);
+      });
+      attended.appendChild(g);
+    }
+    addGroup("Upcoming", document.querySelectorAll("#upcoming .card h3"));
+    addGroup("Past events", document.querySelectorAll("#past .gallery-item h3"));
+  }
 })();

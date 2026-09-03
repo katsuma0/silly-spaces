@@ -59,6 +59,20 @@
     </div>
   </section>
 
+  <!-- About teaser -->
+  <section class="section" id="about">
+    <div class="wrap">
+      <div class="about-teaser">
+        <div class="art reveal"><img src="/assets/logo.svg" alt=""></div>
+        <div class="reveal" data-delay="1">
+          <h2>What Silly Spaces is</h2>
+          <!-- Two or three sentences about Silly Spaces go here. -->
+          <a class="btn-link" href="/about.html">Read the full description</a>
+        </div>
+      </div>
+    </div>
+  </section>
+
   <!-- Upcoming events -->
   <section class="section" id="upcoming">
     <div class="wrap">
@@ -118,6 +132,12 @@
           <input id="name" name="name" type="text" required autocomplete="name" placeholder="What should we call you">
         </div>
         <div class="field">
+          <label for="attended">Which event did you come to? <small>optional</small></label>
+          <select id="attended" name="attended">
+            <option value="">Haven't been yet</option>
+          </select>
+        </div>
+        <div class="field">
           <label for="phone">Phone <small>optional</small></label>
           <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="905 555 0123">
         </div>
@@ -144,17 +164,9 @@
         <p>Tap one to see the photos.</p>
       </div>
       <div class="gallery">
-        <button class="gallery-item reveal" type="button" data-photos="/assets/photos/p1.svg,/assets/photos/p3.svg" data-desc="">
-          <div class="ph"><img src="/assets/photos/p1.svg" alt="" loading="lazy"></div>
-          <div class="body">
-            <h3>Soccer</h3>
-            <span class="when"></span>
-            <p></p>
-            <span class="count">2 photos</span>
-          </div>
-        </button>
-        <button class="gallery-item reveal" type="button" data-delay="1" data-photos="/assets/photos/p3.svg,/assets/photos/p5.svg" data-desc="">
-          <div class="ph"><img src="/assets/photos/p3.svg" alt="" loading="lazy"></div>
+        <!-- gallery:start -->
+        <button class="gallery-item reveal" type="button" data-photos="/assets/photos/2026-walk/1.svg,/assets/photos/2026-walk/2.svg" data-desc="">
+          <div class="ph"><img src="/assets/photos/2026-walk/1.svg" alt="" loading="lazy"></div>
           <div class="body">
             <h3>Walk</h3>
             <span class="when"></span>
@@ -162,8 +174,8 @@
             <span class="count">2 photos</span>
           </div>
         </button>
-        <button class="gallery-item reveal" type="button" data-delay="2" data-photos="/assets/photos/p2.svg,/assets/photos/p4.svg" data-desc="">
-          <div class="ph"><img src="/assets/photos/p2.svg" alt="" loading="lazy"></div>
+        <button class="gallery-item reveal" type="button" data-delay="1" data-photos="/assets/photos/2026-train/1.svg,/assets/photos/2026-train/2.svg" data-desc="">
+          <div class="ph"><img src="/assets/photos/2026-train/1.svg" alt="" loading="lazy"></div>
           <div class="body">
             <h3>Train</h3>
             <span class="when"></span>
@@ -171,6 +183,16 @@
             <span class="count">2 photos</span>
           </div>
         </button>
+        <button class="gallery-item reveal" type="button" data-delay="2" data-photos="/assets/photos/2026-soccer/1.svg,/assets/photos/2026-soccer/2.svg" data-desc="">
+          <div class="ph"><img src="/assets/photos/2026-soccer/1.svg" alt="" loading="lazy"></div>
+          <div class="body">
+            <h3>Soccer</h3>
+            <span class="when"></span>
+            <p></p>
+            <span class="count">2 photos</span>
+          </div>
+        </button>
+        <!-- gallery:end -->
       </div>
     </div>
   </section>
@@ -190,20 +212,6 @@
       <button class="lb-close" type="button" aria-label="Close">&times;</button>
     </div>
   </dialog>
-
-  <!-- About teaser -->
-  <section class="section" id="about">
-    <div class="wrap">
-      <div class="about-teaser">
-        <div class="art reveal"><img src="/assets/logo.svg" alt=""></div>
-        <div class="reveal" data-delay="1">
-          <h2>What Silly Spaces is</h2>
-          <!-- Two or three sentences about Silly Spaces go here. -->
-          <a class="btn-link" href="/about.html">Read the full description</a>
-        </div>
-      </div>
-    </div>
-  </section>
 
   <!-- FAQ -->
   <section class="section" id="faq">
