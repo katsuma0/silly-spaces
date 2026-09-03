@@ -282,7 +282,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01e
 @keyframes fade-up { from { opacity: 0; transform: translateY(12px); } to { opacity: 1; transform: none; } }
 .lb-inner { background: var(--surface); color: var(--text); border-radius: 20px; overflow: hidden; display: grid; grid-template-columns: 1.4fr 1fr; border: 1px solid var(--line); }
 .lb-photos { position: relative; background: var(--bg); aspect-ratio: 4 / 3; }
-.lb-photos img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; opacity: 0; transition: opacity var(--slow) var(--ease); }
+.lb-photos img { width: 100%; height: 100%; object-fit: contain; position: absolute; inset: 0; opacity: 0; transition: opacity var(--slow) var(--ease); }
 .lb-photos img.on { opacity: 1; }
 .lb-arrow {
   position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%;
