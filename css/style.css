@@ -299,7 +299,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01e
 .lightbox.no-photos .lb-photos { display: none; }
 .lightbox.no-photos .lb-inner { grid-template-columns: 1fr; }
 .lightbox.no-photos { max-width: 520px; }
-.lb-photos img { width: 100%; height: 100%; object-fit: contain; position: absolute; inset: 0; opacity: 0; transition: opacity var(--slow) var(--ease); }
+.lb-photos img { width: 100%; height: 100%; object-fit: cover; position: absolute; inset: 0; opacity: 0; transition: opacity var(--slow) var(--ease); }
 .lb-photos img.on { opacity: 1; }
 .lb-arrow {
   position: absolute; top: 50%; transform: translateY(-50%); width: 38px; height: 38px; border-radius: 50%;

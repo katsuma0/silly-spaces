@@ -17,11 +17,21 @@ and the first one is the cover. Then run:
 An event with no photos yet still shows, with a blank cover, so the
 description and the join form dropdown pick it up right away.
 
+Photos are also normalised in place: the phone's rotation tag is baked
+in, anything over 1600 px on the long edge is shrunk, metadata is
+dropped. Needs Pillow (pip install pillow); without it photos are left
+as they are.
+
 Nothing outside the gallery markers in index.html is touched.
 """
 from html import escape
 from pathlib import Path
 import sys
+
+try:
+    from PIL import Image, ImageOps
+except ImportError:  # photos still work, they just stay at whatever size they came in
+    Image = None
 
 ROOT = Path(__file__).resolve().parent
 PHOTOS = ROOT / "assets" / "photos"
@@ -30,6 +40,29 @@ START = "        <!-- gallery:start -->"
 END = "        <!-- gallery:end -->"
 # Browsers can show these. HEIC from an iPhone is not on the list on purpose.
 IMAGE_TYPES = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".avif"}
+# Every photo is brought to this long edge so they all load and display at
+# one scale. Phone photos come in at 4000 px and 4 MB, which is too much.
+LONG_EDGE = 1600
+
+
+def prepare_photo(p):
+    """Bake in the phone's rotation tag, shrink to LONG_EDGE, drop metadata.
+    Only rewrites the file when something actually needs changing."""
+    if Image is None or p.suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp"}:
+        return
+    im = Image.open(p)
+    rotated = im.getexif().get(274, 1) != 1
+    big = max(im.size) > LONG_EDGE
+    if not (rotated or big):
+        return
+    im = ImageOps.exif_transpose(im)
+    if big:
+        im.thumbnail((LONG_EDGE, LONG_EDGE), Image.LANCZOS)
+    if p.suffix.lower() in {".jpg", ".jpeg"}:
+        im.convert("RGB").save(p, "JPEG", quality=82, optimize=True)
+    else:
+        im.save(p, optimize=True)
+    print(f"photo {p.parent.name}/{p.name}: {'rotated, ' if rotated else ''}{im.size[0]}x{im.size[1]}, {p.stat().st_size // 1024} KB")
 
 
 def read_event(folder):
@@ -45,6 +78,8 @@ def read_event(folder):
         p for p in folder.iterdir()
         if p.is_file() and p.suffix.lower() in IMAGE_TYPES
     )
+    for p in photos:
+        prepare_photo(p)
     skipped = [p.name for p in folder.iterdir() if p.is_file() and p.suffix.lower() == ".heic"]
     if skipped:
         print(f"note  {folder.name}: {len(skipped)} HEIC file(s) ignored, convert them to JPG")
