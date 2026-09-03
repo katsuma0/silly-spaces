@@ -20,7 +20,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&display=swap">
-  <link rel="stylesheet" href="/css/style.css">
+  <link rel="stylesheet" href="/css/style.css?v=e43eddcd\">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -50,8 +50,8 @@
   <section class="hero">
     <div class="wrap">
       <div class="mark hero-logo" role="img" aria-label="Silly Spaces logo">
-        <img class="mark-s mark-blue" src="/assets/logo-blue.svg" alt="" width="876" height="741">
-        <img class="mark-s mark-pink" src="/assets/logo-pink.svg" alt="" width="876" height="741">
+        <span class="mark-s mark-blue"><img src="/assets/logo-blue.svg" alt="" width="876" height="741"></span>
+        <span class="mark-s mark-pink"><img src="/assets/logo-pink.svg" alt="" width="876" height="741"></span>
       </div>
       <h1><span class="blue">Silly</span> <span class="pink">Spaces</span></h1>
       <!-- Tagline goes here when there is one. -->
@@ -98,7 +98,8 @@
         </article>
       </div>
       <p class="empty reveal" id="no-events" hidden>Nothing on the calendar right now. <a href="#join">Join the list</a> and you'll hear first.</p>
-      <div class="calendar reveal" id="calendar" aria-label="Event calendar">
+      <div class="reveal"><button class="cal-toggle btn-link" type="button" aria-expanded="false" aria-controls="calendar">Show the calendar</button></div>
+      <div class="calendar" id="calendar" aria-label="Event calendar" hidden>
         <div class="cal-head">
           <button type="button" class="cal-nav" data-dir="-1" aria-label="Previous month">&#8249;</button>
           <h3 class="cal-title"></h3>
@@ -301,6 +302,6 @@
   </div>
 </footer>
 
-<script src="/js/main.js"></script>
+<script src="/js/main.js?v=3f59e760\"></script>
 </body>
 </html>

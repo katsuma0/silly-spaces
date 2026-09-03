@@ -137,14 +137,16 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01e
    coordinate box, so stacking them reproduces the logo exactly. Each S
    slides in from its own side, then drifts on its own slow loop, out of
    phase with the other, so they read as two letters leaning on each other. */
-.mark { position: relative; aspect-ratio: 876 / 741; }
-.mark-s { position: absolute; inset: 0; width: 100%; height: 100%; will-change: transform; }
-.mark-blue { animation: s-in-left 1.4s var(--ease) both, drift-a 7s 1.4s ease-in-out infinite; }
-.mark-pink { animation: s-in-right 1.4s 0.18s var(--ease) both, drift-b 7s 1.58s ease-in-out infinite; }
-@keyframes s-in-left { from { opacity: 0; transform: translate(-14%, 6%) rotate(-6deg); } to { opacity: 1; transform: none; } }
-@keyframes s-in-right { from { opacity: 0; transform: translate(14%, -6%) rotate(6deg); } to { opacity: 1; transform: none; } }
-@keyframes drift-a { 0%, 100% { transform: none; } 50% { transform: translate(-1.5%, -3.5%) rotate(-2deg); } }
-@keyframes drift-b { 0%, 100% { transform: none; } 50% { transform: translate(1.5%, 3.5%) rotate(2deg); } }
+.mark { position: relative; aspect-ratio: 876 / 741; --p: 0; }
+.mark-s { position: absolute; inset: 0; display: block; will-change: transform; }
+.mark-s img { display: block; width: 100%; height: 100%; }
+/* --p goes 0 to 1 as the hero scrolls away: the letters ease apart a little */
+.mark-blue { transform: translate(calc(var(--p) * -9%), calc(var(--p) * -5%)) rotate(calc(var(--p) * -4deg)); }
+.mark-pink { transform: translate(calc(var(--p) * 9%), calc(var(--p) * 5%)) rotate(calc(var(--p) * 4deg)); }
+.mark-blue img { animation: s-in-left 1.4s var(--ease) both; }
+.mark-pink img { animation: s-in-right 1.4s 0.18s var(--ease) both; }
+@keyframes s-in-left { from { opacity: 0; transform: translate(-12%, 5%) rotate(-5deg); } to { opacity: 1; transform: none; } }
+@keyframes s-in-right { from { opacity: 0; transform: translate(12%, -5%) rotate(5deg); } to { opacity: 1; transform: none; } }
 .brand img { width: 30px; height: 25px; }
 
 /* ---------- Hero ---------- */
@@ -218,7 +220,12 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01e
 .empty a { text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------- Calendar ---------- */
-.calendar { margin-top: 28px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 8px 36px; align-items: start; transition: background-color var(--slow) var(--ease); }
+.cal-toggle { margin-top: 20px; background: none; border: 0; border-bottom: 1px solid var(--line-strong); padding: 0 0 2px; cursor: pointer; font: inherit; font-size: 16px; color: var(--text); transition: border-color var(--mid) var(--ease); }
+.cal-toggle:hover { border-color: var(--text); }
+.cal-toggle::after { content: " \2193"; }
+.cal-toggle[aria-expanded="true"]::after { content: " \2191"; }
+.calendar[hidden] { display: none; }
+.calendar { overflow: hidden; margin-top: 16px; background: var(--surface); border: 1px solid var(--line); border-radius: var(--radius); padding: 22px; display: grid; grid-template-columns: minmax(260px, 340px) 1fr; gap: 8px 36px; align-items: start; transition: background-color var(--slow) var(--ease); }
 .cal-head { display: flex; align-items: center; justify-content: space-between; grid-column: 1; }
 .cal-title { font-size: 20px; }
 .cal-nav { width: 32px; height: 32px; border-radius: 50%; border: 1px solid var(--line); background: transparent; cursor: pointer; font-size: 18px; color: var(--muted); display: grid; place-items: center; transition: border-color var(--mid) var(--ease), color var(--mid) var(--ease); }
