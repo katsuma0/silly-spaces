@@ -74,7 +74,8 @@ def read_event(folder):
     lines = info.read_text(encoding="utf-8").splitlines()
     title = lines[0].strip() if lines else folder.name
     when = lines[1].strip() if len(lines) > 1 else ""
-    desc = " ".join(l.strip() for l in lines[2:] if l.strip())
+    paras = [l.strip() for l in lines[2:] if l.strip()]
+    desc = " ".join(paras)
     photos = sorted(
         p for p in folder.iterdir()
         if p.is_file() and p.suffix.lower() in IMAGE_TYPES
@@ -88,7 +89,8 @@ def read_event(folder):
         print(f"note  {folder.name}: no photos yet, showing a blank cover")
     # a folder named 2026-07-09-something gives the calendar its date
     m = re.match(r"(\d{4}-\d{2}-\d{2})", folder.name)
-    return {"title": title, "when": when, "desc": desc, "date": m.group(1) if m else "",
+    return {"title": title, "when": when, "desc": desc, "paras": paras, "slug": folder.name,
+            "date": m.group(1) if m else "",
             "photos": [f"/assets/photos/{folder.name}/{p.name}" for p in photos]}
 
 
@@ -98,7 +100,7 @@ def render(ev, i):
     count = "No photos yet" if n == 0 else "1 photo" if n == 1 else f"{n} photos"
     cover = ev["photos"][0] if ev["photos"] else "/assets/photos/blank.svg"
     date = f' data-date="{ev["date"]}"' if ev["date"] else ""
-    return f"""        <button class="gallery-item reveal" type="button"{delay}{date} data-photos="{escape(','.join(ev['photos']))}" data-desc="{escape(ev['desc'])}">
+    return f"""        <a class="gallery-item reveal" href="/events/{ev['slug']}.html"{delay}{date}>
           <div class="ph"><img src="{escape(cover)}" alt="" loading="lazy"></div>
           <div class="body">
             <h3>{escape(ev['title'])}</h3>
@@ -106,7 +108,85 @@ def render(ev, i):
             <p>{escape(ev['desc'])}</p>
             <span class="count">{count}</span>
           </div>
-        </button>"""
+        </a>"""
+
+
+def page_shell(html):
+    """Nav and footer lifted from index.html so event pages always match."""
+    nav = html[html.index('<header class="nav">'):html.index("</header>") + len("</header>")]
+    foot = html[html.index('<footer class="socials"'):html.index("</footer>") + len("</footer>")]
+    head = html[html.index("<head>"):html.index("</head>")]
+    # the stylesheet, fonts, icons, and share tags, minus page-specific title, description, canonical
+    head_lines = [l for l in head.splitlines()[1:]
+                  if not any(k in l for k in ("<title>", 'name="description"', 'rel="canonical"', "og:title", "og:url", "twitter:title"))]
+    return nav, foot, "\n".join(head_lines)
+
+
+def render_event_page(ev, nav, foot, head):
+    n = len(ev["photos"])
+    if n:
+        tiles = "\n".join(
+            f'        <button class="photo" type="button" data-index="{i}" data-src="{escape(p)}"><img src="{escape(p)}" alt="" loading="lazy"></button>'
+            for i, p in enumerate(ev["photos"]))
+        grid = f'      <div class="photo-grid reveal" data-delay="2">\n{tiles}\n      </div>'
+    else:
+        grid = '      <p class="empty reveal" data-delay="2">No photos yet.</p>'
+    paras = "\n".join('        <p%s>%s</p>' % (' class="lede"' if i == 0 else "", escape(t)) for i, t in enumerate(ev["paras"])) \
+        or "        <!-- Description goes in event.txt, from line 3 down. -->"
+    return f"""<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <title>{escape(ev['title'])} · Silly Spaces</title>
+  <meta name="description" content="{escape(ev['title'])}, {escape(ev['when'])}. A Silly Spaces event.">
+  <link rel="canonical" href="https://sillyspaces.com/events/{ev['slug']}.html">
+  <meta property="og:title" content="{escape(ev['title'])} · Silly Spaces">
+  <meta property="og:url" content="https://sillyspaces.com/events/{ev['slug']}.html">
+  <meta name="twitter:title" content="{escape(ev['title'])} · Silly Spaces">
+{head}
+</head>
+<body>
+<a class="skip" href="#main">Skip to content</a>
+
+{nav}
+
+<main id="main">
+  <section class="section event-page">
+    <div class="wrap">
+      <div class="prose">
+        <a class="back-link reveal" href="/#past">Back to past events</a>
+        <p class="eyebrow reveal">{escape(ev['when'])}</p>
+        <h1 class="reveal">{escape(ev['title'])}</h1>
+        <div class="reveal" data-delay="1">
+{paras}
+        </div>
+      </div>
+{grid}
+    </div>
+  </section>
+
+  <dialog class="lightbox" id="lightbox" aria-label="Event photos" data-title="{escape(ev['title'])}" data-when="{escape(ev['when'])}" data-desc="{escape(ev['desc'])}">
+    <div class="lb-inner">
+      <div class="lb-photos">
+        <button class="lb-arrow prev" type="button" aria-label="Previous photo">&#8249;</button>
+        <button class="lb-arrow next" type="button" aria-label="Next photo">&#8250;</button>
+        <div class="lb-dots"></div>
+      </div>
+      <div class="lb-text">
+        <h3></h3>
+        <span class="when"></span>
+        <p></p>
+      </div>
+      <button class="lb-close" type="button" aria-label="Close">&times;</button>
+    </div>
+  </dialog>
+</main>
+
+{foot}
+
+<script src="/js/main.js"></script>
+</body>
+</html>
+"""
 
 
 def stamp_assets():
@@ -115,7 +195,7 @@ def stamp_assets():
     import hashlib
     for f in ["css/style.css", "js/main.js"]:
         h = hashlib.md5((ROOT / f).read_bytes()).hexdigest()[:8]
-        for page in ROOT.glob("*.html"):
+        for page in list(ROOT.glob("*.html")) + list((ROOT / "events").glob("*.html")):
             t = page.read_text(encoding="utf-8")
             t2 = re.sub(r"(/%s)(\?v=[0-9a-f]+)?\"" % re.escape(f), r"\1?v=%s\"" % h, t)
             if t2 != t:
@@ -132,7 +212,21 @@ def main():
     if a < 0 or b < 0:
         sys.exit("gallery markers not found in index.html")
     block = START + "\n" + "\n".join(render(e, i) for i, e in enumerate(events)) + ("\n" if events else "")
-    INDEX.write_text(html[:a] + block + html[b:], encoding="utf-8")
+    html = html[:a] + block + html[b:]
+    INDEX.write_text(html, encoding="utf-8")
+    # one page per event, written fresh each run so removed events disappear
+    events_dir = ROOT / "events"
+    events_dir.mkdir(exist_ok=True)
+    for old in events_dir.glob("*.html"):
+        old.unlink()
+    nav, foot, head = page_shell(html)
+    for e in events:
+        (events_dir / f"{e['slug']}.html").write_text(render_event_page(e, nav, foot, head), encoding="utf-8")
+    # sitemap lists the pages that exist
+    urls = ["https://sillyspaces.com/", "https://sillyspaces.com/about.html"] + [f"https://sillyspaces.com/events/{e['slug']}.html" for e in events]
+    (ROOT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
+        + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n", encoding="utf-8")
+    print(f"wrote {len(events)} event page(s) into events/")
     for e in events:
         print(f"ok    {e['title']}: {len(e['photos'])} photo(s)")
     print(f"wrote {len(events)} event(s) into index.html")
