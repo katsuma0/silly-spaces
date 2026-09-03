@@ -158,6 +158,7 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01e
 .hero h1 .pink { color: var(--pink); }
 .hero p { font-size: clamp(18px, 2.2vw, 22px); color: var(--muted); max-width: 560px; margin: 0 auto 36px; }
 .hero-cta { display: flex; gap: 22px; justify-content: center; align-items: center; flex-wrap: wrap; }
+.prose-cta { margin-top: 36px; }
 
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
@@ -478,8 +479,9 @@ h1, h2, h3 { font-family: var(--serif); font-weight: 400; letter-spacing: -0.01e
   .member strong { font-size: 17px; }
   .avatar { width: 36px; height: 36px; font-size: 12px; }
   .lb-text { padding: 20px; }
-  .btn { width: 100%; max-width: 320px; }
-  .hero-cta { gap: 14px; }
+  /* button groups stack and centre themselves whatever the phone width */
+  .hero-cta { flex-direction: column; align-items: center; gap: 14px; }
+  .btn { width: 100%; max-width: 360px; }
 }
 
 @media (prefers-reduced-motion: reduce) {
