@@ -9,6 +9,14 @@
      The inline script in <head> already applied the saved theme before paint,
      so this only wires the button. */
   var toggle = document.querySelector(".theme-toggle");
+  function paintStatusBar() {
+    var t = root.getAttribute("data-theme");
+    if (!t) return;
+    document.querySelectorAll('meta[name="theme-color"]').forEach(function (m) {
+      m.setAttribute("content", t === "dark" ? "#1b1a18" : "#f6f3ed");
+    });
+  }
+  paintStatusBar();
   if (toggle) {
     toggle.addEventListener("click", function () {
       var systemDark = window.matchMedia("(prefers-color-scheme: dark)").matches;
@@ -16,6 +24,7 @@
       var next = current === "dark" ? "light" : "dark";
       root.setAttribute("data-theme", next);
       try { localStorage.setItem("ss-theme", next); } catch (e) {}
+      paintStatusBar();
       toggle.setAttribute("aria-label", next === "dark" ? "Switch to light mode" : "Switch to dark mode");
     });
   }
@@ -31,18 +40,24 @@
   onScroll();
   window.addEventListener("scroll", onScroll, { passive: true });
 
+  var lockedY = 0;
   function closeMenu() {
-    if (!links) return;
+    if (!links || !links.classList.contains("open")) return;
     links.classList.remove("open");
     document.body.classList.remove("menu-open");
+    document.body.style.top = "";
+    window.scrollTo(0, lockedY);
     if (menuBtn) menuBtn.setAttribute("aria-expanded", "false");
   }
   if (menuBtn && links) {
     menuBtn.addEventListener("click", function () {
       var open = !links.classList.contains("open");
-      links.classList.toggle("open", open);
-      document.body.classList.toggle("menu-open", open);
-      menuBtn.setAttribute("aria-expanded", String(open));
+      if (!open) { closeMenu(); return; }
+      lockedY = window.scrollY;
+      links.classList.add("open");
+      document.body.style.top = -lockedY + "px";
+      document.body.classList.add("menu-open");
+      menuBtn.setAttribute("aria-expanded", "true");
     });
     links.querySelectorAll("a").forEach(function (a) { a.addEventListener("click", closeMenu); });
     window.addEventListener("resize", function () { if (window.innerWidth > 734) closeMenu(); });
@@ -95,6 +110,13 @@
       syncOptin();
     }
     form.addEventListener("submit", function (e) {
+      if (/YOUR_FORM_ID/.test(form.getAttribute("action") || "")) {
+        e.preventDefault();
+        var note = form.querySelector(".form-note") || form.appendChild(document.createElement("p"));
+        note.className = "form-note";
+        note.innerHTML = 'Sign-up isn\u2019t connected yet. Message <a href="https://instagram.com/silly.spaces" target="_blank" rel="noopener">@silly.spaces</a> to join.';
+        return;
+      }
       var name = form.querySelector('input[name="name"]');
       if (name && !name.value.trim()) {
         e.preventDefault();
@@ -167,6 +189,20 @@
       if (e.key === "ArrowLeft") show(idx - 1);
       if (e.key === "ArrowRight") show(idx + 1);
     });
+    var touchX = null;
+    photosWrap.addEventListener("touchstart", function (e) { touchX = e.touches[0].clientX; }, { passive: true });
+    photosWrap.addEventListener("touchend", function (e) {
+      if (touchX === null) return;
+      var dx = e.changedTouches[0].clientX - touchX; touchX = null;
+      if (Math.abs(dx) > 40) show(dx < 0 ? idx + 1 : idx - 1);
+    }, { passive: true });
+  }
+
+  /* ---- FAQ hides itself, and its links, until it has questions ---- */
+  var faq = document.getElementById("faq");
+  if (faq && !faq.querySelector("details")) {
+    faq.hidden = true;
+    document.querySelectorAll('a[href$="#faq"]').forEach(function (a) { var li = a.closest("li"); (li || a).hidden = true; });
   }
 
   /* ---- Auto-hide upcoming events once their date has passed ---- */

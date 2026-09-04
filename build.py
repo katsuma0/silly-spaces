@@ -44,6 +44,9 @@ IMAGE_TYPES = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".avif"}
 # Every photo is brought to this long edge so they all load and display at
 # one scale. Phone photos come in at 4000 px and 4 MB, which is too much.
 LONG_EDGE = 1600
+# Card covers and grid tiles use a small copy in a thumbs/ folder beside the
+# photos, so the homepage and event pages stay light. The viewer uses the full file.
+THUMB_EDGE = 800
 
 
 def prepare_photo(p):
@@ -64,6 +67,20 @@ def prepare_photo(p):
     else:
         im.save(p, optimize=True)
     print(f"photo {p.parent.name}/{p.name}: {'rotated, ' if rotated else ''}{im.size[0]}x{im.size[1]}, {p.stat().st_size // 1024} KB")
+
+
+def make_thumb(p):
+    """Write thumbs/<name>.jpg for a photo when it is missing or older than the photo."""
+    if Image is None or p.suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp"}:
+        return None
+    t = p.parent / "thumbs" / (p.stem + ".jpg")
+    if not t.exists() or t.stat().st_mtime < p.stat().st_mtime:
+        t.parent.mkdir(exist_ok=True)
+        im = ImageOps.exif_transpose(Image.open(p))
+        im.thumbnail((THUMB_EDGE, THUMB_EDGE), Image.LANCZOS)
+        im.convert("RGB").save(t, "JPEG", quality=78, optimize=True, progressive=True)
+        print(f"thumb {p.parent.name}/thumbs/{t.name}: {t.stat().st_size // 1024} KB")
+    return t
 
 
 def read_event(folder):
@@ -89,21 +106,26 @@ def read_event(folder):
         print(f"note  {folder.name}: no photos yet, showing a blank cover")
     # a folder named 2026-07-09-something gives the calendar its date
     m = re.match(r"(\d{4}-\d{2}-\d{2})", folder.name)
+    def small(p):
+        t = make_thumb(p)
+        return f"/assets/photos/{folder.name}/thumbs/{t.name}" if t else f"/assets/photos/{folder.name}/{p.name}"
     return {"title": title, "when": when, "desc": desc, "paras": paras, "slug": folder.name,
             "date": m.group(1) if m else "",
-            "photos": [f"/assets/photos/{folder.name}/{p.name}" for p in photos]}
+            "photos": [f"/assets/photos/{folder.name}/{p.name}" for p in photos],
+            "thumbs": [small(p) for p in photos]}
 
 
 def render(ev, i):
     delay = f' data-delay="{min(i, 5)}"' if i else ""
     n = len(ev["photos"])
     count = "No photos yet" if n == 0 else "1 photo" if n == 1 else f"{n} photos"
-    cover = ev["photos"][0] if ev["photos"] else "/assets/photos/blank.svg"
+    cover = ev["thumbs"][0] if ev["photos"] else "/assets/photos/blank.svg"
     # every line of event.txt is its own line on the card, nothing is cut off
     lines = "\n".join(f"            <p>{escape(t)}</p>" for t in ev["paras"]) or "            <p></p>"
     date = f' data-date="{ev["date"]}"' if ev["date"] else ""
-    return f"""        <a class="gallery-item reveal" href="/events/{ev['slug']}.html"{delay}{date}>
-          <div class="ph"><img src="{escape(cover)}" alt="" loading="lazy"></div>
+    nophoto = "" if ev["photos"] else " no-photos"
+    return f"""        <a class="gallery-item reveal{nophoto}" href="/events/{ev['slug']}.html"{delay}{date}>
+          <div class="ph"><img src="{escape(cover)}" alt="" loading="lazy" decoding="async"></div>
           <div class="body">
             <h3>{escape(ev['title'])}</h3>
             <span class="when">{escape(ev['when'])}</span>
@@ -128,8 +150,8 @@ def render_event_page(ev, nav, foot, head):
     n = len(ev["photos"])
     if n:
         tiles = "\n".join(
-            f'        <button class="photo" type="button" data-index="{i}" data-src="{escape(p)}"><img src="{escape(p)}" alt="" loading="lazy"></button>'
-            for i, p in enumerate(ev["photos"]))
+            f'        <button class="photo" type="button" data-index="{i}" data-src="{escape(p)}"><img src="{escape(t)}" alt="" loading="lazy" decoding="async"></button>'
+            for i, (p, t) in enumerate(zip(ev["photos"], ev["thumbs"])))
         grid = f'      <div class="photo-grid reveal" data-delay="2">\n{tiles}\n      </div>'
     else:
         grid = '      <p class="empty reveal" data-delay="2">No photos yet.</p>'
