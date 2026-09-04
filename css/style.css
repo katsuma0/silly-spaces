@@ -108,7 +108,10 @@ a, button { touch-action: manipulation; }
 }
 .nav.is-scrolled { border-bottom-color: var(--line); }
 .nav .wrap { display: flex; align-items: center; height: 100%; gap: 24px; }
-.brand { display: flex; align-items: center; gap: 12px; font-family: var(--serif); font-size: 21px; letter-spacing: -0.01em; }
+.brand { display: flex; align-items: center; gap: 12px; font-family: var(--serif); font-size: 21px; letter-spacing: -0.01em; transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); will-change: opacity, transform; }
+/* On the homepage the big logo is the brand until it scrolls under the bar.
+   The script adds show-brand once the hero logo is out of view. */
+.nav:has(+ main .hero .mark):not(.show-brand) .brand { opacity: 0; transform: translateY(8px) scale(0.96); pointer-events: none; }
 .nav-links { display: flex; gap: 26px; margin-left: auto; list-style: none; padding: 0; margin-top: 0; margin-bottom: 0; }
 .nav-links a { color: var(--muted); font-size: 15px; }
 .nav-links li { display: flex; align-items: center; }
@@ -156,7 +159,7 @@ a, button { touch-action: manipulation; }
 /* ---------- Hero ---------- */
 .hero { min-height: calc(100vh - var(--nav-h)); min-height: calc(100svh - var(--nav-h)); display: flex; align-items: center; justify-content: center; padding: 48px 0 64px; text-align: center; }
 .hero .wrap { display: flex; flex-direction: column; align-items: center; }
-.hero-logo { width: clamp(120px, 16vw, 170px); margin: 0 auto 32px; }
+.hero-logo { width: clamp(168px, 24vw, 250px); margin: 0 auto 32px; }
 .hero h1 { font-size: clamp(44px, 7.5vw, 84px); line-height: 1.02; margin-bottom: 20px; }
 .hero h1 .blue { color: var(--blue); }
 .hero h1 .pink { color: var(--pink); }
