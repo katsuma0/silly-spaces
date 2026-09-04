@@ -2,7 +2,7 @@
 <html lang="en-CA">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
   <title>Silly Spaces</title>
   <meta name="description" content="Silly Spaces. Events that connect people.">
   <link rel="canonical" href="https://sillyspaces.com/">
@@ -29,7 +29,7 @@
   </script>
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&display=swap">
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&display=optional">
   <link rel="stylesheet" href="/css/style.css?v=e43eddcd\">
 </head>
 <body>
@@ -37,7 +37,7 @@
 
 <header class="nav">
   <div class="wrap">
-    <a class="brand" href="/" aria-label="Silly Spaces home"><img src="/assets/logo.svg" alt="" width="30" height="25"> Silly Spaces</a>
+    <a class="brand" href="/" aria-label="Silly Spaces home"><img src="/assets/logo.svg" alt="" width="30" height="25" decoding="async"> Silly Spaces</a>
     <ul class="nav-links" id="nav-links">
       <li><a href="/#upcoming">Upcoming</a></li>
       <li><a href="/#members">Members</a></li>
@@ -62,8 +62,8 @@
   <section class="hero">
     <div class="wrap">
       <div class="mark hero-logo" role="img" aria-label="Silly Spaces logo">
-        <span class="mark-s mark-blue"><img src="/assets/logo-blue.svg" alt="" width="876" height="741"></span>
-        <span class="mark-s mark-pink"><img src="/assets/logo-pink.svg" alt="" width="876" height="741"></span>
+        <span class="mark-s mark-blue"><img src="/assets/logo-blue.svg" alt="" width="876" height="741" decoding="async"></span>
+        <span class="mark-s mark-pink"><img src="/assets/logo-pink.svg" alt="" width="876" height="741" decoding="async"></span>
       </div>
       <h1><span class="blue">Silly</span> <span class="pink">Spaces</span></h1>
       <p>Invisible strings made visible.</p>
@@ -133,7 +133,7 @@
 
         <div class="field">
           <label for="name">Name</label>
-          <input id="name" name="name" type="text" required autocomplete="name" placeholder="What should we call you">
+          <input id="name" name="name" type="text" required autocomplete="name" autocapitalize="words" enterkeyhint="next" placeholder="What should we call you">
         </div>
         <div class="field">
           <label for="attended">Which event did you come to? <small>optional</small></label>
@@ -147,7 +147,7 @@
         </div>
         <div class="field">
           <label for="email">Email <small>optional</small></label>
-          <input id="email" name="email" type="email" autocomplete="email" placeholder="you@example.com">
+          <input id="email" name="email" type="email" autocomplete="email" autocapitalize="none" enterkeyhint="done" placeholder="you@example.com">
         </div>
         <label class="check">
           <input type="checkbox" name="newsletter" value="yes">
@@ -169,8 +169,8 @@
       </div>
       <div class="gallery">
         <!-- gallery:start -->
-        <a class="gallery-item reveal" href="/events/2026-08-29-finger-painting.html" data-date="2026-08-29">
-          <div class="ph"><img src="/assets/photos/blank.svg" alt="" loading="lazy"></div>
+        <a class="gallery-item reveal no-photos" href="/events/2026-08-29-finger-painting.html" data-date="2026-08-29">
+          <div class="ph"><img src="/assets/photos/blank.svg" alt="" loading="lazy" decoding="async"></div>
           <div class="body">
             <h3>Finger painting the waterfront</h3>
             <span class="when">August 29, 2026</span>
@@ -179,8 +179,8 @@
             <span class="count">No photos yet</span>
           </div>
         </a>
-        <a class="gallery-item reveal" href="/events/2026-08-04-footy.html" data-delay="1" data-date="2026-08-04">
-          <div class="ph"><img src="/assets/photos/blank.svg" alt="" loading="lazy"></div>
+        <a class="gallery-item reveal no-photos" href="/events/2026-08-04-footy.html" data-delay="1" data-date="2026-08-04">
+          <div class="ph"><img src="/assets/photos/blank.svg" alt="" loading="lazy" decoding="async"></div>
           <div class="body">
             <h3>Footy in da City</h3>
             <span class="when">August 4, 2026</span>
@@ -190,7 +190,7 @@
           </div>
         </a>
         <a class="gallery-item reveal" href="/events/2026-07-09-humrpferftc.html" data-delay="2" data-date="2026-07-09">
-          <div class="ph"><img src="/assets/photos/2026-07-09-humrpferftc/01-cn-tower.jpg" alt="" loading="lazy"></div>
+          <div class="ph"><img src="/assets/photos/2026-07-09-humrpferftc/thumbs/01-cn-tower.jpg" alt="" loading="lazy" decoding="async"></div>
           <div class="body">
             <h3>H.U.M.R.P.F.E.R.F.T.C.</h3>
             <span class="when">July 9, 2026</span>
@@ -199,8 +199,8 @@
             <span class="count">4 photos</span>
           </div>
         </a>
-        <a class="gallery-item reveal" href="/events/2026-06-27-train-aboard.html" data-delay="3" data-date="2026-06-27">
-          <div class="ph"><img src="/assets/photos/blank.svg" alt="" loading="lazy"></div>
+        <a class="gallery-item reveal no-photos" href="/events/2026-06-27-train-aboard.html" data-delay="3" data-date="2026-06-27">
+          <div class="ph"><img src="/assets/photos/blank.svg" alt="" loading="lazy" decoding="async"></div>
           <div class="body">
             <h3>Train A’Boarddd</h3>
             <span class="when">June 27, 2026</span>
