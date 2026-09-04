@@ -81,6 +81,18 @@
     setP();
   }
 
+  /* ---- Header brand appears once the big logo has scrolled under the bar.
+     An observer, not a scroll handler, so it costs nothing per frame. ---- */
+  if (nav) {
+    if (heroMark && "IntersectionObserver" in window) {
+      new IntersectionObserver(function (entries) {
+        nav.classList.toggle("show-brand", !entries[0].isIntersecting);
+      }, { rootMargin: "-" + nav.offsetHeight + "px 0px 0px 0px", threshold: 0 }).observe(heroMark);
+    } else {
+      nav.classList.add("show-brand");
+    }
+  }
+
   /* ---- Scroll reveal ---- */
   var revealEls = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window && !reduce) {
