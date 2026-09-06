@@ -222,7 +222,9 @@ def stamp_assets():
         h = hashlib.md5((ROOT / f).read_bytes()).hexdigest()[:8]
         for page in list(ROOT.glob("*.html")) + list((ROOT / "events").glob("*.html")):
             t = page.read_text(encoding="utf-8")
-            t2 = re.sub(r"(/%s)(\?v=[0-9a-f]+)?\"" % re.escape(f), r"\1?v=%s\"" % h, t)
+            # also swallows the stray backslash an earlier version of this wrote
+            pat = re.compile(r'(/%s)(\?v=[0-9a-f]+\\?)?"' % re.escape(f))
+            t2 = pat.sub(lambda m: '%s?v=%s"' % (m.group(1), h), t)
             if t2 != t:
                 page.write_text(t2, encoding="utf-8")
     print("stamped css/js versions into the pages")
