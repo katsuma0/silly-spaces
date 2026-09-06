@@ -34,13 +34,19 @@ June 14, 2026
 Pickup at Milliken Park. Teams picked on the spot, score forgotten by the end.
 ```
 
-Line one is the title, line two is the date in any wording, everything after that is the description. Then from the repo root:
+Line one is the title, line two is the date in any wording, everything after that is the description. Then from the repo root (or skip this and let the Action do it, see below):
 
 ```
 python3 build.py
 ```
 
 It rewrites the gallery in `index.html`, writes one page per event into `events/` (title, date, the text from `event.txt` as paragraphs, and a photo grid), refreshes `sitemap.xml`, and prints what it found. The event pages take their nav and footer from `index.html`, so edit those there. Run it after any change to `style.css` or `main.js` too, so the version stamp on their links updates. Commit and open a PR. Photos show in filename order and the first one is the cover, so rename to `01.jpg`, `02.jpg` if the order matters. iPhone HEIC files won't show in a browser, export them as JPG first. Keep each under about 500 KB, the page loads them all.
+
+## Adding photos from a phone
+
+Open sillyspaces.com/upload.html on the phone. The first time it asks for a GitHub token, the steps are on the page, it takes two minutes and the token stays in that phone's browser. After that: pick an event or start a new one, fill in the title and the What and Why lines, tap Add photos and pick as many as you like, use the arrows to set the order, tap Send. The page shrinks each photo to 1600 px on the phone, pushes them to a `photos/...` branch, and opens a pull request. A GitHub Action on that branch runs `build.py`, so the thumbnails, gallery card and event page come with it. When the check is green, merge from the GitHub app. The site updates a couple of minutes later.
+
+The Action also runs when anything under `assets/photos/` changes on any other branch, so a folder uploaded through github.com gets built too. The page is not linked from the site and has `noindex`; without a token it does nothing.
 
 ## Adding an upcoming event
 

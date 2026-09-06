@@ -1,0 +1,43 @@
+# Runs build.py whenever photos or event.txt files change on any branch,
+# then commits the thumbnails, gallery, event pages and sitemap back to
+# that branch. This is what lets photos go up from a phone: the upload
+# page only has to push the originals, the rest is done here.
+name: Build event pages
+
+on:
+  push:
+    paths:
+      - "assets/photos/**"
+      - "build.py"
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+# A new branch fires twice (create, then the photo commit). Keep the last run.
+concurrency:
+  group: build-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.12"
+      # pinned so thumbnails come out byte for byte the same as a local build
+      - run: pip install pillow==12.3.0
+      - run: python3 build.py
+      - name: Commit the generated files
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A
+          if git diff --cached --quiet; then
+            echo "nothing to commit"
+            exit 0
+          fi
+          git commit -m "chore: build event pages"
+          git push

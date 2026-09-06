@@ -1,0 +1,408 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Add photos · Silly Spaces</title>
+  <meta name="robots" content="noindex, nofollow">
+  <meta name="theme-color" content="#f6f3ed" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#1b1a18" media="(prefers-color-scheme: dark)">
+  <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <script>
+    try { var t = localStorage.getItem("ss-theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+  </script>
+  <link rel="stylesheet" href="/css/style.css?v=e14d7237">
+  <style>
+    /* Phone-first tool page. Not linked from the site, does nothing without a token. */
+    .up { width: min(560px, calc(100% - 40px)); margin: 0 auto; padding: 28px 0 calc(60px + env(safe-area-inset-bottom)); }
+    .up h1 { font-size: 34px; margin: 6px 0 10px; }
+    .up h2 { font-size: 22px; margin: 34px 0 10px; }
+    .up p { color: var(--muted); font-size: 16px; margin: 0 0 14px; }
+    .up ol.steps { color: var(--muted); font-size: 15px; padding-left: 20px; margin: 0 0 18px; }
+    .up ol.steps li + li { margin-top: 6px; }
+    .up a { text-decoration: underline; text-underline-offset: 3px; }
+    .field textarea {
+      font: inherit; padding: 13px 16px; border-radius: 12px; border: 1px solid var(--line-strong);
+      background: transparent; color: var(--text); resize: vertical; min-height: 96px;
+    }
+    .field textarea:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 4px var(--line); }
+    .field input:disabled { color: var(--muted); border-style: dashed; }
+    .row { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; }
+    .btn { width: auto; max-width: none; }
+    .pick { position: relative; }
+    .pick input { position: absolute; inset: 0; opacity: 0; width: 100%; height: 100%; cursor: pointer; }
+    .tiles { list-style: none; padding: 0; margin: 18px 0 0; display: grid; grid-template-columns: repeat(3, 1fr); gap: 10px; }
+    .tile { position: relative; border-radius: 12px; overflow: hidden; background: var(--surface); border: 1px solid var(--line); }
+    .tile img { display: block; width: 100%; aspect-ratio: 1; object-fit: cover; }
+    .tile .n { position: absolute; top: 6px; left: 6px; min-width: 22px; height: 22px; padding: 0 6px; border-radius: 11px; background: var(--ink); color: var(--ink-text); font-size: 12px; display: grid; place-items: center; }
+    .tile .cover { position: absolute; top: 6px; right: 6px; padding: 2px 7px; border-radius: 9px; background: var(--blue); color: #fff; font-size: 11px; }
+    .tile .tools { display: flex; }
+    .tile .tools button {
+      flex: 1; height: 40px; border: 0; background: transparent; color: var(--text); font: inherit; font-size: 18px; cursor: pointer;
+      border-top: 1px solid var(--line);
+    }
+    .tile .tools button + button { border-left: 1px solid var(--line); }
+    .tile .tools button:disabled { color: var(--line-strong); }
+    .tile .tools .rm { color: var(--pink); }
+    .status { margin-top: 16px; font-size: 16px; color: var(--text); min-height: 24px; }
+    .status.err { color: var(--pink); }
+    .status a { font-weight: 500; }
+    .small { font-size: 14px; }
+    .sending .btn-primary { opacity: 0.5; pointer-events: none; }
+    @media (max-width: 400px) { .tiles { gap: 8px; } .tile .tools button { height: 38px; } }
+  </style>
+</head>
+<body>
+<main class="up">
+  <a class="back-link" href="/">Back to the homepage</a>
+  <h1>Add photos</h1>
+  <p>Pick an event or start one, add photos, put them in order, send. That opens a pull request you merge from the GitHub app, and the site updates a couple of minutes later.</p>
+
+  <section id="s-token" hidden>
+    <h2>Connect this phone to GitHub</h2>
+    <p>Once per phone. Make a token that can only touch this one repo.</p>
+    <ol class="steps">
+      <li>On github.com go to Settings, Developer settings, Personal access tokens, Fine-grained tokens, Generate new token.</li>
+      <li>Repository access: Only select repositories, pick silly-spaces.</li>
+      <li>Repository permissions: Contents, Read and write. Pull requests, Read and write.</li>
+      <li>Generate, copy it, paste it below. It stays in this browser only.</li>
+    </ol>
+    <div class="field"><label for="token">Token</label><input id="token" type="password" autocomplete="off" autocapitalize="off" spellcheck="false"></div>
+    <div class="row"><button class="btn btn-primary" id="save-token" type="button">Save</button></div>
+    <p class="status" id="token-msg" aria-live="polite"></p>
+  </section>
+
+  <section id="s-event" hidden>
+    <div class="field"><label for="event">Event</label>
+      <select id="event"><option value="">Loading events…</option></select>
+    </div>
+    <div class="field"><label for="title">Title</label><input id="title" autocomplete="off"></div>
+    <div class="field"><label for="date">Date</label><input id="date" type="date"></div>
+    <div class="field"><label for="desc">Description, one line per paragraph</label><textarea id="desc" placeholder="What? …&#10;Why? …"></textarea></div>
+  </section>
+
+  <section id="s-photos" hidden>
+    <h2>Photos</h2>
+    <p>The first one is the cover. Arrows move a photo earlier or later. Photos are shrunk on the phone before they go up, so pick as many as you want.</p>
+    <div class="row">
+      <label class="btn btn-ghost pick">Add photos<input type="file" id="files" accept="image/*" multiple></label>
+      <span class="small" id="prep" aria-live="polite"></span>
+    </div>
+    <ol class="tiles" id="tiles"></ol>
+  </section>
+
+  <section id="s-send" hidden>
+    <h2>Send</h2>
+    <div class="row"><button class="btn btn-primary" id="send" type="button">Send to the site</button></div>
+    <p class="status" id="status" aria-live="polite"></p>
+    <p class="small"><a href="#" id="change-token">Use a different token</a></p>
+  </section>
+</main>
+
+<script>
+(function () {
+  "use strict";
+  var OWNER = "katsuma0", REPO = "silly-spaces", BASE = "main", DIR = "assets/photos";
+  var API = "https://api.github.com/repos/" + OWNER + "/" + REPO;
+  var LONG_EDGE = 1600, QUALITY = 0.82;
+  var IMG = /\.(jpe?g|png|webp|gif|avif)$/i;
+
+  function $(id) { return document.getElementById(id); }
+  var token = "";
+  try { token = localStorage.getItem("ss-token") || ""; } catch (e) {}
+
+  /* One event on screen at a time. tiles is the order the photos will have. */
+  var st = { folder: "", isNew: true, when: "", eventText: null, existing: [], thumbs: [], tiles: [], busy: false };
+
+  function gh(path, opts) {
+    opts = opts || {};
+    return fetch(API + path, {
+      method: opts.method || "GET",
+      headers: {
+        Authorization: "Bearer " + token,
+        Accept: "application/vnd.github+json",
+        "X-GitHub-Api-Version": "2022-11-28",
+        "Content-Type": "application/json"
+      },
+      body: opts.body ? JSON.stringify(opts.body) : undefined
+    }).then(function (r) {
+      if (r.status === 404 && opts.allow404) return null;
+      return r.json().then(function (j) {
+        if (!r.ok) throw new Error((j && j.message) || ("GitHub answered " + r.status));
+        return j;
+      });
+    });
+  }
+
+  function show(id, on) { $(id).hidden = !on; }
+  function say(id, msg, err) { var el = $(id); el.textContent = msg; el.classList.toggle("err", !!err); }
+  function link(id, before, href, text, after) {
+    var el = $(id); el.textContent = before; el.classList.remove("err");
+    var a = document.createElement("a"); a.href = href; a.textContent = text; a.target = "_blank"; a.rel = "noopener";
+    el.appendChild(a); el.appendChild(document.createTextNode(after || ""));
+  }
+
+  /* ---- Token ---- */
+  function start() {
+    if (!token) { show("s-token", true); return; }
+    show("s-token", false); show("s-event", true); show("s-photos", true); show("s-send", true);
+    loadEvents();
+  }
+  $("save-token").addEventListener("click", function () {
+    var t = $("token").value.trim();
+    if (!t) return;
+    token = t;
+    say("token-msg", "Checking…");
+    gh("").then(function () {
+      try { localStorage.setItem("ss-token", token); } catch (e) {}
+      say("token-msg", "");
+      start();
+    }, function (e) { token = ""; say("token-msg", "That token did not work: " + e.message, true); });
+  });
+  $("change-token").addEventListener("click", function (e) {
+    e.preventDefault();
+    token = "";
+    try { localStorage.removeItem("ss-token"); } catch (err) {}
+    show("s-event", false); show("s-photos", false); show("s-send", false);
+    $("token").value = "";
+    start();
+  });
+
+  /* ---- Events ---- */
+  var sel = $("event"), known = [];
+  function loadEvents() {
+    gh("/contents/" + DIR + "?ref=" + BASE).then(function (list) {
+      var dirs = list.filter(function (f) { return f.type === "dir"; }).map(function (f) { return f.name; }).sort().reverse();
+      known = dirs;
+      sel.innerHTML = "";
+      var o = document.createElement("option"); o.value = "__new"; o.textContent = "New event"; sel.appendChild(o);
+      dirs.forEach(function (d) {
+        var o = document.createElement("option"); o.value = d; o.textContent = d; sel.appendChild(o);
+        // show the title instead of the folder name once event.txt comes back
+        gh("/contents/" + DIR + "/" + d + "/event.txt?ref=" + BASE, { allow404: true }).then(function (f) {
+          if (!f) return;
+          var lines = decode(f.content).split(/\r?\n/);
+          if (lines[0] && lines[0].trim()) o.textContent = lines[0].trim() + (lines[1] && lines[1].trim() ? ", " + lines[1].trim() : "");
+        }).catch(function () {});
+      });
+      sel.value = "__new";
+      newEvent();
+    }, function (e) { say("status", "Could not list events: " + e.message, true); });
+  }
+  sel.addEventListener("change", function () {
+    if (sel.value === "__new") newEvent(); else loadEvent(sel.value);
+  });
+
+  function clearTiles() {
+    st.tiles.forEach(function (t) { if (t.blob) URL.revokeObjectURL(t.url); });
+    st.tiles = [];
+  }
+  function newEvent() {
+    clearTiles();
+    st = { folder: "", isNew: true, when: "", eventText: null, existing: [], thumbs: [], tiles: [], busy: false };
+    $("title").value = ""; $("desc").value = "";
+    $("date").disabled = false;
+    $("date").value = new Date().toLocaleDateString("en-CA");
+    say("status", "");
+    renderTiles();
+  }
+  function decode(b64) {
+    var bin = atob(b64.replace(/\n/g, "")), bytes = new Uint8Array(bin.length);
+    for (var i = 0; i < bin.length; i++) bytes[i] = bin.charCodeAt(i);
+    return new TextDecoder().decode(bytes);
+  }
+  function loadEvent(folder) {
+    clearTiles();
+    say("status", "Loading " + folder + "…");
+    st = { folder: folder, isNew: false, when: "", eventText: null, existing: [], thumbs: [], tiles: [], busy: false };
+    var m = folder.match(/^(\d{4}-\d{2}-\d{2})/);
+    $("date").value = m ? m[1] : ""; $("date").disabled = true;
+    Promise.all([
+      gh("/contents/" + DIR + "/" + folder + "?ref=" + BASE),
+      gh("/contents/" + DIR + "/" + folder + "/thumbs?ref=" + BASE, { allow404: true })
+    ]).then(function (res) {
+      var files = res[0], thumbs = res[1] || [];
+      st.thumbs = thumbs.filter(function (f) { return f.type === "file"; }).map(function (f) { return f.name; });
+      st.existing = files.filter(function (f) { return f.type === "file" && IMG.test(f.name); })
+        .sort(function (a, b) { return a.name < b.name ? -1 : 1; });
+      st.tiles = st.existing.map(function (f) {
+        var stem = f.name.replace(/\.[^.]+$/, "");
+        return { name: f.name, sha: f.sha, existing: true, url: "/" + DIR + "/" + folder + "/thumbs/" + stem + ".jpg", raw: f.download_url };
+      });
+      var info = files.filter(function (f) { return f.name === "event.txt"; })[0];
+      if (!info) { $("title").value = ""; $("desc").value = ""; renderTiles(); say("status", ""); return null; }
+      return gh("/contents/" + DIR + "/" + folder + "/event.txt?ref=" + BASE).then(function (f) {
+        var text = decode(f.content), lines = text.split(/\r?\n/);
+        st.eventText = text;
+        $("title").value = (lines[0] || "").trim();
+        st.when = (lines[1] || "").trim();
+        $("desc").value = lines.slice(2).map(function (l) { return l.trim(); }).filter(Boolean).join("\n");
+        renderTiles(); say("status", "");
+      });
+    }).catch(function (e) { say("status", "Could not load that event: " + e.message, true); });
+  }
+
+  /* ---- Photos: shrink on the phone so uploads are small and rotation is baked in ---- */
+  function shrink(file) {
+    return new Promise(function (resolve, reject) {
+      var url = URL.createObjectURL(file), im = new Image();
+      im.onload = function () {
+        var w = im.naturalWidth, h = im.naturalHeight, k = Math.min(1, LONG_EDGE / Math.max(w, h));
+        var c = document.createElement("canvas");
+        c.width = Math.round(w * k); c.height = Math.round(h * k);
+        c.getContext("2d").drawImage(im, 0, 0, c.width, c.height);
+        URL.revokeObjectURL(url);
+        c.toBlob(function (b) { b ? resolve(b) : reject(new Error("could not read " + file.name)); }, "image/jpeg", QUALITY);
+      };
+      im.onerror = function () { URL.revokeObjectURL(url); reject(new Error("could not read " + file.name)); };
+      im.src = url;
+    });
+  }
+  $("files").addEventListener("change", function () {
+    var files = Array.prototype.slice.call(this.files);
+    this.value = "";
+    if (!files.length) return;
+    var i = 0;
+    function next() {
+      if (i >= files.length) { $("prep").textContent = ""; return; }
+      $("prep").textContent = "Preparing " + (i + 1) + " of " + files.length + "…";
+      shrink(files[i]).then(function (blob) {
+        st.tiles.push({ blob: blob, existing: false, url: URL.createObjectURL(blob), name: files[i].name });
+        i++; renderTiles(); next();
+      }, function (e) { say("status", e.message, true); i++; next(); });
+    }
+    next();
+  });
+
+  var tilesEl = $("tiles");
+  function renderTiles() {
+    tilesEl.innerHTML = "";
+    st.tiles.forEach(function (t, i) {
+      var li = document.createElement("li"); li.className = "tile";
+      var im = document.createElement("img"); im.src = t.url; im.alt = ""; im.decoding = "async";
+      if (t.raw) im.onerror = function () { im.onerror = null; im.src = t.raw; };
+      li.appendChild(im);
+      var n = document.createElement("span"); n.className = "n"; n.textContent = i + 1; li.appendChild(n);
+      if (i === 0) { var c = document.createElement("span"); c.className = "cover"; c.textContent = "Cover"; li.appendChild(c); }
+      var tools = document.createElement("div"); tools.className = "tools";
+      [["‹", "Move earlier", i === 0, -1], ["›", "Move later", i === st.tiles.length - 1, 1], ["×", "Remove", false, 0]].forEach(function (b) {
+        var btn = document.createElement("button"); btn.type = "button"; btn.textContent = b[0]; btn.setAttribute("aria-label", b[1]); btn.disabled = b[2];
+        if (!b[3]) btn.className = "rm";
+        btn.addEventListener("click", function () {
+          if (b[3]) { var j = i + b[3]; var tmp = st.tiles[j]; st.tiles[j] = st.tiles[i]; st.tiles[i] = tmp; }
+          else { if (t.blob) URL.revokeObjectURL(t.url); st.tiles.splice(i, 1); }
+          renderTiles();
+        });
+        tools.appendChild(btn);
+      });
+      li.appendChild(tools);
+      tilesEl.appendChild(li);
+    });
+  }
+
+  /* ---- Send: one commit on a new branch, then a pull request ---- */
+  function slug(s) { return s.toLowerCase().replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40); }
+  function pad(i, n) { var w = n >= 100 ? 3 : 2, s = String(i); while (s.length < w) s = "0" + s; return s; }
+  function newName(t, i, n) {
+    if (!t.existing) return pad(i, n) + ".jpg";
+    var rest = t.name.replace(/^\d+[-_]?/, "");
+    return pad(i, n) + (rest.charAt(0) === "." || !rest ? (rest || ".jpg") : "-" + rest);
+  }
+  function toBase64(blob) {
+    return new Promise(function (resolve, reject) {
+      var r = new FileReader();
+      r.onload = function () { resolve(String(r.result).split(",")[1]); };
+      r.onerror = function () { reject(new Error("could not read a photo")); };
+      r.readAsDataURL(blob);
+    });
+  }
+
+  $("send").addEventListener("click", function () {
+    if (st.busy) return;
+    var title = $("title").value.trim(), date = $("date").value;
+    var paras = $("desc").value.split(/\n/).map(function (l) { return l.trim(); }).filter(Boolean);
+    if (!title) { say("status", "Give the event a title.", true); return; }
+    if (!date) { say("status", "Pick the date.", true); return; }
+    var folder = st.isNew ? date + "-" + slug(title) : st.folder;
+    if (st.isNew && !slug(title)) { say("status", "The title needs some letters or numbers.", true); return; }
+    if (st.isNew && known.indexOf(folder) >= 0) { say("status", "That event is already on the site, pick it from the list instead.", true); return; }
+    var when = st.isNew || !st.when ? new Date(date + "T12:00:00").toLocaleDateString("en-CA", { month: "long", day: "numeric", year: "numeric" }) : st.when;
+    var eventText = [title, when].concat(paras).join("\n") + "\n";
+    var base = DIR + "/" + folder + "/";
+    var n = st.tiles.length;
+
+    var tree = [], adds = 0, removes = 0, moves = 0, finalPaths = {};
+    st.tiles.forEach(function (t, i) {
+      var name = newName(t, i + 1, n);
+      finalPaths[name] = true;
+      if (t.existing && t.name === name) return;
+      if (t.existing) { moves++; tree.push({ path: base + name, mode: "100644", type: "blob", sha: t.sha }); }
+      else { adds++; tree.push({ path: base + name, mode: "100644", type: "blob", tile: t }); }
+    });
+    st.existing.forEach(function (f) {
+      // a renamed photo also leaves its old path behind, but only a photo taken off the list counts as removed
+      if (!finalPaths[f.name]) tree.push({ path: base + f.name, mode: "100644", type: "blob", sha: null });
+      if (!st.tiles.some(function (t) { return t.existing && t.name === f.name; })) removes++;
+    });
+    if (adds || removes || moves) {
+      // thumbs are rebuilt by the Action, so drop the old set rather than leave strays
+      st.thumbs.forEach(function (name) { tree.push({ path: base + "thumbs/" + name, mode: "100644", type: "blob", sha: null }); });
+    }
+    if (eventText !== st.eventText) tree.push({ path: base + "event.txt", mode: "100644", type: "blob", content: eventText });
+    if (!tree.length) { say("status", "Nothing changed."); return; }
+
+    st.busy = true; document.body.classList.add("sending");
+    var branch = "photos/" + folder + "-" + Date.now().toString(36);
+    var baseSha, treeSha, done = 0;
+    var summary = [];
+    if (adds) summary.push(adds + (adds === 1 ? " photo added" : " photos added"));
+    if (removes) summary.push(removes + " removed");
+    if (moves) summary.push("order changed");
+    if (eventText !== st.eventText) summary.push(st.isNew ? "new event" : "text updated");
+    var msg = ((st.isNew ? "feat: add " : "feat: update ") + title.toLowerCase()).slice(0, 50);
+
+    say("status", "Starting…");
+    gh("/git/ref/heads/" + BASE).then(function (ref) {
+      baseSha = ref.object.sha;
+      return gh("/git/commits/" + baseSha);
+    }).then(function (c) {
+      treeSha = c.tree.sha;
+      var uploads = tree.filter(function (e) { return e.tile; });
+      function upload(k) {
+        if (k >= uploads.length) return Promise.resolve();
+        say("status", "Uploading photo " + (k + 1) + " of " + uploads.length + "…");
+        return toBase64(uploads[k].tile.blob).then(function (b64) {
+          return gh("/git/blobs", { method: "POST", body: { content: b64, encoding: "base64" } });
+        }).then(function (blob) { uploads[k].sha = blob.sha; delete uploads[k].tile; return upload(k + 1); });
+      }
+      return upload(0);
+    }).then(function () {
+      say("status", "Saving…");
+      return gh("/git/trees", { method: "POST", body: { base_tree: treeSha, tree: tree } });
+    }).then(function (t) {
+      return gh("/git/commits", { method: "POST", body: { message: msg, tree: t.sha, parents: [baseSha] } });
+    }).then(function (c) {
+      // the branch is made last, pointing straight at the finished commit,
+      // so a failure earlier leaves nothing behind but unreachable blobs
+      return gh("/git/refs", { method: "POST", body: { ref: "refs/heads/" + branch, sha: c.sha } });
+    }).then(function () {
+      return gh("/pulls", { method: "POST", body: {
+        title: msg, head: branch, base: BASE,
+        body: "Sent from the phone upload page. " + summary.join(", ") + " in " + folder + ".\n\nThe build check adds the thumbnails, gallery card and event page to this branch. Wait for it to turn green, then merge."
+      } });
+    }).then(function (pr) {
+      st.busy = false; document.body.classList.remove("sending");
+      link("status", "Done. ", pr.html_url, "Open the pull request", ", wait for the check to go green, then merge. The site updates a couple of minutes after that.");
+      st.eventText = eventText;
+    }).catch(function (e) {
+      st.busy = false; document.body.classList.remove("sending");
+      say("status", "Something went wrong: " + e.message + ". Nothing is half saved, try again.", true);
+    });
+  });
+
+  start();
+})();
+</script>
+</body>
+</html>
