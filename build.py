@@ -183,6 +183,7 @@ def render_event_page(ev, nav, foot, head):
         <div class="reveal" data-delay="1">
 {paras}
         </div>
+        <button class="share-btn reveal" type="button" data-delay="1" data-share-title="{escape(ev['title'])} · Silly Spaces" data-share-url="https://sillyspaces.com/events/{ev['slug']}.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg><span>Share this event</span></button>
       </div>
 {grid}
     </div>
