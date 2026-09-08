@@ -22,7 +22,7 @@ Then open http://localhost:8000. Links use root-relative paths, so it needs a se
 1. Make the join form actually send somewhere. Create a free form at formspree.io, then replace `YOUR_FORM_ID` in `index.html`. The `_next` field already points at the thank you page. Netlify Forms works too, add `data-netlify="true"` to the form and drop the action.
 2. Add real past events, see below. The three folders in `assets/photos/` hold gradient placeholders right now.
 3. Update the social handles in the footer of `index.html` and `about.html`. They point at `@sillyspaces` on each network right now.
-4. Set `hello@sillyspaces.com` up as a real inbox, it appears on every page.
+4. The email on every page is `sillyspacesww@gmail.com`, change it in `index.html`, `about.html`, `404.html` and `thanks.html` if it ever moves.
 
 ## Adding past event photos
 
