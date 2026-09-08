@@ -183,6 +183,7 @@ def render_event_page(ev, nav, foot, head):
         <div class="reveal" data-delay="1">
 {paras}
         </div>
+        <button class="share-btn reveal" type="button" data-delay="1" data-share-title="{escape(ev['title'])} · Silly Spaces" data-share-url="https://sillyspaces.com/events/{ev['slug']}.html"><svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 3v12"/><path d="M8 7l4-4 4 4"/><path d="M5 12v7a1 1 0 0 0 1 1h12a1 1 0 0 0 1-1v-7"/></svg><span>Share this event</span></button>
       </div>
 {grid}
     </div>
@@ -221,7 +222,9 @@ def stamp_assets():
         h = hashlib.md5((ROOT / f).read_bytes()).hexdigest()[:8]
         for page in list(ROOT.glob("*.html")) + list((ROOT / "events").glob("*.html")):
             t = page.read_text(encoding="utf-8")
-            t2 = re.sub(r"(/%s)(\?v=[0-9a-f]+)?\"" % re.escape(f), r"\1?v=%s\"" % h, t)
+            # also swallows the stray backslash an earlier version of this wrote
+            pat = re.compile(r'(/%s)(\?v=[0-9a-f]+\\?)?"' % re.escape(f))
+            t2 = pat.sub(lambda m: '%s?v=%s"' % (m.group(1), h), t)
             if t2 != t:
                 page.write_text(t2, encoding="utf-8")
     print("stamped css/js versions into the pages")

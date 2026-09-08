@@ -353,6 +353,17 @@ a, button { touch-action: manipulation; }
 .event-page .prose { text-align: left; }
 .event-page .eyebrow { margin-bottom: 8px; }
 .event-page .empty { margin-top: 40px; }
+/* Share button: looks like the text links around it, but it is a button
+   because on phones it opens the system share sheet, not a page. */
+.share-btn {
+  display: inline-flex; align-items: center; gap: 8px; margin-top: 22px; padding: 10px 0 2px;
+  background: none; border: 0; border-bottom: 1px solid var(--line-strong); border-radius: 0;
+  font: inherit; font-size: 16px; color: var(--text); cursor: pointer;
+  transition: border-color var(--mid) var(--ease), color var(--mid) var(--ease);
+}
+.share-btn:hover { border-color: var(--text); }
+.share-btn svg { flex: 0 0 auto; }
+.share-btn.is-done { color: var(--muted); pointer-events: none; }
 
 /* Lightbox */
 .lightbox { border: 0; padding: 0; background: transparent; max-width: min(960px, calc(100vw - 32px)); width: 100%; border-radius: 20px; overflow: hidden; }

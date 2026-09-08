@@ -313,6 +313,35 @@
     render();
   }
 
+  /* ---- Share button on event pages: the system share sheet where the
+     browser has one (every phone), otherwise copy the link and say so. ---- */
+  var share = document.querySelector(".share-btn");
+  if (share) {
+    var shareLabel = share.querySelector("span");
+    var shareText = shareLabel.textContent;
+    var shareTimer;
+    function shareDone(msg) {
+      clearTimeout(shareTimer);
+      shareLabel.textContent = msg;
+      share.classList.add("is-done");
+      shareTimer = setTimeout(function () {
+        shareLabel.textContent = shareText;
+        share.classList.remove("is-done");
+      }, 1800);
+    }
+    share.addEventListener("click", function () {
+      var data = { title: share.getAttribute("data-share-title"), url: share.getAttribute("data-share-url") };
+      if (navigator.share) {
+        /* A cancelled sheet rejects; that is not an error worth showing. */
+        navigator.share(data).catch(function () {});
+      } else if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(data.url).then(function () { shareDone("Link copied"); }, function () { prompt("Copy this link", data.url); });
+      } else {
+        prompt("Copy this link", data.url);
+      }
+    });
+  }
+
   /* ---- Join form: fill the "which event" dropdown from the page itself,
      upcoming cards first, then the past events gallery, so it never
      needs editing by hand. Runs after the date filter above. ---- */
