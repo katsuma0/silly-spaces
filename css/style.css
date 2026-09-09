@@ -435,8 +435,8 @@ a, button { touch-action: manipulation; }
 
 /* ---------- Footer / socials ---------- */
 .socials { padding: clamp(56px, 8vw, 96px) 0 36px; border-top: 1px solid var(--line); }
-.social-grid { display: flex; flex-wrap: wrap; justify-content: center; gap: 12px; }
-.social { flex: 0 1 190px; }
+/* Three socials plus a wider email tile, so the address stays on one line. */
+.social-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(max-content, 1.4fr); gap: 12px; }
 .social {
   display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-radius: 14px;
   background: var(--surface); border: 1px solid var(--line);
@@ -502,9 +502,13 @@ a, button { touch-action: manipulation; }
   .gallery-item { flex-basis: 100%; }
   .gallery-item.no-photos .ph { aspect-ratio: 5 / 2; }
   .photo-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
-  .social { flex: 0 1 calc(50% - 6px); min-width: 0; padding: 14px; gap: 10px; }
+  /* phone: the three socials stand in a row, email gets the full width under them */
+  .social-grid { grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+  .social { flex-direction: column; text-align: center; gap: 8px; padding: 14px 6px 12px; min-width: 0; }
   .social span { font-size: 14px; min-width: 0; }
-  .social small { overflow-wrap: anywhere; }
+  .social small { font-size: 11px; overflow-wrap: anywhere; }
+  .social.mail { grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 12px; padding: 14px; text-align: left; }
+  .social.mail small { font-size: 12px; }
   .member { flex-basis: calc(50% - 6px); }
   .member { padding: 14px; gap: 10px; }
   .member strong { font-size: 17px; }
