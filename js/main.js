@@ -121,12 +121,17 @@
       email.addEventListener("input", syncOptin);
       syncOptin();
     }
+    function formNote(html) {
+      var note = form.querySelector(".form-note") || form.appendChild(document.createElement("p"));
+      note.className = "form-note";
+      note.innerHTML = html;
+    }
+    var sending = false;
     form.addEventListener("submit", function (e) {
-      if (/YOUR_FORM_ID/.test(form.getAttribute("action") || "")) {
+      var action = form.getAttribute("action") || "";
+      if (/PASTE_YOUR_ID/.test(action)) {
         e.preventDefault();
-        var note = form.querySelector(".form-note") || form.appendChild(document.createElement("p"));
-        note.className = "form-note";
-        note.innerHTML = 'Sign-up isn\u2019t connected yet. Message <a href="https://instagram.com/silly.spaces" target="_blank" rel="noopener">@silly.spaces</a> to join.';
+        formNote('Sign-up isn\u2019t connected yet. Message <a href="https://instagram.com/silly.spaces" target="_blank" rel="noopener">@silly.spaces</a> to join.');
         return;
       }
       var name = form.querySelector('input[name="name"]');
@@ -138,6 +143,24 @@
         name.addEventListener("input", function () { name.setCustomValidity(""); }, { once: true });
         return;
       }
+      /* The action is a Google Apps Script web app that appends a row to a
+         sheet. Posting from here (no-cors, so its redirect never shows) keeps
+         people on sillyspaces.com and lands them on the thanks page. Without
+         fetch the plain form post still works, it just ends on a Google page. */
+      if (!window.fetch || !window.URLSearchParams) return;
+      e.preventDefault();
+      if (sending) return;
+      sending = true;
+      var btn = form.querySelector('button[type="submit"]');
+      var label = btn ? btn.textContent : "";
+      if (btn) { btn.disabled = true; btn.textContent = "Sending\u2026"; }
+      fetch(action, { method: "POST", mode: "no-cors", body: new URLSearchParams(new FormData(form)) })
+        .then(function () { window.location.href = "/thanks.html"; })
+        .catch(function () {
+          sending = false;
+          if (btn) { btn.disabled = false; btn.textContent = label; }
+          formNote('That didn\u2019t send. Try again, or message <a href="https://instagram.com/silly.spaces" target="_blank" rel="noopener">@silly.spaces</a>.');
+        });
       var btn = form.querySelector('button[type="submit"]');
       if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
     });

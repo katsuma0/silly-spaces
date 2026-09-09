@@ -19,7 +19,7 @@ Then open http://localhost:8000. Links use root-relative paths, so it needs a se
 
 ## Before it goes live
 
-1. Make the join form actually send somewhere. Create a free form at formspree.io, then replace `YOUR_FORM_ID` in `index.html`. The `_next` field already points at the thank you page. Netlify Forms works too, add `data-netlify="true"` to the form and drop the action.
+1. Connect the join form to a Google Sheet. The steps are at the top of `sheet/Code.gs`: make a sheet, paste that file into its Apps Script, deploy it as a web app, and put the web app URL into the form's `action` in `index.html` in place of `PASTE_YOUR_ID`. Every submit then adds a row with the time, name, event, email, phone and whether they want event emails. Until that is done the form shows a note pointing people at Instagram.
 2. Add real past events, see below. The three folders in `assets/photos/` hold gradient placeholders right now.
 3. Update the social handles in the footer of `index.html` and `about.html`. They point at `@sillyspaces` on each network right now.
 4. The email on every page is `sillyspacesww@gmail.com`, change it in `index.html`, `about.html`, `404.html` and `thanks.html` if it ever moves.
