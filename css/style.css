@@ -232,6 +232,8 @@ a, button { touch-action: manipulation; }
 .card.wide .date-col b { font-family: var(--serif); font-weight: 400; font-size: 64px; line-height: 0.95; }
 .card.wide .date-col span { color: var(--muted); font-size: 15px; }
 .card.wide .body { display: flex; flex-direction: column; gap: 12px; }
+/* a poster sits where the big date would go until the date is known */
+.card.wide .poster img { display: block; width: 100%; height: auto; border-radius: 12px; border: 1px solid var(--line); }
 
 .tag { font-size: 13px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
 .tag.free { background: var(--tint-blue); border-color: transparent; color: var(--blue); }
@@ -297,7 +299,9 @@ a, button { touch-action: manipulation; }
   transition: background-color var(--slow) var(--ease);
 }
 .field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
-.field label { font-size: 14px; color: var(--muted); }
+.field label { font-size: 14px; color: var(--muted); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
+/* "optional" sits at the right edge of the label line */
+.field label small { font-size: 12px; color: var(--muted); opacity: 0.8; }
 .field input {
   font: inherit; padding: 13px 16px; border-radius: 12px; border: 1px solid var(--line-strong);
   background: transparent; color: var(--text);
@@ -470,6 +474,7 @@ a, button { touch-action: manipulation; }
   .cal-list { grid-column: 1; grid-row: auto; margin-top: 12px; border-top: 1px solid var(--line); padding-top: 8px; }
   .card.wide .date-col { flex-direction: row; align-items: baseline; gap: 12px; }
   .card.wide .date-col b { font-size: 48px; }
+  .card.wide .poster { max-width: 300px; }
 }
 
 @media (max-width: 734px) {
