@@ -242,14 +242,13 @@
 
   /* ---- Auto-hide upcoming events once their date has passed ---- */
   var today = new Date(); today.setHours(0, 0, 0, 0);
-  var upcoming = document.querySelectorAll("#upcoming [data-date]");
-  var shown = 0;
-  upcoming.forEach(function (card) {
+  document.querySelectorAll("#upcoming [data-date]").forEach(function (card) {
     var d = new Date(card.getAttribute("data-date") + "T23:59:59");
-    if (d < today) card.remove(); else shown++;
+    if (d < today) card.remove();
   });
+  // a card with no date yet (still ??/??/??) has no data-date, so count what is left, not what had a date
   var emptyMsg = document.getElementById("no-events");
-  if (emptyMsg) emptyMsg.hidden = shown > 0;
+  if (emptyMsg) emptyMsg.hidden = document.querySelectorAll("#upcoming .card").length > 0;
 
   /* ---- Calendar toggle: closed by default so Upcoming stays one card ---- */
   var calToggle = document.querySelector(".cal-toggle");
