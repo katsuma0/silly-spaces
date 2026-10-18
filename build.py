@@ -25,8 +25,8 @@ A date written as YYYY-MM-DD shows as "November 8, 2026" and the card hides
 itself once the day has passed. Anything else, like ??/??/??, shows as written.
 
 Questions are one file each under assets/questions/, named YYYY-MM-DD.txt with
-the question on the first line. The newest shows on the site, all of them go
-into the feed. Then run:
+the question on the first line. They go into the feed for the app, nothing
+shows on the site. Then run:
 
     python3 build.py
 
@@ -43,6 +43,7 @@ each run. Nothing outside the markers in index.html is touched.
 """
 from html import escape
 from pathlib import Path
+import datetime
 import json
 import re
 import sys
@@ -63,8 +64,6 @@ START = "        <!-- gallery:start -->"
 END = "        <!-- gallery:end -->"
 UP_START = "        <!-- upcoming:start -->"
 UP_END = "        <!-- upcoming:end -->"
-Q_START = "          <!-- question:start -->"
-Q_END = "          <!-- question:end -->"
 # Browsers can show these. HEIC from an iPhone is not on the list on purpose.
 IMAGE_TYPES = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".avif"}
 # Every photo is brought to this long edge so they all load and display at
@@ -122,7 +121,7 @@ def read_event(folder):
     if not info.exists():
         print(f"skip  {folder.name}: no event.txt")
         return None
-    lines = info.read_text(encoding="utf-8").splitlines()
+    lines = info.read_text(encoding="utf-8-sig").splitlines()
     title = lines[0].strip() if lines else folder.name
     when = lines[1].strip() if len(lines) > 1 else ""
     paras = [l.strip() for l in lines[2:] if l.strip()]
@@ -176,7 +175,9 @@ def long_date(text):
     if not m:
         return None
     y, mo, d = (int(x) for x in m.groups())
-    if not 1 <= mo <= 12 or not 1 <= d <= 31:
+    try:
+        datetime.date(y, mo, d)
+    except ValueError:
         return None
     return f"{MONTHS[mo - 1]} {d}, {y}"
 
@@ -199,7 +200,7 @@ def read_upcoming(folder):
     if not info.exists():
         print(f"skip  upcoming/{folder.name}: no event.txt")
         return None
-    lines = info.read_text(encoding="utf-8").splitlines()
+    lines = info.read_text(encoding="utf-8-sig").splitlines()
     title = lines[0].strip() if lines else folder.name
     fields, rest = {}, []
     for n, line in enumerate(lines[1:], 1):
@@ -211,7 +212,8 @@ def read_upcoming(folder):
             fields[m.group(1).lower()] = m.group(2).strip()
     date = fields.get("date", "")
     poster = find_poster(folder)
-    return {"slug": folder.name, "title": title, "date": date,
+    size = Image.open(poster).size if poster else (0, 0)
+    return {"slug": folder.name, "title": title, "date": date, "poster_size": size,
             "iso": date if long_date(date) else "",
             "when": long_date(date) or date,
             "time": fields.get("time", ""), "where": fields.get("where", ""),
@@ -235,7 +237,7 @@ def render_upcoming(ev, i):
     cls = "card wide reveal" if ev["poster"] else "card reveal"
     out = [f'        <article class="{cls}"{delay}{date}>']
     if ev["poster"]:
-        out.append(f'          <div class="poster"><img src="{escape(ev["poster"])}" alt="Poster for {escape(ev["title"])}" loading="lazy" decoding="async"></div>')
+        out.append(f'          <div class="poster"><img src="{escape(ev["poster"])}" alt="Poster for {escape(ev["title"])}" width="{ev["poster_size"][0]}" height="{ev["poster_size"][1]}" loading="lazy" decoding="async"></div>')
     out.append('          <div class="body">')
     out.append(f'            <h3>{escape(ev["title"])}</h3>')
     meta = [(icon, text) for icon, text in ((CAL_ICON, ev["when"]), (CLOCK_ICON, ev["time"]), (PIN_ICON, ev["where"])) if text]
@@ -256,7 +258,7 @@ def read_questions():
     """Every question under assets/questions/, newest first by the date in its name."""
     out = []
     for p in sorted(QUESTIONS.glob("*.txt"), reverse=True) if QUESTIONS.is_dir() else []:
-        lines = p.read_text(encoding="utf-8").splitlines()
+        lines = p.read_text(encoding="utf-8-sig").splitlines()
         text = lines[0].strip() if lines else ""
         if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", p.stem) or not text:
             print(f"skip  questions/{p.name}: name it YYYY-MM-DD.txt with the question on line 1")
@@ -265,12 +267,6 @@ def read_questions():
     return out
 
 
-def render_question(q):
-    """The one line in the app section that names the current question, if there is one."""
-    base = "A new one every two weeks, answered in the app."
-    if not q:
-        return f"          <p>{base}</p>"
-    return f"          <p>{base} This time: <q>{escape(q['text'])}</q></p>"
 
 
 def fill(html, start, end, lines, what):
@@ -403,7 +399,6 @@ def stamp_assets():
 
 
 def main():
-    stamp_assets()
     folders = sorted((d for d in PHOTOS.iterdir() if d.is_dir()), reverse=True)
     events = [e for e in (read_event(d) for d in folders) if e]
     upcoming = sort_upcoming([u for u in (read_upcoming(d) for d in folders_in(UPCOMING)) if u])
@@ -411,7 +406,6 @@ def main():
     html = INDEX.read_text(encoding="utf-8")
     html = fill(html, START, END, [render(e, i) for i, e in enumerate(events)], "gallery")
     html = fill(html, UP_START, UP_END, [render_upcoming(u, i) for i, u in enumerate(upcoming)], "upcoming")
-    html = fill(html, Q_START, Q_END, [render_question(questions[0] if questions else None)], "question")
     INDEX.write_text(html, encoding="utf-8")
     # one page per event, written fresh each run so removed events disappear
     events_dir = ROOT / "events"
@@ -426,6 +420,8 @@ def main():
     (ROOT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n", encoding="utf-8")
     write_feed(events, upcoming, questions)
+    # last, so the freshly written event pages get the stamp too
+    stamp_assets()
     print(f"wrote {len(events)} event page(s) into events/")
     for e in events:
         print(f"ok    {e['title']}: {len(e['photos'])} photo(s)")
@@ -433,7 +429,7 @@ def main():
     for u in upcoming:
         print(f"ok    {u['title']}: {u['when'] or 'no date'}, {'poster' if u['poster'] else 'no poster'}")
     print(f"wrote {len(upcoming)} upcoming card(s) into index.html")
-    print(f"wrote {len(questions)} question(s), {'showing ' + questions[0]['date'] if questions else 'none showing'}")
+    print(f"wrote {len(questions)} question(s) into events.json")
     print("wrote events.json")
 
 

@@ -83,11 +83,12 @@
 
   /* ---- Header brand appears once the big logo has scrolled under the bar.
      An observer, not a scroll handler, so it costs nothing per frame. ---- */
+  var bigLogo = document.querySelector("main .mark.hero-logo");
   if (nav) {
-    if (heroMark && "IntersectionObserver" in window) {
+    if (bigLogo && "IntersectionObserver" in window) {
       new IntersectionObserver(function (entries) {
         nav.classList.toggle("show-brand", !entries[0].isIntersecting);
-      }, { rootMargin: "-" + nav.offsetHeight + "px 0px 0px 0px", threshold: 0 }).observe(heroMark);
+      }, { rootMargin: "-" + nav.offsetHeight + "px 0px 0px 0px", threshold: 0 }).observe(bigLogo);
     } else {
       nav.classList.add("show-brand");
     }

@@ -11,7 +11,7 @@
  *   5. Copy the Web app URL and paste it into the join form's action in index.html,
  *      replacing the PASTE_YOUR_ID placeholder. Commit, open a PR, merge.
  *
- * Every submit adds one row: when, email, status, source. Then the welcome email goes out.
+ * Every submit adds one row: when, name, email, status, source. Then the welcome email goes out.
  * Rows land in the first tab. Open the sheet in the Google Sheets app to read them on
  * your phone. When someone replies stop, change their Status cell to stopped by hand
  * and they are skipped from then on. When the app is out, put the download link in
@@ -23,20 +23,22 @@
 // welcome email says so instead of linking to it.
 var APP_LINK = "";
 
-var HEADERS = ["When", "Email", "Status", "Source"];
+var HEADERS = ["When", "Name", "Email", "Status", "Source"];
 var SUBJECT = "You're on the Silly Spaces list";
 var FROM_NAME = "Silly Spaces";
 var REPLY_TO = "sillyspacesww@gmail.com";
 var SITE = "https://sillyspaces.com";
 var STOP_LINE = "Reply stop and we take you off the list.";
-// Gmail caps one message at 50 BCC addresses, so a bigger list goes out in batches.
-var BATCH = 50;
+// Apps Script allows 50 recipients on one message, and each batch also goes to our
+// own address, so 49 BCC addresses per message.
+var BATCH = 49;
 
 // The form posts here. One row and one welcome email per new address, nothing else.
 function doPost(e) {
   var p = (e && e.parameter) || {};
   // the form has a hidden field real people never see; bots fill it in
   if (p.company) return reply({ ok: true });
+  var name = String(p.name || "").trim().slice(0, 80);
   var email = String(p.email || "").trim().toLowerCase().slice(0, 200);
   if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(email)) return reply({ ok: false, error: "bad email" });
 
@@ -45,13 +47,14 @@ function doPost(e) {
   if (hasEmail(sheet, email)) return reply({ ok: true, note: "already on the list" });
   sheet.appendRow([
     Utilities.formatDate(new Date(), "America/Toronto", "yyyy-MM-dd HH:mm"),
+    clean(name),
     clean(email),
     "active",
     "web"
   ]);
   // the row is what matters; a mail hiccup must not turn into a lost sign-up
   try {
-    sendWelcome(email);
+    sendWelcome(email, name);
   } catch (err) {
     Logger.log("welcome email failed for " + email + ": " + err);
   }
@@ -75,23 +78,23 @@ function getSheet() {
   return sheet;
 }
 
-// Column B holds the emails. Case never matters in an address, so compare lower case.
+// Column C holds the emails. Case never matters in an address, so compare lower case.
 function hasEmail(sheet, email) {
   var last = sheet.getLastRow();
   if (last < 2) return false;
-  var rows = sheet.getRange(2, 2, last - 1, 1).getValues();
+  var rows = sheet.getRange(2, 3, last - 1, 1).getValues();
   for (var i = 0; i < rows.length; i++) {
     if (normalize(rows[i][0]) === email) return true;
   }
   return false;
 }
 
-// Everyone still on the list: column B where column C says active. Someone who
+// Everyone still on the list: column C where column D says active. Someone who
 // replied stop has that cell set to stopped by hand and is left out here.
 function activeEmails(sheet) {
   var last = sheet.getLastRow();
   if (last < 2) return [];
-  return sheet.getRange(2, 2, last - 1, 2).getValues()
+  return sheet.getRange(2, 3, last - 1, 2).getValues()
     .filter(function (r) { return String(r[1]).trim().toLowerCase() === "active"; })
     .map(function (r) { return normalize(r[0]); })
     .filter(Boolean);
@@ -114,21 +117,22 @@ function reply(obj) {
 }
 
 // The welcome email. Plain text, so it reads the same in every mail app.
-function sendWelcome(email) {
-  MailApp.sendEmail({ to: email, name: FROM_NAME, replyTo: REPLY_TO, subject: SUBJECT, body: welcomeBody() });
+function sendWelcome(email, name) {
+  MailApp.sendEmail({ to: email, name: FROM_NAME, replyTo: REPLY_TO, subject: SUBJECT, body: welcomeBody(name) });
 }
 
 // The welcome text. It changes once APP_LINK is filled in, so the same sign-up
-// gets the right story before and after the app is out.
-function welcomeBody() {
+// gets the right story before and after the app is out. Greets by first name.
+function welcomeBody(name) {
+  var first = String(name || "").trim().split(/\s+/)[0];
   var app = APP_LINK
     ? "The member part lives in the Silly Spaces app: your record of events, photos from the day, a question every two weeks, and a notification before the email even goes out. Get it here: " + APP_LINK
     : "We're building a Silly Spaces app. That's where the member part lives: your record of events, photos from the day, a question every two weeks, and a notification before the email even goes out. The download link lands in this inbox the day it's out.";
   var site = (APP_LINK ? "Upcoming events" : "Until then, upcoming events") + " and photos from past ones are at " + SITE;
   return [
-    "Hi,",
+    "Hi" + (first ? " " + first : "") + ",",
     "",
-    "You're on the list. When the next event has a date, you get one email with the where and when. A few a month at most.",
+    "You're on the list. When the next event has a date, you get one email with the where and when.",
     "",
     app,
     "",
@@ -152,12 +156,12 @@ function sendLatestDraftToList() {
   var list = activeEmails(getSheet());
 
   // Consumer Gmail gives Apps Script about 100 recipients a day. Each batch also
-  // goes to our own address, so count that too. Past the limit, select column B
+  // goes to our own address, so count that too. Past the limit, select column C
   // in the sheet and BCC from Gmail directly, which allows about 500.
   var needed = list.length + Math.ceil(list.length / BATCH);
   var quota = MailApp.getRemainingDailyQuota();
   if (quota < needed) {
-    throw new Error("The list has " + list.length + " addresses but only " + quota + " emails can go out today. Select column B in the sheet and BCC from Gmail instead.");
+    throw new Error("The list has " + list.length + " addresses but only " + quota + " emails can go out today. Select column C in the sheet and BCC from Gmail instead.");
   }
   for (var i = 0; i < list.length; i += BATCH) {
     MailApp.sendEmail({

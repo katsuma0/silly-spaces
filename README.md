@@ -6,7 +6,7 @@ The site is the front door: what is coming up, what happened, an email box to jo
 
 ## Pages
 
-- `index.html`, everything on one page: upcoming events, the app, the join box, past events gallery, FAQ, socials.
+- `index.html`, everything on one page: upcoming events, the join box, past events gallery, FAQ, socials.
 - `about.html`, the full description.
 - `thanks.html`, where the join box lands after a submit.
 - `404.html`, custom not-found page. GitHub Pages picks it up by name.
@@ -22,7 +22,7 @@ Then open http://localhost:8000. Links use root-relative paths, so it needs a se
 
 ## Before it goes live
 
-1. Connect the join box to a Google Sheet. The steps are at the top of `sheet/Code.gs`. Do them signed in as sillyspacesww@gmail.com, because the emails come from whichever account runs the script: make a sheet, paste that file into its Apps Script, deploy it as a web app, and put the web app URL into the form's `action` in `index.html` in place of `PASTE_YOUR_ID`. Every submit then adds a row with the time, email, status and source, and sends the welcome email. Until that is done the form shows a note pointing people at Instagram.
+1. Connect the join box to a Google Sheet. The steps are at the top of `sheet/Code.gs`. Do them signed in as sillyspacesww@gmail.com, because the emails come from whichever account runs the script: make a sheet, paste that file into its Apps Script, deploy it as a web app, and put the web app URL into the form's `action` in `index.html` in place of `PASTE_YOUR_ID`. Every submit then adds a row with the time, name, email, status and source, and sends the welcome email. Until that is done the form shows a note pointing people at Instagram.
 2. When the app is out, put the download link in the `APP_LINK` constant at the top of `Code.gs`. The welcome email switches from "we're building an app" to the link on its own.
 3. After any edit to `Code.gs`: Deploy, Manage deployments, Edit, Version: New version, Deploy. Without a new version the old code keeps running.
 4. Add past events as they happen, see below. The folders in `assets/photos/` are the real ones.
@@ -76,7 +76,7 @@ The upload page does all of this from a phone. Switch it to Upcoming, pick the e
 
 ## The question
 
-The app asks members a question every two weeks. The questions live in `assets/questions/`, one file per question, named by the date it goes live, for example `2026-10-18.txt`, with the question on the first line. The newest file shows on the site, in the app section, and every file goes into `events.json` for the app. Nothing checks the date against today: the file is added when the question should go live, and every two weeks is the plan, not a rule the build enforces.
+The app asks members a question every two weeks. The questions live in `assets/questions/`, one file per question, named by the date it goes live, for example `2026-10-18.txt`, with the question on the first line. Nothing shows on the site; every file goes into `events.json` for the app. Nothing checks the date against today: the file is added when the question should go live, and every two weeks is the plan, not a rule the build enforces.
 
 The upload page's Question mode writes the file. Switch to Question, type it, keep or change the date, tap Send.
 
@@ -86,9 +86,9 @@ On github.com, open the repo, Settings, Collaborators, Add people, and give them
 
 ## Emails
 
-Every sign-up gets one welcome email from sillyspacesww@gmail.com. It says they are on the list and what to expect (one email when the next event has a date, a few a month at most), that the member part lives in the app, where to find upcoming events and photos until then, and how to get off the list. Once `APP_LINK` is set the same email carries the download link instead.
+Every sign-up gets one welcome email from sillyspacesww@gmail.com. It says they are on the list and what to expect (one email when the next event has a date), that the member part lives in the app, where to find upcoming events and photos until then, and how to get off the list. Once `APP_LINK` is set the same email carries the download link instead.
 
-To email everyone on the list: write the email as a draft in Gmail, with a subject that starts with `[list] `. Then open the sheet, Extensions, Apps Script, pick `sendLatestDraftToList` in the function dropdown and press Run. It finds that draft, strips the prefix, and sends the plain text to every address whose Status is `active`, in batches of 50, with "Reply stop and we take you off the list." at the bottom. Apps Script on a consumer Gmail account sends to about 100 recipients a day. Past that, select column B in the sheet, copy it, and BCC from Gmail directly, which allows about 500 a day.
+To email everyone on the list: write the email as a draft in Gmail, with a subject that starts with `[list] `. Then open the sheet, Extensions, Apps Script, pick `sendLatestDraftToList` in the function dropdown and press Run. It finds that draft, strips the prefix, and sends the plain text to every address whose Status is `active`, in batches of 49, with "Reply stop and we take you off the list." at the bottom. Apps Script on a consumer Gmail account sends to about 100 recipients a day. Past that, select column C in the sheet, copy it, and BCC from Gmail directly, which allows about 500 a day.
 
 When someone replies stop, open the sheet and change their Status cell to `stopped`. They are skipped from then on. Canada's anti-spam law wants consent, a sender name and address, and a way out in every message, which is why the sign-off and the stop line are in every email.
 
