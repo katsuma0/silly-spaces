@@ -6,7 +6,7 @@ The site is the front door: what is coming up, what happened, an email box to jo
 
 ## Pages
 
-- `index.html`, everything on one page: upcoming events, the app, the join box, past events gallery, FAQ, socials.
+- `index.html`, everything on one page: upcoming events, the join box, past events gallery, FAQ, socials.
 - `about.html`, the full description.
 - `thanks.html`, where the join box lands after a submit.
 - `404.html`, custom not-found page. GitHub Pages picks it up by name.
@@ -76,7 +76,7 @@ The upload page does all of this from a phone. Switch it to Upcoming, pick the e
 
 ## The question
 
-The app asks members a question every two weeks. The questions live in `assets/questions/`, one file per question, named by the date it goes live, for example `2026-10-18.txt`, with the question on the first line. The newest file shows on the site, in the app section, and every file goes into `events.json` for the app. Nothing checks the date against today: the file is added when the question should go live, and every two weeks is the plan, not a rule the build enforces.
+The app asks members a question every two weeks. The questions live in `assets/questions/`, one file per question, named by the date it goes live, for example `2026-10-18.txt`, with the question on the first line. Nothing shows on the site; every file goes into `events.json` for the app. Nothing checks the date against today: the file is added when the question should go live, and every two weeks is the plan, not a rule the build enforces.
 
 The upload page's Question mode writes the file. Switch to Question, type it, keep or change the date, tap Send.
 

@@ -25,8 +25,8 @@ A date written as YYYY-MM-DD shows as "November 8, 2026" and the card hides
 itself once the day has passed. Anything else, like ??/??/??, shows as written.
 
 Questions are one file each under assets/questions/, named YYYY-MM-DD.txt with
-the question on the first line. The newest shows on the site, all of them go
-into the feed. Then run:
+the question on the first line. They go into the feed for the app, nothing
+shows on the site. Then run:
 
     python3 build.py
 
@@ -63,8 +63,6 @@ START = "        <!-- gallery:start -->"
 END = "        <!-- gallery:end -->"
 UP_START = "        <!-- upcoming:start -->"
 UP_END = "        <!-- upcoming:end -->"
-Q_START = "          <!-- question:start -->"
-Q_END = "          <!-- question:end -->"
 # Browsers can show these. HEIC from an iPhone is not on the list on purpose.
 IMAGE_TYPES = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".avif"}
 # Every photo is brought to this long edge so they all load and display at
@@ -265,12 +263,6 @@ def read_questions():
     return out
 
 
-def render_question(q):
-    """The one line in the app section that names the current question, if there is one."""
-    base = "A new one every two weeks, answered in the app."
-    if not q:
-        return f"          <p>{base}</p>"
-    return f"          <p>{base} This time: <q>{escape(q['text'])}</q></p>"
 
 
 def fill(html, start, end, lines, what):
@@ -411,7 +403,6 @@ def main():
     html = INDEX.read_text(encoding="utf-8")
     html = fill(html, START, END, [render(e, i) for i, e in enumerate(events)], "gallery")
     html = fill(html, UP_START, UP_END, [render_upcoming(u, i) for i, u in enumerate(upcoming)], "upcoming")
-    html = fill(html, Q_START, Q_END, [render_question(questions[0] if questions else None)], "question")
     INDEX.write_text(html, encoding="utf-8")
     # one page per event, written fresh each run so removed events disappear
     events_dir = ROOT / "events"
@@ -433,7 +424,7 @@ def main():
     for u in upcoming:
         print(f"ok    {u['title']}: {u['when'] or 'no date'}, {'poster' if u['poster'] else 'no poster'}")
     print(f"wrote {len(upcoming)} upcoming card(s) into index.html")
-    print(f"wrote {len(questions)} question(s), {'showing ' + questions[0]['date'] if questions else 'none showing'}")
+    print(f"wrote {len(questions)} question(s) into events.json")
     print("wrote events.json")
 
 
