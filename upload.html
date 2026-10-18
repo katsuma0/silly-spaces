@@ -685,8 +685,21 @@
   }
 
   // Every mode ends here: entries carrying a blob go up first, then one tree, one commit, one branch, one pull request.
+  // Fields are frozen while a send runs, so the success step writes back to the
+  // event that was actually sent and not one picked meanwhile.
+  var frozen = [];
+  function freeze(on) {
+    if (on) {
+      frozen = Array.prototype.filter.call(document.querySelectorAll("#s-event select, #s-event input, #s-event textarea, #s-event button, #s-photos input, #s-photos button"), function (el) { return !el.disabled; });
+      frozen.forEach(function (el) { el.disabled = true; });
+    } else {
+      frozen.forEach(function (el) { el.disabled = false; });
+      frozen = [];
+    }
+  }
+
   function run(job) {
-    busy = true; document.body.classList.add("sending");
+    busy = true; document.body.classList.add("sending"); freeze(true);
     var baseSha, treeSha;
     say("status", "Starting…");
     gh("/git/ref/heads/" + BASE).then(function (ref) {
@@ -715,12 +728,12 @@
     }).then(function () {
       return gh("/pulls", { method: "POST", body: { title: job.message, head: job.branch, base: BASE, body: job.body } });
     }).then(function (pr) {
-      busy = false; document.body.classList.remove("sending");
+      busy = false; document.body.classList.remove("sending"); freeze(false);
       link("status", "Done. ", pr.html_url, "Open the pull request", ", wait for the check to go green, then merge. The site updates a couple of minutes after that.");
       if (job.after) job.after();
       summary();
     }).catch(function (e) {
-      busy = false; document.body.classList.remove("sending");
+      busy = false; document.body.classList.remove("sending"); freeze(false);
       say("status", "Something went wrong: " + e.message + ". Nothing is half saved, try again.", true);
     });
   }
