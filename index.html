@@ -152,37 +152,18 @@
     <div class="wrap">
       <div class="section-head reveal">
         <p class="eyebrow">Join</p>
-        <h2>Join Silly Spaces</h2>
-        <p>Just a name is enough. Phone and email are optional.</p>
+        <h2>Join the list</h2>
+        <p>One email when the next event has a date. A few a month at most.</p>
       </div>
       <!-- The action is the Google Apps Script web app URL, see sheet/Code.gs for the setup. -->
       <form class="join-box reveal" id="join-form" action="https://script.google.com/macros/s/PASTE_YOUR_ID/exec" method="POST">
         <input class="honey" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
-
         <div class="field">
-          <label for="name">Name</label>
-          <input id="name" name="name" type="text" required autocomplete="name" autocapitalize="words" enterkeyhint="next" placeholder="What should we call you">
+          <label for="email">Email</label>
+          <input id="email" name="email" type="email" required autocomplete="email" autocapitalize="none" inputmode="email" enterkeyhint="done" placeholder="you@example.com">
         </div>
-        <div class="field">
-          <label for="attended">Which event did you come to? <small>optional</small></label>
-          <select id="attended" name="attended">
-            <option value="">Haven't been yet</option>
-          </select>
-        </div>
-        <div class="field">
-          <label for="phone">Phone <small>optional</small></label>
-          <input id="phone" name="phone" type="tel" autocomplete="tel" inputmode="tel" placeholder="905 555 0123">
-        </div>
-        <div class="field">
-          <label for="email">Email <small>optional</small></label>
-          <input id="email" name="email" type="email" autocomplete="email" autocapitalize="none" enterkeyhint="done" placeholder="you@example.com">
-        </div>
-        <label class="check">
-          <input type="checkbox" name="newsletter" value="yes">
-          <span>I want emails about upcoming events</span>
-        </label>
-
         <button class="btn btn-primary" type="submit" style="width:100%">Join</button>
+        <p class="form-note">The first email has the app link once it is out. Reply stop to any of them and you are off the list.</p>
       </form>
     </div>
   </section>
