@@ -29,8 +29,9 @@ var FROM_NAME = "Silly Spaces";
 var REPLY_TO = "sillyspacesww@gmail.com";
 var SITE = "https://sillyspaces.com";
 var STOP_LINE = "Reply stop and we take you off the list.";
-// Gmail caps one message at 50 BCC addresses, so a bigger list goes out in batches.
-var BATCH = 50;
+// Apps Script allows 50 recipients on one message, and each batch also goes to our
+// own address, so 49 BCC addresses per message.
+var BATCH = 49;
 
 // The form posts here. One row and one welcome email per new address, nothing else.
 function doPost(e) {
