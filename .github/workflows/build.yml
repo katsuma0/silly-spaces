@@ -1,13 +1,16 @@
-# Runs build.py whenever photos or event.txt files change on any branch,
-# then commits the thumbnails, gallery, event pages and sitemap back to
-# that branch. This is what lets photos go up from a phone: the upload
-# page only has to push the originals, the rest is done here.
+# Runs build.py whenever photos, upcoming events, questions or event.txt
+# files change on any branch, then commits the thumbnails, gallery, upcoming
+# cards, event pages, sitemap and events.json back to that branch. This is
+# what lets edits go up from a phone: the upload page only has to push the
+# originals, the rest is done here.
 name: Build event pages
 
 on:
   push:
     paths:
       - "assets/photos/**"
+      - "assets/upcoming/**"
+      - "assets/questions/**"
       - "build.py"
   workflow_dispatch:
 

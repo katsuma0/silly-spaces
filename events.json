@@ -1,0 +1,133 @@
+{
+  "site": "https://sillyspaces.com",
+  "past": [
+    {
+      "slug": "2026-08-29-finger-painting",
+      "title": "Finger painting the waterfront",
+      "when": "August 29, 2026",
+      "date": "2026-08-29",
+      "url": "/events/2026-08-29-finger-painting.html",
+      "description": [
+        "What? Fingerpainting the waterfront on one big canvas.",
+        "Why? To reclaim a lost art form held hostage by toddlers."
+      ],
+      "cover": "/assets/photos/2026-08-29-finger-painting/thumbs/01.jpg",
+      "images": [
+        "/assets/photos/2026-08-29-finger-painting/01.jpg",
+        "/assets/photos/2026-08-29-finger-painting/02.jpg",
+        "/assets/photos/2026-08-29-finger-painting/03.jpg",
+        "/assets/photos/2026-08-29-finger-painting/04.jpg",
+        "/assets/photos/2026-08-29-finger-painting/05.jpg",
+        "/assets/photos/2026-08-29-finger-painting/06.jpg",
+        "/assets/photos/2026-08-29-finger-painting/07.jpg",
+        "/assets/photos/2026-08-29-finger-painting/08.jpg",
+        "/assets/photos/2026-08-29-finger-painting/09.jpg",
+        "/assets/photos/2026-08-29-finger-painting/10.jpg"
+      ],
+      "thumbs": [
+        "/assets/photos/2026-08-29-finger-painting/thumbs/01.jpg",
+        "/assets/photos/2026-08-29-finger-painting/thumbs/02.jpg",
+        "/assets/photos/2026-08-29-finger-painting/thumbs/03.jpg",
+        "/assets/photos/2026-08-29-finger-painting/thumbs/04.jpg",
+        "/assets/photos/2026-08-29-finger-painting/thumbs/05.jpg",
+        "/assets/photos/2026-08-29-finger-painting/thumbs/06.jpg",
+        "/assets/photos/2026-08-29-finger-painting/thumbs/07.jpg",
+        "/assets/photos/2026-08-29-finger-painting/thumbs/08.jpg",
+        "/assets/photos/2026-08-29-finger-painting/thumbs/09.jpg",
+        "/assets/photos/2026-08-29-finger-painting/thumbs/10.jpg"
+      ]
+    },
+    {
+      "slug": "2026-08-04-footy",
+      "title": "Footy in da City",
+      "when": "August 4, 2026",
+      "date": "2026-08-04",
+      "url": "/events/2026-08-04-footy.html",
+      "description": [
+        "What? Chalk up a soccer field and play.",
+        "Why? The streets are where legends are born."
+      ],
+      "cover": null,
+      "images": [],
+      "thumbs": []
+    },
+    {
+      "slug": "2026-07-09-humrpferftc",
+      "title": "H.U.M.R.P.F.E.R.F.T.C.",
+      "when": "July 9, 2026",
+      "date": "2026-07-09",
+      "url": "/events/2026-07-09-humrpferftc.html",
+      "description": [
+        "What? A phone-less expedition.",
+        "Why? Historic Unfertilized Mosquito Research Phoneless Fun Expedition Race For The Cure."
+      ],
+      "cover": "/assets/photos/2026-07-09-humrpferftc/thumbs/01-cn-tower.jpg",
+      "images": [
+        "/assets/photos/2026-07-09-humrpferftc/01-cn-tower.jpg",
+        "/assets/photos/2026-07-09-humrpferftc/02-markham-station.jpg",
+        "/assets/photos/2026-07-09-humrpferftc/03-rain.jpg",
+        "/assets/photos/2026-07-09-humrpferftc/04-trail.jpg"
+      ],
+      "thumbs": [
+        "/assets/photos/2026-07-09-humrpferftc/thumbs/01-cn-tower.jpg",
+        "/assets/photos/2026-07-09-humrpferftc/thumbs/02-markham-station.jpg",
+        "/assets/photos/2026-07-09-humrpferftc/thumbs/03-rain.jpg",
+        "/assets/photos/2026-07-09-humrpferftc/thumbs/04-trail.jpg"
+      ]
+    },
+    {
+      "slug": "2026-06-27-train-aboard",
+      "title": "Train A’Boarddd",
+      "when": "June 27, 2026",
+      "date": "2026-06-27",
+      "url": "/events/2026-06-27-train-aboard.html",
+      "description": [
+        "What? Play board games on the train.",
+        "Why? There’s no way of knowing."
+      ],
+      "cover": "/assets/photos/2026-06-27-train-aboard/thumbs/01.jpg",
+      "images": [
+        "/assets/photos/2026-06-27-train-aboard/01.jpg",
+        "/assets/photos/2026-06-27-train-aboard/02.jpg",
+        "/assets/photos/2026-06-27-train-aboard/03.jpg",
+        "/assets/photos/2026-06-27-train-aboard/04.jpg",
+        "/assets/photos/2026-06-27-train-aboard/05.jpg",
+        "/assets/photos/2026-06-27-train-aboard/06.jpg",
+        "/assets/photos/2026-06-27-train-aboard/07.jpg"
+      ],
+      "thumbs": [
+        "/assets/photos/2026-06-27-train-aboard/thumbs/01.jpg",
+        "/assets/photos/2026-06-27-train-aboard/thumbs/02.jpg",
+        "/assets/photos/2026-06-27-train-aboard/thumbs/03.jpg",
+        "/assets/photos/2026-06-27-train-aboard/thumbs/04.jpg",
+        "/assets/photos/2026-06-27-train-aboard/thumbs/05.jpg",
+        "/assets/photos/2026-06-27-train-aboard/thumbs/06.jpg",
+        "/assets/photos/2026-06-27-train-aboard/thumbs/07.jpg"
+      ]
+    }
+  ],
+  "upcoming": [
+    {
+      "slug": "battle-of-borders",
+      "title": "The Battle Of Borders (B.O.B)",
+      "date": "??/??/??",
+      "time": "?:?? pm",
+      "where": "The border marker",
+      "tags": [
+        "Free",
+        "Outdoors"
+      ],
+      "poster": "/assets/upcoming/battle-of-borders/poster.jpg",
+      "description": [
+        "Cross border volleyball to settle the debate for the greatest Canadian province.",
+        "Date and time go out to the list first."
+      ]
+    }
+  ],
+  "questions": [
+    {
+      "date": "2026-10-18",
+      "text": "what would a sesame street puppet of you look like? (e.g. purple + well dressed + salamander)"
+    }
+  ]
+}
