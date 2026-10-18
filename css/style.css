@@ -109,9 +109,9 @@ a, button { touch-action: manipulation; }
 .nav.is-scrolled { border-bottom-color: var(--line); }
 .nav .wrap { display: flex; align-items: center; height: 100%; gap: 24px; }
 .brand { display: flex; align-items: center; gap: 12px; font-family: var(--serif); font-size: 21px; letter-spacing: -0.01em; transition: opacity 0.6s var(--ease), transform 0.6s var(--ease); will-change: opacity, transform; }
-/* On the homepage the big logo is the brand until it scrolls under the bar.
-   The script adds show-brand once the hero logo is out of view. */
-.nav:has(+ main .hero .mark):not(.show-brand) .brand { opacity: 0; transform: translateY(8px) scale(0.96); pointer-events: none; }
+/* Where a page opens with the big logo (home, about) it is the brand until it
+   scrolls under the bar. The script adds show-brand once it is out of view. */
+.nav:has(+ main .mark.hero-logo):not(.show-brand) .brand { opacity: 0; transform: translateY(8px) scale(0.96); pointer-events: none; }
 .nav-links { display: flex; gap: 26px; margin-left: auto; list-style: none; padding: 0; margin-top: 0; margin-bottom: 0; }
 .nav-links a { color: var(--muted); font-size: 15px; }
 .nav-links li { display: flex; align-items: center; }
