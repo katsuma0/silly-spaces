@@ -106,21 +106,9 @@
     revealEls.forEach(function (el) { el.classList.add("in"); });
   }
 
-  /* ---- Join form: the email opt-in only appears once an email is typed ---- */
+  /* ---- Join form: one email field, posted to the sheet without leaving the page ---- */
   var form = document.getElementById("join-form");
   if (form) {
-    var email = form.querySelector('input[name="email"]');
-    var optin = form.querySelector(".check");
-    var optinBox = form.querySelector('input[name="newsletter"]');
-    function syncOptin() {
-      var has = email.value.trim().length > 0;
-      optin.classList.toggle("show", has);
-      if (!has && optinBox) optinBox.checked = false;
-    }
-    if (email && optin) {
-      email.addEventListener("input", syncOptin);
-      syncOptin();
-    }
     function formNote(html) {
       var note = form.querySelector(".form-note") || form.appendChild(document.createElement("p"));
       note.className = "form-note";
@@ -132,15 +120,6 @@
       if (/PASTE_YOUR_ID/.test(action)) {
         e.preventDefault();
         formNote('Sign-up isn\u2019t connected yet. Message <a href="https://instagram.com/silly.spaces" target="_blank" rel="noopener">@silly.spaces</a> to join.');
-        return;
-      }
-      var name = form.querySelector('input[name="name"]');
-      if (name && !name.value.trim()) {
-        e.preventDefault();
-        name.focus();
-        name.setCustomValidity("Just a name is enough.");
-        name.reportValidity();
-        name.addEventListener("input", function () { name.setCustomValidity(""); }, { once: true });
         return;
       }
       /* The action is a Google Apps Script web app that appends a row to a
@@ -161,8 +140,6 @@
           if (btn) { btn.disabled = false; btn.textContent = label; }
           formNote('That didn\u2019t send. Try again, or message <a href="https://instagram.com/silly.spaces" target="_blank" rel="noopener">@silly.spaces</a>.');
         });
-      var btn = form.querySelector('button[type="submit"]');
-      if (btn) { btn.disabled = true; btn.textContent = "Sending…"; }
     });
   }
 
@@ -362,26 +339,5 @@
         prompt("Copy this link", data.url);
       }
     });
-  }
-
-  /* ---- Join form: fill the "which event" dropdown from the page itself,
-     upcoming cards first, then the past events gallery, so it never
-     needs editing by hand. Runs after the date filter above. ---- */
-  var attended = document.getElementById("attended");
-  if (attended) {
-    function addGroup(label, nodes) {
-      var names = Array.prototype.map.call(nodes, function (n) { return n.textContent.trim(); }).filter(Boolean);
-      if (!names.length) return;
-      var g = document.createElement("optgroup");
-      g.label = label;
-      names.forEach(function (name) {
-        var o = document.createElement("option");
-        o.value = name; o.textContent = name;
-        g.appendChild(o);
-      });
-      attended.appendChild(g);
-    }
-    addGroup("Upcoming", document.querySelectorAll("#upcoming .card h3"));
-    addGroup("Past events", document.querySelectorAll("#past .gallery-item h3"));
   }
 })();
