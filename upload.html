@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <title>Add photos · Silly Spaces</title>
+  <title>Update the site · Silly Spaces</title>
   <meta name="robots" content="noindex, nofollow">
   <meta name="theme-color" content="#f6f3ed" media="(prefers-color-scheme: light)">
   <meta name="theme-color" content="#1b1a18" media="(prefers-color-scheme: dark)">
@@ -49,15 +49,28 @@
     .status.err { color: var(--pink); }
     .status a { font-weight: 500; }
     .small { font-size: 14px; }
-    .sending .btn-primary { opacity: 0.5; pointer-events: none; }
-    @media (max-width: 400px) { .tiles { gap: 8px; } .tile .tools button { height: 38px; } }
+    .sending .btn-primary, .sending .modes { opacity: 0.5; pointer-events: none; }
+    /* The three modes share one step, a segmented switch picks which form is on screen */
+    .modes { display: flex; gap: 4px; padding: 4px; margin: 0 0 22px; border: 1px solid var(--line-strong); border-radius: 999px; }
+    .modes button {
+      flex: 1; min-height: 42px; border: 0; border-radius: 999px; background: transparent; color: var(--muted);
+      font: inherit; font-size: 15px; cursor: pointer; padding: 0 6px;
+    }
+    .modes button[aria-checked="true"] { background: var(--ink); color: var(--ink-text); }
+    .poster-prev { display: block; width: 100%; max-height: 280px; object-fit: contain; border-radius: 12px; border: 1px solid var(--line); background: var(--surface); }
+    .done { display: flex; align-items: flex-start; gap: 12px; padding: 14px 16px; margin: 4px 0 18px; border-radius: 12px; background: var(--tint-blue); font-size: 15px; cursor: pointer; }
+    .done input { width: 18px; height: 18px; margin: 3px 0 0; accent-color: var(--blue); flex: none; }
+    .done small { display: block; color: var(--muted); }
+    /* Ticking the done box means the fields will not be saved, so they fade */
+    .removing #up-form { opacity: 0.45; pointer-events: none; }
+    @media (max-width: 400px) { .tiles { gap: 8px; } .tile .tools button { height: 38px; } .modes button { font-size: 14px; } }
   </style>
 </head>
 <body>
 <main class="up">
   <a class="back-link" href="/">Back to the homepage</a>
-  <h1>Add photos</h1>
-  <p>Pick an event or start one, add photos, put them in order, send. That opens a pull request you merge from the GitHub app, and the site updates a couple of minutes later.</p>
+  <h1>Update the site</h1>
+  <p>Add photos to a past event, put an upcoming event on the site or set the next question; each send opens a pull request you merge from the GitHub app, and the site updates a couple of minutes later.</p>
 
   <section id="s-token" hidden>
     <h2>Connect this phone to GitHub</h2>
@@ -74,12 +87,52 @@
   </section>
 
   <section id="s-event" hidden>
-    <div class="field"><label for="event">Event</label>
-      <select id="event"><option value="">Loading events…</option></select>
+    <div class="modes" role="radiogroup" aria-label="What to send">
+      <button type="button" role="radio" aria-checked="true" data-mode="past">Past event</button>
+      <button type="button" role="radio" aria-checked="false" data-mode="upcoming">Upcoming</button>
+      <button type="button" role="radio" aria-checked="false" data-mode="question">Question</button>
     </div>
-    <div class="field"><label for="title">Title</label><input id="title" autocomplete="off"></div>
-    <div class="field"><label for="date">Date</label><input id="date" type="date"></div>
-    <div class="field"><label for="desc">Description, one line per paragraph</label><textarea id="desc" placeholder="What? …&#10;Why? …"></textarea></div>
+
+    <div id="m-past">
+      <div class="field"><label for="event">Event</label>
+        <select id="event"><option value="">Loading events…</option></select>
+      </div>
+      <div class="field"><label for="title">Title</label><input id="title" autocomplete="off"></div>
+      <div class="field"><label for="date">Date</label><input id="date" type="date"></div>
+      <div class="field"><label for="desc">Description, one line per paragraph</label><textarea id="desc" placeholder="What? …&#10;Why? …"></textarea></div>
+    </div>
+
+    <div id="m-upcoming" hidden>
+      <div class="field"><label for="up-event">Event</label>
+        <select id="up-event"><option value="">Loading events…</option></select>
+      </div>
+      <div id="up-form">
+        <div class="field"><label for="up-title">Title</label><input id="up-title" autocomplete="off"></div>
+        <div class="field"><label for="up-date">Date <small>optional</small></label><input id="up-date" autocomplete="off" placeholder="2026-11-08 or ??/??/??"></div>
+        <div class="field"><label for="up-time">Time <small>optional</small></label><input id="up-time" autocomplete="off" placeholder="6:30 pm"></div>
+        <div class="field"><label for="up-where">Where <small>optional</small></label><input id="up-where" autocomplete="off"></div>
+        <div class="field"><label for="up-tags">Tags <small>optional, comma separated</small></label><input id="up-tags" autocomplete="off" placeholder="Free, Outdoors"></div>
+        <div class="field"><label for="up-desc">Description, one line per paragraph</label><textarea id="up-desc" placeholder="What it is.&#10;Date and time go out to the list first."></textarea></div>
+        <div class="field">
+          <label for="up-poster">Poster <small>optional, one image</small></label>
+          <img class="poster-prev" id="up-poster-img" alt="" decoding="async" hidden>
+          <div class="row">
+            <label class="btn btn-ghost pick" id="up-poster-btn">Choose a poster<input type="file" id="up-poster" accept="image/*"></label>
+            <span class="small" id="up-poster-msg" aria-live="polite"></span>
+          </div>
+        </div>
+      </div>
+      <label class="done" id="up-done-box" hidden>
+        <input type="checkbox" id="up-done">
+        <span>Done, take it off the site<small>Deletes the folder. Add its photos under Past event and it comes back as an archive item.</small></span>
+      </label>
+    </div>
+
+    <div id="m-question" hidden>
+      <p class="small" id="q-current">Loading the current question…</p>
+      <div class="field"><label for="q-text">Question <small>up to 300 characters</small></label><textarea id="q-text" maxlength="300" placeholder="what would a sesame street puppet of you look like?"></textarea></div>
+      <div class="field"><label for="q-date">Goes live</label><input id="q-date" type="date"></div>
+    </div>
   </section>
 
   <section id="s-photos" hidden>
@@ -94,6 +147,7 @@
 
   <section id="s-send" hidden>
     <h2>Send</h2>
+    <p class="small" id="summary" hidden></p>
     <div class="row"><button class="btn btn-primary" id="send" type="button">Send to the site</button></div>
     <p class="status" id="status" aria-live="polite"></p>
     <p class="small"><a href="#" id="change-token">Use a different token</a></p>
@@ -104,6 +158,7 @@
 (function () {
   "use strict";
   var OWNER = "katsuma0", REPO = "silly-spaces", BASE = "main", DIR = "assets/photos";
+  var UP_DIR = "assets/upcoming", Q_DIR = "assets/questions";
   var API = "https://api.github.com/repos/" + OWNER + "/" + REPO;
   var LONG_EDGE = 1600, QUALITY = 0.82;
   var IMG = /\.(jpe?g|png|webp|gif|avif)$/i;
@@ -112,8 +167,13 @@
   var token = "";
   try { token = localStorage.getItem("ss-token") || ""; } catch (e) {}
 
+  var mode = "past", busy = false, loaded = {};
   /* One event on screen at a time. tiles is the order the photos will have. */
-  var st = { folder: "", isNew: true, when: "", eventText: null, existing: [], thumbs: [], tiles: [], busy: false };
+  var st = { folder: "", isNew: true, when: "", eventText: null, existing: [], thumbs: [], tiles: [] };
+  /* The upcoming folder on screen. files is its listing on main, text its event.txt there, blob a new poster not yet sent. */
+  var up = { folder: "", isNew: true, files: [], text: "\n", poster: "", posterRaw: "", blob: null, url: "" };
+  /* The question files already on main, so a resend of the same day is called a fix. */
+  var q = { files: [] };
 
   function gh(path, opts) {
     opts = opts || {};
@@ -142,12 +202,20 @@
     var a = document.createElement("a"); a.href = href; a.textContent = text; a.target = "_blank"; a.rel = "noopener";
     el.appendChild(a); el.appendChild(document.createTextNode(after || ""));
   }
+  function trim(s) { return s.trim(); }
+  function option(select, value, text) {
+    var o = document.createElement("option"); o.value = value; o.textContent = text; select.appendChild(o); return o;
+  }
+  function dirNames(list) {
+    return (list || []).filter(function (f) { return f.type === "dir"; }).map(function (f) { return f.name; }).sort();
+  }
 
   /* ---- Token ---- */
   function start() {
     if (!token) { show("s-token", true); return; }
-    show("s-token", false); show("s-event", true); show("s-photos", true); show("s-send", true);
-    loadEvents();
+    show("s-token", false); show("s-event", true); show("s-send", true);
+    loaded = {};
+    setMode(mode);
   }
   $("save-token").addEventListener("click", function () {
     var t = $("token").value.trim();
@@ -169,16 +237,41 @@
     start();
   });
 
-  /* ---- Events ---- */
+  /* ---- Modes: each list loads the first time its mode is opened, and keeps what was typed when switching away ---- */
+  var modeBtns = Array.prototype.slice.call(document.querySelectorAll(".modes button"));
+  function setMode(m) {
+    mode = m;
+    modeBtns.forEach(function (b) { b.setAttribute("aria-checked", String(b.getAttribute("data-mode") === m)); });
+    show("m-past", m === "past"); show("m-upcoming", m === "upcoming"); show("m-question", m === "question");
+    show("s-photos", m === "past");
+    say("status", "");
+    if (!loaded[m]) {
+      loaded[m] = true;
+      (m === "past" ? loadEvents : m === "upcoming" ? loadUpcoming : loadQuestions)();
+    }
+    summary();
+  }
+  modeBtns.forEach(function (b, i) {
+    b.addEventListener("click", function () { if (!busy) setMode(b.getAttribute("data-mode")); });
+    b.addEventListener("keydown", function (e) {
+      var d = e.key === "ArrowRight" || e.key === "ArrowDown" ? 1 : e.key === "ArrowLeft" || e.key === "ArrowUp" ? -1 : 0;
+      if (!d || busy) return;
+      e.preventDefault();
+      var next = modeBtns[(i + d + modeBtns.length) % modeBtns.length];
+      next.focus(); setMode(next.getAttribute("data-mode"));
+    });
+  });
+
+  /* ---- Past events ---- */
   var sel = $("event"), known = [];
   function loadEvents() {
     gh("/contents/" + DIR + "?ref=" + BASE).then(function (list) {
-      var dirs = list.filter(function (f) { return f.type === "dir"; }).map(function (f) { return f.name; }).sort().reverse();
+      var dirs = dirNames(list).reverse();
       known = dirs;
       sel.innerHTML = "";
-      var o = document.createElement("option"); o.value = "__new"; o.textContent = "New event"; sel.appendChild(o);
+      option(sel, "__new", "New event");
       dirs.forEach(function (d) {
-        var o = document.createElement("option"); o.value = d; o.textContent = d; sel.appendChild(o);
+        var o = option(sel, d, d);
         // show the title instead of the folder name once event.txt comes back
         gh("/contents/" + DIR + "/" + d + "/event.txt?ref=" + BASE, { allow404: true }).then(function (f) {
           if (!f) return;
@@ -200,10 +293,10 @@
   }
   function newEvent() {
     clearTiles();
-    st = { folder: "", isNew: true, when: "", eventText: null, existing: [], thumbs: [], tiles: [], busy: false };
+    st = { folder: "", isNew: true, when: "", eventText: null, existing: [], thumbs: [], tiles: [] };
     $("title").value = ""; $("desc").value = "";
     $("date").disabled = false;
-    $("date").value = new Date().toLocaleDateString("en-CA");
+    $("date").value = today();
     say("status", "");
     renderTiles();
   }
@@ -215,7 +308,7 @@
   function loadEvent(folder) {
     clearTiles();
     say("status", "Loading " + folder + "…");
-    st = { folder: folder, isNew: false, when: "", eventText: null, existing: [], thumbs: [], tiles: [], busy: false };
+    st = { folder: folder, isNew: false, when: "", eventText: null, existing: [], thumbs: [], tiles: [] };
     var m = folder.match(/^(\d{4}-\d{2}-\d{2})/);
     $("date").value = m ? m[1] : ""; $("date").disabled = true;
     Promise.all([
@@ -237,7 +330,7 @@
         st.eventText = text;
         $("title").value = (lines[0] || "").trim();
         st.when = (lines[1] || "").trim();
-        $("desc").value = lines.slice(2).map(function (l) { return l.trim(); }).filter(Boolean).join("\n");
+        $("desc").value = lines.slice(2).map(trim).filter(Boolean).join("\n");
         renderTiles(); say("status", "");
       });
     }).catch(function (e) { say("status", "Could not load that event: " + e.message, true); });
@@ -301,6 +394,233 @@
     });
   }
 
+  /* ---- Upcoming: one folder per event under assets/upcoming, an event.txt and at most one poster ---- */
+  var upSel = $("up-event"), upKnown = [];
+  var UP_KEYS = ["date", "time", "where", "tags"];
+  function loadUpcoming() {
+    gh("/contents/" + UP_DIR + "?ref=" + BASE, { allow404: true }).then(function (list) {
+      var dirs = dirNames(list);
+      upKnown = dirs;
+      upSel.innerHTML = "";
+      option(upSel, "__new", "New upcoming event");
+      dirs.forEach(function (d) {
+        var o = option(upSel, d, d);
+        gh("/contents/" + UP_DIR + "/" + d + "/event.txt?ref=" + BASE, { allow404: true }).then(function (f) {
+          if (!f) return;
+          var title = parseUpcoming(decode(f.content)).title;
+          if (title) o.textContent = title;
+        }).catch(function () {});
+      });
+      upSel.value = "__new";
+      newUpcoming();
+    }, function (e) { say("status", "Could not list upcoming events: " + e.message, true); });
+  }
+  upSel.addEventListener("change", function () {
+    if (upSel.value === "__new") newUpcoming(); else loadUpcomingEvent(upSel.value);
+  });
+
+  // The file format build.py reads: title, key: value lines, a blank line, one paragraph per line.
+  function parseUpcoming(text) {
+    var lines = text.split(/\r?\n/), ev = { title: (lines[0] || "").trim(), date: "", time: "", where: "", tags: "", desc: [] }, i = 1;
+    for (; i < lines.length && lines[i].trim(); i++) {
+      var m = lines[i].match(/^\s*(date|time|where|tags)\s*:\s*(.*)$/i);
+      if (m) ev[m[1].toLowerCase()] = m[2].trim();
+    }
+    ev.desc = lines.slice(i + 1).map(trim).filter(Boolean);
+    return ev;
+  }
+  function upcomingText(ev) {
+    var lines = [ev.title];
+    UP_KEYS.forEach(function (k) { if (ev[k]) lines.push(k + ": " + ev[k]); });
+    if (ev.desc.length) lines = lines.concat([""], ev.desc);
+    return lines.join("\n") + "\n";
+  }
+  function readUpcomingForm() {
+    var ev = { title: $("up-title").value.trim(), desc: $("up-desc").value.split(/\n/).map(trim).filter(Boolean) };
+    UP_KEYS.forEach(function (k) { ev[k] = $("up-" + k).value.trim(); });
+    ev.tags = ev.tags.split(",").map(trim).filter(Boolean).join(", ");
+    return ev;
+  }
+
+  function resetUpcoming() {
+    if (up.url) URL.revokeObjectURL(up.url);
+    // text starts as what an empty form serializes to, so an untouched form is not a change
+    up = { folder: "", isNew: true, files: [], text: "\n", poster: "", posterRaw: "", blob: null, url: "" };
+    $("up-title").value = ""; $("up-desc").value = "";
+    UP_KEYS.forEach(function (k) { $("up-" + k).value = ""; });
+    $("up-done").checked = false; $("m-upcoming").classList.remove("removing");
+  }
+  function showPoster() {
+    var im = $("up-poster-img"), src = up.url || (up.poster ? "/" + UP_DIR + "/" + up.folder + "/" + up.poster : "");
+    im.onerror = null;
+    im.hidden = !src;
+    if (src) {
+      // the site copy loads fastest, the raw GitHub file is the fallback while a merge is pending
+      if (!up.url && up.posterRaw) im.onerror = function () { im.onerror = null; im.src = up.posterRaw; };
+      im.src = src;
+    } else im.removeAttribute("src");
+    $("up-poster-msg").textContent = up.blob ? "New poster, goes up as poster.jpg" : up.poster ? "Current poster: " + up.poster : "No poster yet";
+    $("up-poster-btn").firstChild.nodeValue = up.blob || up.poster ? "Change the poster" : "Choose a poster";
+  }
+  function newUpcoming() {
+    resetUpcoming();
+    show("up-done-box", false);
+    say("status", "");
+    showPoster(); summary();
+  }
+  function loadUpcomingEvent(folder) {
+    resetUpcoming();
+    var me = up;
+    up.folder = folder; up.isNew = false;
+    show("up-done-box", true);
+    say("status", "Loading " + folder + "…");
+    gh("/contents/" + UP_DIR + "/" + folder + "?ref=" + BASE).then(function (files) {
+      if (up !== me) return null;
+      up.files = files.filter(function (f) { return f.type === "file"; })
+        .map(function (f) { return { name: f.name, sha: f.sha, raw: f.download_url }; })
+        .sort(function (a, b) { return a.name < b.name ? -1 : 1; });
+      var imgs = up.files.filter(function (f) { return IMG.test(f.name); });
+      var p = imgs.filter(function (f) { return f.name === "poster.jpg"; })[0] || imgs[0];
+      if (p) { up.poster = p.name; up.posterRaw = p.raw; }
+      if (!up.files.some(function (f) { return f.name === "event.txt"; })) return null;
+      return gh("/contents/" + UP_DIR + "/" + folder + "/event.txt?ref=" + BASE).then(function (f) {
+        if (up !== me) return;
+        var text = decode(f.content), ev = parseUpcoming(text);
+        up.text = text;
+        $("up-title").value = ev.title; $("up-desc").value = ev.desc.join("\n");
+        UP_KEYS.forEach(function (k) { $("up-" + k).value = ev[k]; });
+      });
+    }).then(function () {
+      if (up !== me) return;
+      showPoster(); summary(); say("status", "");
+    }).catch(function (e) { say("status", "Could not load that event: " + e.message, true); });
+  }
+  $("up-poster").addEventListener("change", function () {
+    var file = this.files && this.files[0];
+    this.value = "";
+    if (!file) return;
+    var me = up;
+    $("up-poster-msg").textContent = "Preparing…";
+    shrink(file).then(function (blob) {
+      if (up !== me) { return; }
+      if (up.url) URL.revokeObjectURL(up.url);
+      up.blob = blob; up.url = URL.createObjectURL(blob);
+      showPoster(); summary();
+    }, function (e) { say("status", e.message, true); showPoster(); });
+  });
+  $("up-done").addEventListener("change", function () {
+    $("m-upcoming").classList.toggle("removing", this.checked);
+    summary();
+  });
+  $("m-upcoming").addEventListener("input", summary);
+
+  function upcomingSlug(title) {
+    var s = slug(title).replace(/-+$/, ""), out = s, n = 2;
+    while (out && upKnown.indexOf(out) >= 0) out = s + "-" + (n++);
+    return out;
+  }
+  // What a send would do right now; the summary line and the send button both read it.
+  function upcomingPlan() {
+    var ev = readUpcomingForm(), text = upcomingText(ev);
+    var plan = { ev: ev, text: text, remove: !up.isNew && $("up-done").checked, poster: !!up.blob, textChanged: text !== up.text, parts: [] };
+    plan.folder = up.isNew ? upcomingSlug(ev.title) : up.folder;
+    if (!plan.remove) {
+      if (plan.poster) plan.parts.push("1 poster");
+      if (plan.textChanged) plan.parts.push("event.txt");
+    }
+    return plan;
+  }
+  function upcomingSummary(plan) {
+    if (plan.remove) return "Removes the folder " + UP_DIR + "/" + plan.folder + ".";
+    if (!plan.parts.length) return "Nothing changed yet.";
+    return UP_DIR + "/" + (plan.folder || "…") + ": " + plan.parts.join(", ") + (plan.parts.length === 1 ? " only" : "");
+  }
+  function upcomingJob() {
+    var plan = upcomingPlan(), ev = plan.ev, folder = plan.folder;
+    if (!plan.remove) {
+      if (!ev.title) { say("status", "Give the event a title.", true); return null; }
+      if (!folder) { say("status", "The title needs some letters or numbers.", true); return null; }
+    }
+    var base = UP_DIR + "/" + folder + "/", tree = [];
+    if (plan.remove) {
+      up.files.forEach(function (f) { tree.push({ path: base + f.name, mode: "100644", type: "blob", sha: null }); });
+    } else {
+      if (plan.textChanged) tree.push({ path: base + "event.txt", mode: "100644", type: "blob", content: plan.text });
+      if (plan.poster) {
+        tree.push({ path: base + "poster.jpg", mode: "100644", type: "blob", blob: up.blob });
+        // one poster per folder, so whatever image was there under another name goes
+        up.files.forEach(function (f) {
+          if (IMG.test(f.name) && f.name !== "poster.jpg") tree.push({ path: base + f.name, mode: "100644", type: "blob", sha: null });
+        });
+      }
+    }
+    if (!tree.length) { say("status", "Nothing changed."); return null; }
+    var title = plan.remove ? (parseUpcoming(up.text || "").title || folder) : ev.title;
+    var msg = plan.remove ? "chore: remove upcoming " + title : (up.isNew ? "feat: upcoming " : "fix: update upcoming ") + title;
+    var body = "Sent from the phone upload page: " + (plan.remove
+      ? "removes " + UP_DIR + "/" + folder + ", the event is over. The build check takes the card out of the site and the feed, merge once it is green."
+      : (up.isNew ? "new upcoming event in " : "updates ") + UP_DIR + "/" + folder + ", " + plan.parts.join(", ") + ". The build check redraws the upcoming cards and the feed, merge once it is green.");
+    return {
+      tree: tree, branch: "upcoming/" + folder + "-" + Date.now().toString(36), message: msg, body: body, noun: "poster",
+      after: function () {
+        if (plan.remove) { up.files = []; return; }
+        up.text = plan.text; up.blob = null;
+        if (plan.poster) { up.poster = "poster.jpg"; up.files = up.files.filter(function (f) { return !IMG.test(f.name); }).concat([{ name: "poster.jpg" }]); }
+      }
+    };
+  }
+
+  /* ---- Question: one text file per question under assets/questions, named by the day it goes live ---- */
+  var QFILE = /^\d{4}-\d{2}-\d{2}\.txt$/;
+  function today() { return new Date().toLocaleDateString("en-CA"); }
+  function longDate(d, withYear) {
+    var o = { month: "long", day: "numeric" };
+    if (withYear) o.year = "numeric";
+    return new Date(d + "T12:00:00").toLocaleDateString("en-CA", o);
+  }
+  function loadQuestions() {
+    $("q-date").value = today();
+    gh("/contents/" + Q_DIR + "?ref=" + BASE, { allow404: true }).then(function (list) {
+      q.files = (list || []).filter(function (f) { return f.type === "file" && QFILE.test(f.name); }).map(function (f) { return f.name; }).sort();
+      summary();
+      var newest = q.files[q.files.length - 1];
+      if (!newest) { $("q-current").textContent = "Current: none yet."; return null; }
+      return gh("/contents/" + Q_DIR + "/" + newest + "?ref=" + BASE).then(function (f) {
+        $("q-current").textContent = "Current: " + decode(f.content).split(/\r?\n/)[0].trim();
+      });
+    }).catch(function (e) {
+      $("q-current").textContent = "Current: could not load it.";
+      say("status", "Could not load the questions: " + e.message, true);
+    });
+  }
+  $("m-question").addEventListener("input", summary);
+  function questionJob() {
+    // only the first line of the file counts, so a line break typed in the box becomes a space
+    var text = $("q-text").value.trim().replace(/\s*\n\s*/g, " "), date = $("q-date").value;
+    if (!text) { say("status", "Write the question.", true); return null; }
+    if (text.length > 300) { say("status", "Keep the question under 300 characters.", true); return null; }
+    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { say("status", "Pick the day it goes live.", true); return null; }
+    var name = date + ".txt", exists = q.files.indexOf(name) >= 0, when = longDate(date);
+    return {
+      tree: [{ path: Q_DIR + "/" + name, mode: "100644", type: "blob", content: text + "\n" }],
+      branch: "question/" + date + "-" + Date.now().toString(36),
+      message: (exists ? "fix: question for " : "feat: question for ") + when, noun: "file",
+      body: "Sent from the phone upload page: the question for " + when + " in " + Q_DIR + "/" + name + (exists ? ", replacing the one there" : "") + ". The build check puts it on the site and in the feed, merge once it is green.",
+      after: function () { if (!exists) { q.files.push(name); q.files.sort(); } }
+    };
+  }
+
+  /* ---- Send step summary ---- */
+  function summary() {
+    var el = $("summary"), text = "";
+    if (mode === "upcoming") text = upcomingSummary(upcomingPlan());
+    else if (mode === "question") {
+      var d = $("q-date").value;
+      if (d) text = "Writes " + Q_DIR + "/" + d + ".txt" + (q.files.indexOf(d + ".txt") >= 0 ? ", replacing the one there." : ".");
+    }
+    el.textContent = text; el.hidden = !text;
+  }
+
   /* ---- Send: one commit on a new branch, then a pull request ---- */
   function slug(s) { return s.toLowerCase().replace(/['’]/g, "").replace(/[^a-z0-9]+/g, "-").replace(/^-+|-+$/g, "").slice(0, 40); }
   function pad(i, n) { var w = n >= 100 ? 3 : 2, s = String(i); while (s.length < w) s = "0" + s; return s; }
@@ -318,16 +638,15 @@
     });
   }
 
-  $("send").addEventListener("click", function () {
-    if (st.busy) return;
+  function pastJob() {
     var title = $("title").value.trim(), date = $("date").value;
-    var paras = $("desc").value.split(/\n/).map(function (l) { return l.trim(); }).filter(Boolean);
-    if (!title) { say("status", "Give the event a title.", true); return; }
-    if (!date) { say("status", "Pick the date.", true); return; }
+    var paras = $("desc").value.split(/\n/).map(trim).filter(Boolean);
+    if (!title) { say("status", "Give the event a title.", true); return null; }
+    if (!date) { say("status", "Pick the date.", true); return null; }
     var folder = st.isNew ? date + "-" + slug(title) : st.folder;
-    if (st.isNew && !slug(title)) { say("status", "The title needs some letters or numbers.", true); return; }
-    if (st.isNew && known.indexOf(folder) >= 0) { say("status", "That event is already on the site, pick it from the list instead.", true); return; }
-    var when = st.isNew || !st.when ? new Date(date + "T12:00:00").toLocaleDateString("en-CA", { month: "long", day: "numeric", year: "numeric" }) : st.when;
+    if (st.isNew && !slug(title)) { say("status", "The title needs some letters or numbers.", true); return null; }
+    if (st.isNew && known.indexOf(folder) >= 0) { say("status", "That event is already on the site, pick it from the list instead.", true); return null; }
+    var when = st.isNew || !st.when ? longDate(date, true) : st.when;
     var eventText = [title, when].concat(paras).join("\n") + "\n";
     var base = DIR + "/" + folder + "/";
     var n = st.tiles.length;
@@ -338,7 +657,7 @@
       finalPaths[name] = true;
       if (t.existing && t.name === name) return;
       if (t.existing) { moves++; tree.push({ path: base + name, mode: "100644", type: "blob", sha: t.sha }); }
-      else { adds++; tree.push({ path: base + name, mode: "100644", type: "blob", tile: t }); }
+      else { adds++; tree.push({ path: base + name, mode: "100644", type: "blob", blob: t.blob }); }
     });
     st.existing.forEach(function (f) {
       // a renamed photo also leaves its old path behind, but only a photo taken off the list counts as removed
@@ -350,55 +669,66 @@
       st.thumbs.forEach(function (name) { tree.push({ path: base + "thumbs/" + name, mode: "100644", type: "blob", sha: null }); });
     }
     if (eventText !== st.eventText) tree.push({ path: base + "event.txt", mode: "100644", type: "blob", content: eventText });
-    if (!tree.length) { say("status", "Nothing changed."); return; }
+    if (!tree.length) { say("status", "Nothing changed."); return null; }
 
-    st.busy = true; document.body.classList.add("sending");
-    var branch = "photos/" + folder + "-" + Date.now().toString(36);
-    var baseSha, treeSha, done = 0;
-    var summary = [];
-    if (adds) summary.push(adds + (adds === 1 ? " photo added" : " photos added"));
-    if (removes) summary.push(removes + " removed");
-    if (moves) summary.push("order changed");
-    if (eventText !== st.eventText) summary.push(st.isNew ? "new event" : "text updated");
-    var msg = ((st.isNew ? "feat: add " : "feat: update ") + title.toLowerCase()).slice(0, 50);
+    var summaryBits = [];
+    if (adds) summaryBits.push(adds + (adds === 1 ? " photo added" : " photos added"));
+    if (removes) summaryBits.push(removes + " removed");
+    if (moves) summaryBits.push("order changed");
+    if (eventText !== st.eventText) summaryBits.push(st.isNew ? "new event" : "text updated");
+    return {
+      tree: tree, branch: "photos/" + folder + "-" + Date.now().toString(36),
+      message: ((st.isNew ? "feat: add " : "feat: update ") + title.toLowerCase()).slice(0, 50), noun: "photo",
+      body: "Sent from the phone upload page. " + summaryBits.join(", ") + " in " + folder + ".\n\nThe build check adds the thumbnails, gallery card and event page to this branch. Wait for it to turn green, then merge.",
+      after: function () { st.eventText = eventText; }
+    };
+  }
 
+  // Every mode ends here: entries carrying a blob go up first, then one tree, one commit, one branch, one pull request.
+  function run(job) {
+    busy = true; document.body.classList.add("sending");
+    var baseSha, treeSha;
     say("status", "Starting…");
     gh("/git/ref/heads/" + BASE).then(function (ref) {
       baseSha = ref.object.sha;
       return gh("/git/commits/" + baseSha);
     }).then(function (c) {
       treeSha = c.tree.sha;
-      var uploads = tree.filter(function (e) { return e.tile; });
+      var uploads = job.tree.filter(function (e) { return e.blob; });
       function upload(k) {
         if (k >= uploads.length) return Promise.resolve();
-        say("status", "Uploading photo " + (k + 1) + " of " + uploads.length + "…");
-        return toBase64(uploads[k].tile.blob).then(function (b64) {
+        say("status", "Uploading " + job.noun + " " + (k + 1) + " of " + uploads.length + "…");
+        return toBase64(uploads[k].blob).then(function (b64) {
           return gh("/git/blobs", { method: "POST", body: { content: b64, encoding: "base64" } });
-        }).then(function (blob) { uploads[k].sha = blob.sha; delete uploads[k].tile; return upload(k + 1); });
+        }).then(function (blob) { uploads[k].sha = blob.sha; delete uploads[k].blob; return upload(k + 1); });
       }
       return upload(0);
     }).then(function () {
       say("status", "Saving…");
-      return gh("/git/trees", { method: "POST", body: { base_tree: treeSha, tree: tree } });
+      return gh("/git/trees", { method: "POST", body: { base_tree: treeSha, tree: job.tree } });
     }).then(function (t) {
-      return gh("/git/commits", { method: "POST", body: { message: msg, tree: t.sha, parents: [baseSha] } });
+      return gh("/git/commits", { method: "POST", body: { message: job.message, tree: t.sha, parents: [baseSha] } });
     }).then(function (c) {
       // the branch is made last, pointing straight at the finished commit,
       // so a failure earlier leaves nothing behind but unreachable blobs
-      return gh("/git/refs", { method: "POST", body: { ref: "refs/heads/" + branch, sha: c.sha } });
+      return gh("/git/refs", { method: "POST", body: { ref: "refs/heads/" + job.branch, sha: c.sha } });
     }).then(function () {
-      return gh("/pulls", { method: "POST", body: {
-        title: msg, head: branch, base: BASE,
-        body: "Sent from the phone upload page. " + summary.join(", ") + " in " + folder + ".\n\nThe build check adds the thumbnails, gallery card and event page to this branch. Wait for it to turn green, then merge."
-      } });
+      return gh("/pulls", { method: "POST", body: { title: job.message, head: job.branch, base: BASE, body: job.body } });
     }).then(function (pr) {
-      st.busy = false; document.body.classList.remove("sending");
+      busy = false; document.body.classList.remove("sending");
       link("status", "Done. ", pr.html_url, "Open the pull request", ", wait for the check to go green, then merge. The site updates a couple of minutes after that.");
-      st.eventText = eventText;
+      if (job.after) job.after();
+      summary();
     }).catch(function (e) {
-      st.busy = false; document.body.classList.remove("sending");
+      busy = false; document.body.classList.remove("sending");
       say("status", "Something went wrong: " + e.message + ". Nothing is half saved, try again.", true);
     });
+  }
+
+  $("send").addEventListener("click", function () {
+    if (busy) return;
+    var job = mode === "past" ? pastJob() : mode === "upcoming" ? upcomingJob() : questionJob();
+    if (job) run(job);
   });
 
   start();
