@@ -86,7 +86,7 @@ On github.com, open the repo, Settings, Collaborators, Add people, and give them
 
 ## Emails
 
-Every sign-up gets one welcome email from sillyspacesww@gmail.com. It says they are on the list and what to expect (one email when the next event has a date, a few a month at most), that the member part lives in the app, where to find upcoming events and photos until then, and how to get off the list. Once `APP_LINK` is set the same email carries the download link instead.
+Every sign-up gets one welcome email from sillyspacesww@gmail.com. It says they are on the list and what to expect (one email when the next event has a date), that the member part lives in the app, where to find upcoming events and photos until then, and how to get off the list. Once `APP_LINK` is set the same email carries the download link instead.
 
 To email everyone on the list: write the email as a draft in Gmail, with a subject that starts with `[list] `. Then open the sheet, Extensions, Apps Script, pick `sendLatestDraftToList` in the function dropdown and press Run. It finds that draft, strips the prefix, and sends the plain text to every address whose Status is `active`, in batches of 50, with "Reply stop and we take you off the list." at the bottom. Apps Script on a consumer Gmail account sends to about 100 recipients a day. Past that, select column C in the sheet, copy it, and BCC from Gmail directly, which allows about 500 a day.
 

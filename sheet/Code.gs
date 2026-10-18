@@ -131,7 +131,7 @@ function welcomeBody(name) {
   return [
     "Hi" + (first ? " " + first : "") + ",",
     "",
-    "You're on the list. When the next event has a date, you get one email with the where and when. A few a month at most.",
+    "You're on the list. When the next event has a date, you get one email with the where and when.",
     "",
     app,
     "",
