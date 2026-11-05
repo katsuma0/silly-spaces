@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Rebuild index.html, the event pages and events.json from the files under assets/.
+"""Rebuild index.html and the event pages from the files under assets/.
 
 Past events are one folder each under assets/photos/. Paste photos into it and
 add an event.txt beside them:
@@ -24,9 +24,7 @@ folder):
 A date written as YYYY-MM-DD shows as "November 8, 2026" and the card hides
 itself once the day has passed. Anything else, like ??/??/??, shows as written.
 
-Questions are one file each under assets/questions/, named YYYY-MM-DD.txt with
-the question on the first line. They go into the feed for the app, nothing
-shows on the site. Then run:
+Then run:
 
     python3 build.py
 
@@ -38,13 +36,11 @@ in, anything over 1600 px on the long edge is shrunk, metadata is
 dropped. Needs Pillow (pip install pillow); without it photos are left
 as they are.
 
-events.json at the repo root is the same data for the app, written fresh
-each run. Nothing outside the markers in index.html is touched.
+Nothing outside the markers in index.html is touched.
 """
 from html import escape
 from pathlib import Path
 import datetime
-import json
 import re
 import sys
 
@@ -56,10 +52,7 @@ except ImportError:  # photos still work, they just stay at whatever size they c
 ROOT = Path(__file__).resolve().parent
 PHOTOS = ROOT / "assets" / "photos"
 UPCOMING = ROOT / "assets" / "upcoming"
-QUESTIONS = ROOT / "assets" / "questions"
 INDEX = ROOT / "index.html"
-FEED = ROOT / "events.json"
-SITE = "https://sillyspaces.com"
 START = "        <!-- gallery:start -->"
 END = "        <!-- gallery:end -->"
 UP_START = "        <!-- upcoming:start -->"
@@ -254,19 +247,6 @@ def render_upcoming(ev, i):
     return "\n".join(out)
 
 
-def read_questions():
-    """Every question under assets/questions/, newest first by the date in its name."""
-    out = []
-    for p in sorted(QUESTIONS.glob("*.txt"), reverse=True) if QUESTIONS.is_dir() else []:
-        lines = p.read_text(encoding="utf-8-sig").splitlines()
-        text = lines[0].strip() if lines else ""
-        if not re.fullmatch(r"\d{4}-\d{2}-\d{2}", p.stem) or not text:
-            print(f"skip  questions/{p.name}: name it YYYY-MM-DD.txt with the question on line 1")
-            continue
-        out.append({"date": p.stem, "text": text})
-    return out
-
-
 
 
 def fill(html, start, end, lines, what):
@@ -282,25 +262,6 @@ def folders_in(path):
     return sorted(d for d in path.iterdir() if d.is_dir()) if path.is_dir() else []
 
 
-def write_feed(past, upcoming, questions):
-    """events.json: the same events and questions as the site, in one file for the
-    app. Paths are root-relative so the app puts the site in front of them. No
-    timestamp, so a build with nothing new changes nothing."""
-    feed = {
-        "site": SITE,
-        "past": [{
-            "slug": e["slug"], "title": e["title"], "when": e["when"], "date": e["date"] or None,
-            "url": f"/events/{e['slug']}.html", "description": e["paras"],
-            "cover": e["thumbs"][0] if e["photos"] else None,
-            "images": e["photos"], "thumbs": e["thumbs"],
-        } for e in past],
-        "upcoming": [{
-            "slug": u["slug"], "title": u["title"], "date": u["date"] or None, "time": u["time"] or None,
-            "where": u["where"] or None, "tags": u["tags"], "poster": u["poster"], "description": u["paras"],
-        } for u in upcoming],
-        "questions": questions,
-    }
-    FEED.write_text(json.dumps(feed, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
 
 
 def page_shell(html):
@@ -402,7 +363,6 @@ def main():
     folders = sorted((d for d in PHOTOS.iterdir() if d.is_dir()), reverse=True)
     events = [e for e in (read_event(d) for d in folders) if e]
     upcoming = sort_upcoming([u for u in (read_upcoming(d) for d in folders_in(UPCOMING)) if u])
-    questions = read_questions()
     html = INDEX.read_text(encoding="utf-8")
     html = fill(html, START, END, [render(e, i) for i, e in enumerate(events)], "gallery")
     html = fill(html, UP_START, UP_END, [render_upcoming(u, i) for i, u in enumerate(upcoming)], "upcoming")
@@ -419,7 +379,6 @@ def main():
     urls = ["https://sillyspaces.com/", "https://sillyspaces.com/about.html"] + [f"https://sillyspaces.com/events/{e['slug']}.html" for e in events]
     (ROOT / "sitemap.xml").write_text('<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n'
         + "".join(f"  <url><loc>{u}</loc></url>\n" for u in urls) + "</urlset>\n", encoding="utf-8")
-    write_feed(events, upcoming, questions)
     # last, so the freshly written event pages get the stamp too
     stamp_assets()
     print(f"wrote {len(events)} event page(s) into events/")
@@ -429,8 +388,6 @@ def main():
     for u in upcoming:
         print(f"ok    {u['title']}: {u['when'] or 'no date'}, {'poster' if u['poster'] else 'no poster'}")
     print(f"wrote {len(upcoming)} upcoming card(s) into index.html")
-    print(f"wrote {len(questions)} question(s) into events.json")
-    print("wrote events.json")
 
 
 if __name__ == "__main__":

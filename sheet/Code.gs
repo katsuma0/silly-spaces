@@ -14,14 +14,9 @@
  * Every submit adds one row: when, name, email, status, source. Then the welcome email goes out.
  * Rows land in the first tab. Open the sheet in the Google Sheets app to read them on
  * your phone. When someone replies stop, change their Status cell to stopped by hand
- * and they are skipped from then on. When the app is out, put the download link in
- * APP_LINK below. If you ever edit this file, Deploy, Manage deployments, Edit,
+ * and they are skipped from then on. If you ever edit this file, Deploy, Manage deployments, Edit,
  * Version: New version, Deploy, or the change never goes live.
  */
-
-// Where the app can be downloaded. Empty means the app is not out yet, and the
-// welcome email says so instead of linking to it.
-var APP_LINK = "";
 
 var HEADERS = ["When", "Name", "Email", "Status", "Source"];
 var SUBJECT = "You're on the Silly Spaces list";
@@ -121,22 +116,15 @@ function sendWelcome(email, name) {
   MailApp.sendEmail({ to: email, name: FROM_NAME, replyTo: REPLY_TO, subject: SUBJECT, body: welcomeBody(name) });
 }
 
-// The welcome text. It changes once APP_LINK is filled in, so the same sign-up
-// gets the right story before and after the app is out. Greets by first name.
+// The welcome text. Greets by first name when there is one.
 function welcomeBody(name) {
   var first = String(name || "").trim().split(/\s+/)[0];
-  var app = APP_LINK
-    ? "The member part lives in the Silly Spaces app: your record of events, photos from the day, a question every two weeks, and a notification before the email even goes out. Get it here: " + APP_LINK
-    : "We're building a Silly Spaces app. That's where the member part lives: your record of events, photos from the day, a question every two weeks, and a notification before the email even goes out. The download link lands in this inbox the day it's out.";
-  var site = (APP_LINK ? "Upcoming events" : "Until then, upcoming events") + " and photos from past ones are at " + SITE;
   return [
     "Hi" + (first ? " " + first : "") + ",",
     "",
     "You're on the list. When the next event has a date, you get one email with the where and when.",
     "",
-    app,
-    "",
-    site,
+    "Upcoming events and photos from past ones are at " + SITE,
     "",
     "Silly Spaces, Markham, Ontario",
     STOP_LINE

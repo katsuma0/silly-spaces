@@ -70,7 +70,7 @@
 <main class="up">
   <a class="back-link" href="/">Back to the homepage</a>
   <h1>Update the site</h1>
-  <p>Add photos to a past event, put an upcoming event on the site or set the next question; each send opens a pull request you merge from the GitHub app, and the site updates a couple of minutes later.</p>
+  <p>Add photos to a past event, or put an upcoming event on the site; each send opens a pull request you merge from the GitHub app, and the site updates a couple of minutes later.</p>
 
   <section id="s-token" hidden>
     <h2>Connect this phone to GitHub</h2>
@@ -90,7 +90,6 @@
     <div class="modes" role="radiogroup" aria-label="What to send">
       <button type="button" role="radio" aria-checked="true" data-mode="past">Past event</button>
       <button type="button" role="radio" aria-checked="false" data-mode="upcoming">Upcoming</button>
-      <button type="button" role="radio" aria-checked="false" data-mode="question">Question</button>
     </div>
 
     <div id="m-past">
@@ -127,12 +126,6 @@
         <span>Done, take it off the site<small>Deletes the folder. Add its photos under Past event and it comes back as an archive item.</small></span>
       </label>
     </div>
-
-    <div id="m-question" hidden>
-      <p class="small" id="q-current">Loading the current question…</p>
-      <div class="field"><label for="q-text">Question <small>up to 300 characters</small></label><textarea id="q-text" maxlength="300" placeholder="what would a sesame street puppet of you look like?"></textarea></div>
-      <div class="field"><label for="q-date">Goes live</label><input id="q-date" type="date"></div>
-    </div>
   </section>
 
   <section id="s-photos" hidden>
@@ -158,7 +151,7 @@
 (function () {
   "use strict";
   var OWNER = "katsuma0", REPO = "silly-spaces", BASE = "main", DIR = "assets/photos";
-  var UP_DIR = "assets/upcoming", Q_DIR = "assets/questions";
+  var UP_DIR = "assets/upcoming";
   var API = "https://api.github.com/repos/" + OWNER + "/" + REPO;
   var LONG_EDGE = 1600, QUALITY = 0.82;
   var IMG = /\.(jpe?g|png|webp|gif|avif)$/i;
@@ -172,8 +165,6 @@
   var st = { folder: "", isNew: true, when: "", eventText: null, existing: [], thumbs: [], tiles: [] };
   /* The upcoming folder on screen. files is its listing on main, text its event.txt there, blob a new poster not yet sent. */
   var up = { folder: "", isNew: true, files: [], text: "\n", poster: "", posterRaw: "", blob: null, url: "" };
-  /* The question files already on main, so a resend of the same day is called a fix. */
-  var q = { files: [] };
 
   function gh(path, opts) {
     opts = opts || {};
@@ -242,12 +233,12 @@
   function setMode(m) {
     mode = m;
     modeBtns.forEach(function (b) { b.setAttribute("aria-checked", String(b.getAttribute("data-mode") === m)); });
-    show("m-past", m === "past"); show("m-upcoming", m === "upcoming"); show("m-question", m === "question");
+    show("m-past", m === "past"); show("m-upcoming", m === "upcoming");
     show("s-photos", m === "past");
     say("status", "");
     if (!loaded[m]) {
       loaded[m] = true;
-      (m === "past" ? loadEvents : m === "upcoming" ? loadUpcoming : loadQuestions)();
+      (m === "past" ? loadEvents : loadUpcoming)();
     }
     summary();
   }
@@ -570,54 +561,18 @@
     };
   }
 
-  /* ---- Question: one text file per question under assets/questions, named by the day it goes live ---- */
-  var QFILE = /^\d{4}-\d{2}-\d{2}\.txt$/;
+  /* ---- Dates ---- */
   function today() { return new Date().toLocaleDateString("en-CA"); }
   function longDate(d, withYear) {
     var o = { month: "long", day: "numeric" };
     if (withYear) o.year = "numeric";
     return new Date(d + "T12:00:00").toLocaleDateString("en-CA", o);
   }
-  function loadQuestions() {
-    $("q-date").value = today();
-    gh("/contents/" + Q_DIR + "?ref=" + BASE, { allow404: true }).then(function (list) {
-      q.files = (list || []).filter(function (f) { return f.type === "file" && QFILE.test(f.name); }).map(function (f) { return f.name; }).sort();
-      summary();
-      var newest = q.files[q.files.length - 1];
-      if (!newest) { $("q-current").textContent = "Current: none yet."; return null; }
-      return gh("/contents/" + Q_DIR + "/" + newest + "?ref=" + BASE).then(function (f) {
-        $("q-current").textContent = "Current: " + decode(f.content).split(/\r?\n/)[0].trim();
-      });
-    }).catch(function (e) {
-      $("q-current").textContent = "Current: could not load it.";
-      say("status", "Could not load the questions: " + e.message, true);
-    });
-  }
-  $("m-question").addEventListener("input", summary);
-  function questionJob() {
-    // only the first line of the file counts, so a line break typed in the box becomes a space
-    var text = $("q-text").value.trim().replace(/\s*\n\s*/g, " "), date = $("q-date").value;
-    if (!text) { say("status", "Write the question.", true); return null; }
-    if (text.length > 300) { say("status", "Keep the question under 300 characters.", true); return null; }
-    if (!/^\d{4}-\d{2}-\d{2}$/.test(date)) { say("status", "Pick the day it goes live.", true); return null; }
-    var name = date + ".txt", exists = q.files.indexOf(name) >= 0, when = longDate(date);
-    return {
-      tree: [{ path: Q_DIR + "/" + name, mode: "100644", type: "blob", content: text + "\n" }],
-      branch: "question/" + date + "-" + Date.now().toString(36),
-      message: (exists ? "fix: question for " : "feat: question for ") + when, noun: "file",
-      body: "Sent from the phone upload page: the question for " + when + " in " + Q_DIR + "/" + name + (exists ? ", replacing the one there" : "") + ". The build check puts it on the site and in the feed, merge once it is green.",
-      after: function () { if (!exists) { q.files.push(name); q.files.sort(); } }
-    };
-  }
 
   /* ---- Send step summary ---- */
   function summary() {
     var el = $("summary"), text = "";
     if (mode === "upcoming") text = upcomingSummary(upcomingPlan());
-    else if (mode === "question") {
-      var d = $("q-date").value;
-      if (d) text = "Writes " + Q_DIR + "/" + d + ".txt" + (q.files.indexOf(d + ".txt") >= 0 ? ", replacing the one there." : ".");
-    }
     el.textContent = text; el.hidden = !text;
   }
 
@@ -740,7 +695,7 @@
 
   $("send").addEventListener("click", function () {
     if (busy) return;
-    var job = mode === "past" ? pastJob() : mode === "upcoming" ? upcomingJob() : questionJob();
+    var job = mode === "past" ? pastJob() : upcomingJob();
     if (job) run(job);
   });
 
