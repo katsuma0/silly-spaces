@@ -1,6 +1,9 @@
 #!/usr/bin/env python3
 """Rebuild index.html and the event pages from the files under assets/.
 
+Upcoming and past events are written as slides between the events markers
+in index.html. The homepage carousel loops them.
+
 Past events are one folder each under assets/photos/. Paste photos into it and
 add an event.txt beside them:
 
@@ -53,10 +56,8 @@ ROOT = Path(__file__).resolve().parent
 PHOTOS = ROOT / "assets" / "photos"
 UPCOMING = ROOT / "assets" / "upcoming"
 INDEX = ROOT / "index.html"
-START = "        <!-- gallery:start -->"
-END = "        <!-- gallery:end -->"
-UP_START = "        <!-- upcoming:start -->"
-UP_END = "        <!-- upcoming:end -->"
+EV_START = "        <!-- events:start -->"
+EV_END = "        <!-- events:end -->"
 # Browsers can show these. HEIC from an iPhone is not on the list on purpose.
 IMAGE_TYPES = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".avif"}
 # Every photo is brought to this long edge so they all load and display at
@@ -69,10 +70,6 @@ THUMB_EDGE = 800
 # set to another language still writes English dates.
 MONTHS = ("January", "February", "March", "April", "May", "June", "July",
           "August", "September", "October", "November", "December")
-# The three icons on an upcoming card, the same ones the hand-written card used.
-CAL_ICON = '<svg viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="16" rx="2"/><path d="M3 10h18M8 3v4M16 3v4"/></svg>'
-CLOCK_ICON = '<svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><path d="M12 7v5l3 2"/></svg>'
-PIN_ICON = '<svg viewBox="0 0 24 24"><path d="M12 21s7-6 7-11a7 7 0 0 0-14 0c0 5 7 11 7 11z"/><circle cx="12" cy="10" r="2.5"/></svg>'
 
 
 def prepare_photo(p):
@@ -142,21 +139,16 @@ def read_event(folder):
 
 
 def render(ev, i):
-    delay = f' data-delay="{min(i, 5)}"' if i else ""
-    n = len(ev["photos"])
-    count = "No photos yet" if n == 0 else "1 photo" if n == 1 else f"{n} photos"
     cover = ev["thumbs"][0] if ev["photos"] else "/assets/photos/blank.svg"
-    # every line of event.txt is its own line on the card, nothing is cut off
-    lines = "\n".join(f"            <p>{escape(t)}</p>" for t in ev["paras"]) or "            <p></p>"
     date = f' data-date="{ev["date"]}"' if ev["date"] else ""
     nophoto = "" if ev["photos"] else " no-photos"
-    return f"""        <a class="gallery-item reveal{nophoto}" href="/events/{ev['slug']}.html"{delay}{date}>
+    desc = "&#10;".join(escape(t) for t in ev["paras"])
+    return f"""        <a class="slide{nophoto}" href="/events/{ev['slug']}.html" data-kind="past"{date} data-desc="{desc}">
           <div class="ph"><img src="{escape(cover)}" alt="" loading="lazy" decoding="async"></div>
-          <div class="body">
+          <div class="cap">
+            <span class="kicker">Past</span>
             <h3>{escape(ev['title'])}</h3>
             <span class="when">{escape(ev['when'])}</span>
-{lines}
-            <span class="count">{count}</span>
           </div>
         </a>"""
 
@@ -205,7 +197,7 @@ def read_upcoming(folder):
             fields[m.group(1).lower()] = m.group(2).strip()
     date = fields.get("date", "")
     poster = find_poster(folder)
-    size = Image.open(poster).size if poster else (0, 0)
+    size = Image.open(poster).size if poster and Image is not None else (0, 0)
     return {"slug": folder.name, "title": title, "date": date, "poster_size": size,
             "iso": date if long_date(date) else "",
             "when": long_date(date) or date,
@@ -221,30 +213,22 @@ def sort_upcoming(events):
 
 
 def render_upcoming(ev, i):
-    """One card in the upcoming grid, shaped like the hand-written one it replaces
-    so main.js and the calendar keep finding what they look for."""
-    # the first card already carried data-delay="1" by hand, so keep the stagger it had
-    delay = f' data-delay="{min(i + 1, 3)}"'
-    # only a real date gets data-date, which is what hides the card once the day is over
+    """One slide in the events carousel. A real date gets data-date, which is
+    what hides the slide once the day is over."""
     date = f' data-date="{ev["iso"]}"' if ev["iso"] else ""
-    cls = "card wide reveal" if ev["poster"] else "card reveal"
-    out = [f'        <article class="{cls}"{delay}{date}>']
-    if ev["poster"]:
-        out.append(f'          <div class="poster"><img src="{escape(ev["poster"])}" alt="Poster for {escape(ev["title"])}" width="{ev["poster_size"][0]}" height="{ev["poster_size"][1]}" loading="lazy" decoding="async"></div>')
-    out.append('          <div class="body">')
-    out.append(f'            <h3>{escape(ev["title"])}</h3>')
-    meta = [(icon, text) for icon, text in ((CAL_ICON, ev["when"]), (CLOCK_ICON, ev["time"]), (PIN_ICON, ev["where"])) if text]
-    if meta:
-        out.append('            <div class="meta">')
-        out += [f'              <span>{icon}{escape(text)}</span>' for icon, text in meta]
-        out.append('            </div>')
-    out += [f'            <p>{escape(t)}</p>' for t in ev["paras"]]
-    if ev["tags"]:
-        tags = "".join(f'<span class="tag{" free" if t.lower() == "free" else ""}">{escape(t)}</span>' for t in ev["tags"])
-        out.append(f'            <div class="actions">{tags}</div>')
-    out.append('          </div>')
-    out.append('        </article>')
-    return "\n".join(out)
+    cover = ev["poster"] or "/assets/photos/blank.svg"
+    nophoto = "" if ev["poster"] else " no-photos"
+    bits = [t for t in (ev["when"], ev["time"], ev["where"]) if t]
+    desc = "&#10;".join(escape(t) for t in ev["paras"])
+    tags = ",".join(ev["tags"])
+    return f"""        <article class="slide{nophoto}" data-kind="up"{date} data-desc="{desc}" data-tags="{escape(tags)}">
+          <div class="ph"><img src="{escape(cover)}" alt="" loading="lazy" decoding="async"></div>
+          <div class="cap">
+            <span class="kicker">Upcoming</span>
+            <h3>{escape(ev["title"])}</h3>
+            <span class="when">{escape(" · ".join(bits))}</span>
+          </div>
+        </article>"""
 
 
 
@@ -306,7 +290,7 @@ def render_event_page(ev, nav, foot, head):
   <section class="section event-page">
     <div class="wrap">
       <div class="prose">
-        <a class="back-link reveal" href="/#past">Back to past events</a>
+        <a class="back-link reveal" href="/#events">Back to events</a>
         <p class="eyebrow reveal">{escape(ev['when'])}</p>
         <h1 class="reveal">{escape(ev['title'])}</h1>
         <div class="reveal" data-delay="1">
@@ -364,8 +348,8 @@ def main():
     events = [e for e in (read_event(d) for d in folders) if e]
     upcoming = sort_upcoming([u for u in (read_upcoming(d) for d in folders_in(UPCOMING)) if u])
     html = INDEX.read_text(encoding="utf-8")
-    html = fill(html, START, END, [render(e, i) for i, e in enumerate(events)], "gallery")
-    html = fill(html, UP_START, UP_END, [render_upcoming(u, i) for i, u in enumerate(upcoming)], "upcoming")
+    slides = [render_upcoming(u, i) for i, u in enumerate(upcoming)] + [render(e, i) for i, e in enumerate(events)]
+    html = fill(html, EV_START, EV_END, slides, "events")
     INDEX.write_text(html, encoding="utf-8")
     # one page per event, written fresh each run so removed events disappear
     events_dir = ROOT / "events"

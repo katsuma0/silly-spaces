@@ -189,7 +189,7 @@ a, button { touch-action: manipulation; }
 
 /* Touch screens: no hover lifts that would stick after a tap, a short press instead */
 @media (hover: none) {
-  .card:hover, .member:hover, .social:hover, .gallery-item:hover, .btn:hover { transform: none; }
+  .card:hover, .member:hover, .social:hover, .gallery-item:hover, .btn:hover, .car-nav:hover { transform: none; }
   .gallery-item:hover img, .photo:hover img { transform: none; }
   .card:active, .member:active, .social:active, .gallery-item:active, .photo:active, .cal-item:active { transform: scale(0.985); transition-duration: 0.12s; }
 }
@@ -331,6 +331,52 @@ a, button { touch-action: manipulation; }
 .form-note { font-size: 14px; color: var(--muted); margin: 14px 0 0; text-align: center; }
 .form-note a { text-decoration: underline; text-underline-offset: 3px; }
 .honey { position: absolute; left: -9999px; }
+
+/* ---------- Event carousel ----------
+   Upcoming and past events share one strip. The script clones the ends so
+   next and previous wrap without a jump. */
+.carousel { position: relative; max-width: 1080px; margin: 0 auto; }
+.car-viewport { overflow: hidden; touch-action: pan-y; }
+.car-track { display: flex; align-items: flex-start; gap: 18px; transition: transform 0.7s var(--ease); will-change: transform; }
+.car-track.is-jump { transition: none; }
+.slide {
+  flex: 0 0 min(320px, 78vw); display: flex; flex-direction: column; gap: 12px;
+  text-decoration: none; color: inherit; opacity: 0.42;
+  transform: scale(0.94); transform-origin: center top;
+  transition: opacity 0.7s var(--ease), transform 0.7s var(--ease);
+}
+.slide.is-active { opacity: 1; transform: none; }
+.slide .ph { aspect-ratio: 4 / 3; overflow: hidden; border-radius: 14px; background: var(--surface); border: 1px solid var(--line); }
+.slide img { width: 100%; height: 100%; object-fit: cover; }
+.slide.no-photos .ph { background: var(--tint-blue); }
+.slide.no-photos img { object-fit: contain; padding: 18%; }
+.slide .cap { display: flex; flex-direction: column; gap: 2px; text-align: center; min-height: 4.8em; }
+.slide:not(.is-active) .cap { visibility: hidden; }
+.slide .kicker { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
+.slide h3 { font-size: 22px; line-height: 1.15; }
+.slide .when { font-size: 14px; color: var(--muted); }
+.slide[data-kind="up"].is-active .kicker { color: var(--blue); }
+.slide[data-kind="past"].is-active .kicker { color: var(--pink); }
+.car-nav {
+  position: absolute; top: 78px; z-index: 2; width: 42px; height: 42px; border-radius: 50%;
+  border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer;
+  font-size: 22px; display: grid; place-items: center;
+  transition: border-color var(--mid) var(--ease), color var(--mid) var(--ease);
+}
+.car-nav:hover { border-color: var(--text); }
+.car-nav.prev { left: 8px; }
+.car-nav.next { right: 8px; }
+.car-dots { display: flex; justify-content: center; gap: 2px; margin-top: 18px; }
+.car-dot { width: 28px; height: 28px; border: 0; border-radius: 50%; background: transparent; cursor: pointer; position: relative; }
+.car-dot::before { content: ""; position: absolute; left: 10px; top: 10px; width: 8px; height: 8px; border-radius: 50%; background: var(--line-strong); }
+.car-dot.on::before { background: var(--text); }
+.car-detail { max-width: 560px; margin: 8px auto 0; text-align: center; }
+.car-detail .kicker { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
+.car-detail h3 { font-size: clamp(28px, 4vw, 36px); }
+.car-detail .when { display: block; margin-top: 6px; color: var(--muted); font-size: 15px; }
+.car-detail p { margin: 12px 0 0; color: var(--muted); }
+.car-detail .actions { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.car-detail .btn-link { margin-top: 8px; }
 
 /* ---------- Gallery ---------- */
 .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
@@ -505,6 +551,7 @@ a, button { touch-action: manipulation; }
   .card h3 { font-size: 24px; }
   .grid { grid-template-columns: 1fr; }
   .gallery-item { flex-basis: 100%; }
+  .slide { flex-basis: 68vw; }
   .gallery-item.no-photos .ph { aspect-ratio: 5 / 2; }
   .photo-grid { grid-template-columns: 1fr 1fr; gap: 8px; }
   /* phone: the three socials stand in a row, email gets the full width under them */

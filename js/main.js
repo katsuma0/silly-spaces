@@ -220,13 +220,141 @@
 
   /* ---- Auto-hide upcoming events once their date has passed ---- */
   var today = new Date(); today.setHours(0, 0, 0, 0);
-  document.querySelectorAll("#upcoming [data-date]").forEach(function (card) {
+  document.querySelectorAll("#event-carousel .slide[data-kind='up'][data-date]").forEach(function (card) {
     var d = new Date(card.getAttribute("data-date") + "T23:59:59");
     if (d < today) card.remove();
   });
-  // a card with no date yet (still ??/??/??) has no data-date, so count what is left, not what had a date
+  // a slide with no date yet (still ??/??/??) has no data-date, so count what is left
   var emptyMsg = document.getElementById("no-events");
-  if (emptyMsg) emptyMsg.hidden = document.querySelectorAll("#upcoming .card").length > 0;
+  if (emptyMsg) emptyMsg.hidden = document.querySelectorAll("#event-carousel .slide").length > 0;
+
+  /* ---- Events carousel: one looping strip of upcoming and past ---- */
+  var carousel = document.getElementById("event-carousel");
+  if (carousel) {
+    var viewport = carousel.querySelector(".car-viewport");
+    var track = carousel.querySelector(".car-track");
+    var real = Array.prototype.filter.call(track.children, function (el) { return el.classList.contains("slide"); });
+    var n = real.length;
+    var detail = document.getElementById("car-detail");
+    var dotsWrap = document.getElementById("car-dots");
+    var current = n > 1 ? 1 : 0;
+    var dragged = false;
+
+    function esc(s) {
+      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
+    }
+    function paintDetail(slide) {
+      if (!detail || !slide) return;
+      var desc = slide.getAttribute("data-desc") || "";
+      var tags = (slide.getAttribute("data-tags") || "").split(",").filter(function (t) { return t.trim(); });
+      var html = "";
+      desc.split("\n").forEach(function (line) {
+        if (line.trim()) html += "<p>" + esc(line.trim()) + "</p>";
+      });
+      if (tags.length) {
+        html += '<div class="actions">' + tags.map(function (t) {
+          var name = t.trim();
+          return '<span class="tag' + (name.toLowerCase() === "free" ? " free" : "") + '">' + esc(name) + "</span>";
+        }).join("") + "</div>";
+      }
+      var href = slide.getAttribute("href");
+      if (href) html += '<a class="btn-link" href="' + esc(href) + '">See this event</a>';
+      detail.innerHTML = html;
+    }
+    if (n > 1) {
+      var head = real[n - 1].cloneNode(true);
+      var tail = real[0].cloneNode(true);
+      [head, tail].forEach(function (clone) {
+        clone.setAttribute("data-clone", "");
+        clone.setAttribute("aria-hidden", "true");
+        if (clone.tabIndex >= 0) clone.tabIndex = -1;
+      });
+      track.insertBefore(head, track.firstChild);
+      track.appendChild(tail);
+    }
+    function slides() { return track.children; }
+    function move(jump) {
+      var slide = slides()[current];
+      if (!slide) return;
+      var x = slide.offsetLeft - (viewport.clientWidth - slide.offsetWidth) / 2;
+      if (jump) track.classList.add("is-jump");
+      track.style.transform = "translate3d(" + (-Math.round(x)) + "px,0,0)";
+      if (jump) {
+        track.getBoundingClientRect();
+        track.classList.remove("is-jump");
+      }
+      Array.prototype.forEach.call(slides(), function (el, i) {
+        el.classList.toggle("is-active", i === current);
+      });
+      paintDetail(slide);
+      var dotIndex = current <= 0 ? n - 1 : current > n ? 0 : current - 1;
+      if (n === 1) dotIndex = 0;
+      if (dotsWrap) {
+        Array.prototype.forEach.call(dotsWrap.children, function (dot, i) {
+          dot.classList.toggle("on", i === dotIndex);
+          if (i === dotIndex) dot.setAttribute("aria-current", "true");
+          else dot.removeAttribute("aria-current");
+        });
+      }
+    }
+    if (dotsWrap) {
+      real.forEach(function (slide, i) {
+        var b = document.createElement("button");
+        b.type = "button";
+        b.className = "car-dot";
+        var title = slide.querySelector("h3");
+        b.setAttribute("aria-label", title ? title.textContent.trim() : "Event " + (i + 1));
+        b.addEventListener("click", function () { current = n > 1 ? i + 1 : 0; move(false); });
+        dotsWrap.appendChild(b);
+      });
+    }
+    function step(dir) {
+      if (n < 2) return;
+      current += dir;
+      move(false);
+    }
+    track.addEventListener("transitionend", function (e) {
+      if (e.target !== track || e.propertyName !== "transform") return;
+      if (current === 0) { current = n; move(true); }
+      else if (current === n + 1) { current = 1; move(true); }
+    });
+    var prevBtn = carousel.querySelector(".prev");
+    var nextBtn = carousel.querySelector(".next");
+    if (prevBtn) prevBtn.addEventListener("click", function () { step(-1); });
+    if (nextBtn) nextBtn.addEventListener("click", function () { step(1); });
+    if (n < 2) carousel.querySelectorAll(".car-nav").forEach(function (b) { b.hidden = true; });
+    var startX = null;
+    viewport.addEventListener("pointerdown", function (e) {
+      if (e.pointerType === "mouse" && e.button !== 0) return;
+      startX = e.clientX;
+      dragged = false;
+    });
+    viewport.addEventListener("pointerup", function (e) {
+      if (startX === null) return;
+      var dx = e.clientX - startX;
+      startX = null;
+      if (Math.abs(dx) > 40) { dragged = true; step(dx < 0 ? 1 : -1); }
+    });
+    viewport.addEventListener("pointercancel", function () { startX = null; });
+    track.addEventListener("click", function (e) {
+      if (!dragged) return;
+      e.preventDefault();
+      dragged = false;
+    });
+    carousel.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowLeft") { e.preventDefault(); step(-1); }
+      if (e.key === "ArrowRight") { e.preventDefault(); step(1); }
+    });
+    carousel.goTo = function (el) {
+      var idx = real.indexOf(el);
+      if (idx < 0) return;
+      current = n > 1 ? idx + 1 : 0;
+      move(false);
+      carousel.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
+    };
+    window.addEventListener("resize", function () { move(true); });
+    move(true);
+  }
 
   /* ---- Calendar toggle: closed by default so Upcoming stays one card ---- */
   var calToggle = document.querySelector(".cal-toggle");
@@ -254,10 +382,10 @@
   var cal = document.getElementById("calendar");
   if (cal) {
     var events = [];
-    document.querySelectorAll("#upcoming .card[data-date]").forEach(function (c) {
+    document.querySelectorAll("#event-carousel .slide[data-kind='up'][data-date]:not([data-clone])").forEach(function (c) {
       events.push({ date: c.getAttribute("data-date"), title: c.querySelector("h3").textContent.trim(), kind: "up", el: c });
     });
-    document.querySelectorAll("#past .gallery-item[data-date]").forEach(function (g) {
+    document.querySelectorAll("#event-carousel .slide[data-kind='past'][data-date]:not([data-clone])").forEach(function (g) {
       events.push({ date: g.getAttribute("data-date"), title: g.querySelector("h3").textContent.trim(), kind: "past", el: g });
     });
     var byDay = {};
@@ -304,8 +432,10 @@
       });
     }
     function open(e) {
-      if (e.kind === "past") { e.el.click(); }
-      else { e.el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" }); }
+      if (e.kind === "past" && e.el.getAttribute("href")) { window.location.href = e.el.getAttribute("href"); return; }
+      var box = document.getElementById("event-carousel");
+      if (box && box.goTo) box.goTo(e.el);
+      else e.el.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
     }
     cal.querySelectorAll(".cal-nav").forEach(function (b) {
       b.addEventListener("click", function () { view.setMonth(view.getMonth() + parseInt(b.getAttribute("data-dir"), 10)); render(); });
