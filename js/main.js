@@ -64,6 +64,99 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeMenu(); });
   }
 
+  /* ---- Filmed logo: play once, drop the black, and hold the settled
+     mark once the last heartbeat has finished. ---- */
+  if (!reduce) {
+    document.querySelectorAll(".logo-anim").forEach(function (video) {
+      var mark = video.closest(".mark");
+      var canvas = mark && mark.querySelector(".logo-canvas");
+      if (!mark || !canvas) return;
+      var ctx = canvas.getContext("2d", { willReadFrequently: true });
+      if (!ctx) return;
+      var playing = false;
+      var held = false;
+      var easing = false;
+      var easeFrom = 2.62;
+      var holdAt = 3;
+      var span = holdAt - easeFrom;
+      // ease-out cubic starts at normal speed and arrives at rest, so the
+      // last heartbeat slows into the settled logo instead of cutting off
+      var wall = span * 3;
+      var easeAt = 0;
+      var hiddenAt = 0;
+      video.loop = false;
+      // letters spring widest near the start; this crop keeps that and the rest
+      var crop = { x: 280, y: 140, w: 1360, h: 800 };
+      function size() {
+        var rect = canvas.getBoundingClientRect();
+        var dpr = Math.min(window.devicePixelRatio || 1, 2);
+        var w = Math.max(1, Math.round(rect.width * dpr));
+        var h = Math.max(1, Math.round(rect.height * dpr));
+        if (canvas.width !== w || canvas.height !== h) {
+          canvas.width = w;
+          canvas.height = h;
+        }
+      }
+      function draw() {
+        size();
+        ctx.drawImage(video, crop.x, crop.y, crop.w, crop.h, 0, 0, canvas.width, canvas.height);
+        var img = ctx.getImageData(0, 0, canvas.width, canvas.height);
+        var d = img.data;
+        for (var i = 0; i < d.length; i += 4) {
+          var m = Math.max(d[i], d[i + 1], d[i + 2]);
+          if (m < 22) d[i + 3] = 0;
+          else if (m < 56) d[i + 3] = Math.round((m - 22) / 34 * 255);
+        }
+        ctx.putImageData(img, 0, 0);
+        if (!mark.classList.contains("is-video")) mark.classList.add("is-video");
+      }
+      function frame() {
+        if (held || !playing) return;
+        if (video.readyState >= 2) {
+          if (!easing && video.currentTime >= easeFrom) {
+            easing = true;
+            easeAt = performance.now();
+            if (video.currentTime > easeFrom + 0.04) video.currentTime = easeFrom;
+          }
+          if (easing) {
+            var t = Math.min(1, (performance.now() - easeAt) / (wall * 1000));
+            var rate = (span * 3 * (1 - t) * (1 - t)) / wall;
+            if (t >= 1 || video.currentTime >= holdAt) {
+              held = true;
+              video.playbackRate = 1;
+              video.pause();
+              draw();
+              return;
+            }
+            video.playbackRate = Math.max(0.07, rate);
+          }
+          draw();
+        }
+        requestAnimationFrame(frame);
+      }
+      function start() {
+        if (playing || held) return;
+        playing = true;
+        requestAnimationFrame(frame);
+      }
+      video.addEventListener("playing", start);
+      video.addEventListener("pause", function () { if (!held) playing = false; });
+      var play = video.play();
+      if (play && play.then) play.then(start, function () {});
+      document.addEventListener("visibilitychange", function () {
+        if (held) return;
+        if (document.hidden) {
+          hiddenAt = performance.now();
+          video.pause();
+        } else {
+          if (easing && hiddenAt) easeAt += performance.now() - hiddenAt;
+          hiddenAt = 0;
+          video.play();
+        }
+      });
+    });
+  }
+
   /* ---- Hero logo: the two letters ease apart a touch as the hero
      scrolls out of view. --p is 0 at the top and 1 once the hero is gone. ---- */
   var heroMark = document.querySelector(".hero .mark");
@@ -245,12 +338,8 @@
     }
     function paintDetail(slide) {
       if (!detail || !slide) return;
-      var desc = slide.getAttribute("data-desc") || "";
       var tags = (slide.getAttribute("data-tags") || "").split(",").filter(function (t) { return t.trim(); });
       var html = "";
-      desc.split("\n").forEach(function (line) {
-        if (line.trim()) html += "<p>" + esc(line.trim()) + "</p>";
-      });
       if (tags.length) {
         html += '<div class="actions">' + tags.map(function (t) {
           var name = t.trim();

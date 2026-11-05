@@ -148,7 +148,6 @@ def render(ev, i):
           <div class="cap">
             <span class="kicker">Past</span>
             <h3>{escape(ev['title'])}</h3>
-            <span class="when">{escape(ev['when'])}</span>
           </div>
         </a>"""
 
@@ -218,7 +217,6 @@ def render_upcoming(ev, i):
     date = f' data-date="{ev["iso"]}"' if ev["iso"] else ""
     cover = ev["poster"] or "/assets/photos/blank.svg"
     nophoto = "" if ev["poster"] else " no-photos"
-    bits = [t for t in (ev["when"], ev["time"], ev["where"]) if t]
     desc = "&#10;".join(escape(t) for t in ev["paras"])
     tags = ",".join(ev["tags"])
     return f"""        <article class="slide{nophoto}" data-kind="up"{date} data-desc="{desc}" data-tags="{escape(tags)}">
@@ -226,7 +224,6 @@ def render_upcoming(ev, i):
           <div class="cap">
             <span class="kicker">Upcoming</span>
             <h3>{escape(ev["title"])}</h3>
-            <span class="when">{escape(" · ".join(bits))}</span>
           </div>
         </article>"""
 

@@ -155,6 +155,14 @@ a, button { touch-action: manipulation; }
 @keyframes s-in-left { from { opacity: 0; transform: translate(-12%, 5%) rotate(-5deg); } to { opacity: 1; transform: none; } }
 @keyframes s-in-right { from { opacity: 0; transform: translate(12%, -5%) rotate(5deg); } to { opacity: 1; transform: none; } }
 .brand img { width: 30px; height: 25px; }
+/* The filmed logo sits on black. The canvas knocks that black out, so the
+   box is the whole frame: wide enough for the letters to spring apart. */
+.logo-anim { position: absolute; inset: 0; width: 100%; height: 100%; opacity: 0; pointer-events: none; }
+.logo-canvas { display: none; }
+.mark.is-video { width: min(520px, 88vw); aspect-ratio: 1360 / 800; }
+.mark.is-video .mark-s { display: none; }
+.mark.is-video .logo-canvas { display: block; position: absolute; inset: 0; width: 100%; height: 100%; }
+.hero .mark.is-video { margin-bottom: 8px; }
 
 /* ---------- Hero ---------- */
 .hero { min-height: calc(100vh - var(--nav-h)); min-height: calc(100svh - var(--nav-h)); display: flex; align-items: center; justify-content: center; padding: 48px 0 64px; text-align: center; }
@@ -350,7 +358,7 @@ a, button { touch-action: manipulation; }
 .slide img { width: 100%; height: 100%; object-fit: cover; }
 .slide.no-photos .ph { background: var(--tint-blue); }
 .slide.no-photos img { object-fit: contain; padding: 18%; }
-.slide .cap { display: flex; flex-direction: column; gap: 2px; text-align: center; min-height: 4.8em; }
+.slide .cap { display: flex; flex-direction: column; gap: 2px; text-align: center; min-height: 3.4em; }
 .slide:not(.is-active) .cap { visibility: hidden; }
 .slide .kicker { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); }
 .slide h3 { font-size: 22px; line-height: 1.15; }
