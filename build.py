@@ -2,7 +2,7 @@
 """Rebuild index.html and the event pages from the files under assets/.
 
 Upcoming and past events are written as slides between the events markers
-in index.html. The homepage carousel loops them.
+in index.html. The homepage loops them in a row, upcoming in the middle.
 
 Past events are one folder each under assets/photos/. Paste photos into it and
 add an event.txt beside them:
@@ -39,11 +39,31 @@ in, anything over 1600 px on the long edge is shrunk, metadata is
 dropped. Needs Pillow (pip install pillow); without it photos are left
 as they are.
 
+Partners are listed in assets/partners.txt, one company per block:
+
+    line 1   company name
+    then     score: 4.9
+             event: title or folder slug of the event you did together
+             why: why they have that face
+
+The homepage ranks them by score. Tap a name for the event and the why.
+
+Bounties are one folder each under assets/bounties/, with a bounty.txt
+and a poster image (poster.jpg, or the first image in the folder):
+
+    line 1   title
+    rest     what we need, as many lines as you want
+
+The poster is a flier pinned to the board. Clicking it zooms in;
+"I can help" on the open flier mails us with that title.
+
 Nothing outside the markers in index.html is touched.
 """
 from html import escape
 from pathlib import Path
+from urllib.parse import quote
 import datetime
+import hashlib
 import re
 import sys
 
@@ -56,8 +76,15 @@ ROOT = Path(__file__).resolve().parent
 PHOTOS = ROOT / "assets" / "photos"
 UPCOMING = ROOT / "assets" / "upcoming"
 INDEX = ROOT / "index.html"
+PARTNERS = ROOT / "assets" / "partners.txt"
+BOUNTY = ROOT / "assets" / "bounties"
 EV_START = "        <!-- events:start -->"
 EV_END = "        <!-- events:end -->"
+PT_START = "        <!-- partners:start -->"
+PT_END = "        <!-- partners:end -->"
+BN_START = "        <!-- bounties:start -->"
+BN_END = "        <!-- bounties:end -->"
+MAIL = "sillyspacesww@gmail.com"
 # Browsers can show these. HEIC from an iPhone is not on the list on purpose.
 IMAGE_TYPES = {".jpg", ".jpeg", ".png", ".webp", ".gif", ".svg", ".avif"}
 # Every photo is brought to this long edge so they all load and display at
@@ -230,6 +257,159 @@ def render_upcoming(ev, i):
 
 
 
+def read_partners():
+    """Companies in assets/partners.txt. Each block is a name, then score, event, why.
+    The homepage list is ranked highest score first."""
+    if not PARTNERS.exists():
+        return []
+    blocks, cur = [], []
+    for line in PARTNERS.read_text(encoding="utf-8-sig").splitlines():
+        if line.startswith("#"):
+            continue
+        if not line.strip():
+            if cur:
+                blocks.append(cur)
+                cur = []
+            continue
+        cur.append(line)
+    if cur:
+        blocks.append(cur)
+    out = []
+    for block in blocks:
+        name = block[0].strip()
+        if not name:
+            continue
+        fields = {}
+        for line in block[1:]:
+            m = re.match(r"\s*([A-Za-z]+)\s*:\s*(.*)$", line)
+            if m:
+                fields[m.group(1).lower()] = m.group(2).strip()
+        out.append({
+            "name": name,
+            "score": fields.get("score", ""),
+            "event": fields.get("event", ""),
+            "why": fields.get("why", ""),
+        })
+    def rank(p):
+        try:
+            return float(p["score"])
+        except (TypeError, ValueError):
+            return float("-inf")
+    out.sort(key=rank, reverse=True)
+    return out
+
+
+def _fold(s):
+    return re.sub(r"['’`]", "'", (s or "")).strip().lower()
+
+
+def find_collab(ref, events, upcoming):
+    """Match an event: line to a past or upcoming event by slug or title."""
+    if not ref:
+        return None
+    key = _fold(ref)
+    for e in events:
+        if e["slug"].lower() == key or _fold(e["title"]) == key:
+            return e["title"], f"/events/{e['slug']}.html"
+    for u in upcoming:
+        if u["slug"].lower() == key or _fold(u["title"]) == key:
+            return u["title"], "/#events"
+    return ref, "/#events"
+
+
+def trust_face(raw):
+    """Green over 4, red under 2, yellow in between."""
+    try:
+        n = float(raw)
+    except (TypeError, ValueError):
+        n = 3
+    if n > 4:
+        return "good", "good"
+    if n < 2:
+        return "bad", "poor"
+    return "mid", "okay"
+
+
+def render_partner(p, events, upcoming):
+    face, rating = trust_face(p["score"])
+    label = f"{p['name']}, {rating}"
+    rows = []
+    found = find_collab(p["event"], events, upcoming) if p["event"] else None
+    if found:
+        title, href = found
+        rows.append(f'<p><span class="partner-label">Event</span> <a href="{escape(href)}">{escape(title)}</a></p>')
+    if p["why"]:
+        rows.append(f'<p><span class="partner-label">Why</span> {escape(p["why"])}</p>')
+    panel = "".join(rows)
+    return (
+        f'        <li>\n'
+        f'          <details class="partner">\n'
+        f'            <summary aria-label="{escape(label)}">\n'
+        f'              <span class="partner-copy"><h3>{escape(p["name"])}</h3><span class="plus"></span></span>\n'
+        f'              <span class="trust"><img src="/assets/trust-{face}.png" alt="" width="64" height="64"></span>\n'
+        f'            </summary>\n'
+            f'            <div class="answer partner-panel">{panel}</div>\n'
+        f'          </details>\n'
+        f'        </li>'
+    )
+
+
+def read_bounty(folder):
+    """One help-wanted poster from assets/bounties/<slug>/bounty.txt."""
+    info = folder / "bounty.txt"
+    if not info.exists():
+        print(f"skip  bounties/{folder.name}: no bounty.txt")
+        return None
+    lines = info.read_text(encoding="utf-8-sig").splitlines()
+    title = lines[0].strip() if lines else folder.name
+    paras = [l.strip() for l in lines[1:] if l.strip()]
+    poster = find_poster(folder)
+    return {
+        "slug": folder.name,
+        "title": title,
+        "paras": paras,
+        "poster": f"/assets/bounties/{folder.name}/{poster.name}" if poster else None,
+    }
+
+
+def bounty_spot(slug, i):
+    """A stable off-centre pin so each flier looks dropped on, not lined up."""
+    h = int(hashlib.md5(f"{slug}:{i}".encode()).hexdigest(), 16)
+    slots = (
+        (16, 12, -3.2),
+        (54, 18, 2.4),
+        (8, 46, -1.6),
+        (48, 50, 3.1),
+        (28, 28, -2.8),
+        (62, 40, 1.4),
+    )
+    x, y, tilt = slots[i % len(slots)]
+    x = max(6, min(68, x + (h % 9) - 4))
+    y = max(8, min(56, y + ((h >> 4) % 9) - 4))
+    tilt = round(tilt + ((h >> 8) % 17) / 10 - 0.8, 1)
+    return x, y, tilt
+
+
+def render_bounty(b, i):
+    """A flier pinned to the board. Clicking it zooms in; the mail is on the open flier."""
+    subject = quote(f"Bounty: {b['title']}")
+    body = quote(f"I can help with: {b['title']}")
+    href = f"mailto:{MAIL}?subject={subject}&body={body}"
+    alt = b["title"]
+    if b["paras"]:
+        alt = f"{b['title']} — {b['paras'][0]}"
+    src = b["poster"] or ""
+    x, y, tilt = bounty_spot(b["slug"], i)
+    return (
+        f'        <article class="bounty" style="--x:{x}%;--y:{y}%;--tilt:{tilt}deg">\n'
+        f'          <button type="button" class="bounty-flier" data-src="{escape(src)}" data-mail="{href}" aria-label="Open bounty: {escape(b["title"])}">\n'
+        f'            <span class="pin" aria-hidden="true"></span>\n'
+        f'            <img src="{escape(src)}" alt="{escape(alt)}">\n'
+        f'          </button>\n'
+        f'        </article>'
+    )
+
+
 def fill(html, start, end, lines, what):
     """Put lines between a pair of marker comments and leave the rest of the page alone."""
     a, b = html.find(start), html.find(end)
@@ -347,6 +527,12 @@ def main():
     html = INDEX.read_text(encoding="utf-8")
     slides = [render_upcoming(u, i) for i, u in enumerate(upcoming)] + [render(e, i) for i, e in enumerate(events)]
     html = fill(html, EV_START, EV_END, slides, "events")
+    partners = read_partners()
+    partner_lines = [render_partner(p, events, upcoming) for p in partners]
+    html = fill(html, PT_START, PT_END, partner_lines, "partners")
+    bounties = [b for b in (read_bounty(d) for d in folders_in(BOUNTY)) if b]
+    bounty_lines = [render_bounty(b, i) for i, b in enumerate(bounties)]
+    html = fill(html, BN_START, BN_END, bounty_lines, "bounties")
     INDEX.write_text(html, encoding="utf-8")
     # one page per event, written fresh each run so removed events disappear
     events_dir = ROOT / "events"
@@ -369,6 +555,10 @@ def main():
     for u in upcoming:
         print(f"ok    {u['title']}: {u['when'] or 'no date'}, {'poster' if u['poster'] else 'no poster'}")
     print(f"wrote {len(upcoming)} upcoming card(s) into index.html")
+    print(f"wrote {len(partners)} partner(s) into index.html")
+    print(f"wrote {len(bounties)} bounty(s) into index.html")
+    for b in bounties:
+        print(f"ok    {b['title']}: {'poster' if b['poster'] else 'no poster'}")
 
 
 if __name__ == "__main__":

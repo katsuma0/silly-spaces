@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&display=optional">
-  <link rel="stylesheet" href="/css/style.css?v=26b14421">
+  <link rel="stylesheet" href="/css/style.css?v=f9f2c4fa">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -40,6 +40,8 @@
     <a class="brand" href="/" aria-label="Silly Spaces home"><img src="/assets/logo.svg" alt="" width="30" height="25" decoding="async"> Silly Spaces</a>
     <ul class="nav-links" id="nav-links">
       <li><a href="/#events">Our Silly Spaces</a></li>
+      <li><a href="/#partners">Partners</a></li>
+      <li><a href="/#bounty">Bounty board</a></li>
       <li><a href="/#join">Join</a></li>
       <li><a href="/#faq">FAQ</a></li>
       <li><a href="/about.html">About</a></li>
@@ -58,11 +60,14 @@
 
   <!-- Hero -->
   <section class="hero">
+    <img class="scene-fig scene-fig-surgeon" src="/assets/ss-surgeon.png" alt="" width="244" height="262" decoding="async" aria-hidden="true">
+    <img class="scene-fig scene-fig-grand" src="/assets/ss-coolgrand.png" alt="" width="196" height="278" decoding="async" aria-hidden="true">
+    <img class="scene-fig scene-fig-quebec" src="/assets/ss-quebecois.png" alt="" width="356" height="418" decoding="async" aria-hidden="true">
     <div class="wrap">
-      <div class="mark hero-logo" role="img" aria-label="Silly Spaces logo">
+      <div class="mark hero-logo has-logo-video" role="img" aria-label="Silly Spaces logo">
         <span class="mark-s mark-blue"><img src="/assets/logo-blue.svg" alt="" width="876" height="741" decoding="async"></span>
         <span class="mark-s mark-pink"><img src="/assets/logo-pink.svg" alt="" width="876" height="741" decoding="async"></span>
-        <video class="logo-anim" src="/assets/logo-anim.mp4?v=2" muted playsinline autoplay preload="auto"></video>
+        <video class="logo-anim" src="/assets/logo-anim.mp4?v=3" muted playsinline autoplay preload="auto"></video>
         <canvas class="logo-canvas" aria-hidden="true"></canvas>
       </div>
       <h1><span class="blue">Silly</span> <span class="pink">Spaces</span></h1>
@@ -75,7 +80,7 @@
     </div>
   </section>
 
-  <!-- Events: upcoming and past, one looping carousel -->
+  <!-- Events: looping strip, upcoming starts in the middle -->
   <section class="section" id="events">
     <div class="wrap">
       <div class="section-head reveal">
@@ -95,29 +100,29 @@
             <h3>The Battle Of Borders (B.O.B)</h3>
           </div>
         </article>
-        <a class="slide" href="/events/2026-08-29-finger-painting.html" data-kind="past" data-date="2026-08-29" data-desc="What? Fingerpainting the waterfront on one big canvas.&#10;Why? To reclaim a lost art form held hostage by toddlers.">
-          <div class="ph"><img src="/assets/photos/2026-08-29-finger-painting/thumbs/01.jpg" alt="" loading="lazy" decoding="async"></div>
+        <a class="slide" href="/events/2026-08-29-finger-painting.html" data-kind="past" data-date="2026-08-29" data-desc="Fingerpanting the waterfront on one massive canvas.">
+          <div class="ph"><img src="/assets/photos/2026-08-29-finger-painting/00-group.jpg" alt="" loading="lazy" decoding="async"></div>
           <div class="cap">
             <span class="kicker">Past</span>
-            <h3>Finger painting the waterfront</h3>
+            <h3>F&#x27;ing the Front</h3>
           </div>
         </a>
-        <a class="slide no-photos" href="/events/2026-08-04-footy.html" data-kind="past" data-date="2026-08-04" data-desc="What? Chalk up a soccer field and play.&#10;Why? The streets are where legends are born.">
-          <div class="ph"><img src="/assets/photos/blank.svg" alt="" loading="lazy" decoding="async"></div>
+        <a class="slide" href="/events/2026-08-04-footy.html" data-kind="past" data-date="2026-08-04" data-desc="What? Chalk up a soccer field and play.&#10;Why? The streets are where legends are born.">
+          <div class="ph"><img src="/assets/photos/2026-08-04-footy/01.jpg" alt="" loading="lazy" decoding="async"></div>
           <div class="cap">
             <span class="kicker">Past</span>
-            <h3>Footy in da City</h3>
+            <h3>Footy in Da City</h3>
           </div>
         </a>
-        <a class="slide" href="/events/2026-07-09-humrpferftc.html" data-kind="past" data-date="2026-07-09" data-desc="What? A phone-less expedition.&#10;Why? Historic Unfertilized Mosquito Research Phoneless Fun Expedition Race For The Cure.">
-          <div class="ph"><img src="/assets/photos/2026-07-09-humrpferftc/thumbs/01-cn-tower.jpg" alt="" loading="lazy" decoding="async"></div>
+        <a class="slide" href="/events/2026-07-09-humrpferftc.html" data-kind="past" data-date="2026-07-09" data-desc="Historic Unfertilized Mosquito Research Phoneless Fun Expedition Race For The Cure">
+          <div class="ph"><img src="/assets/photos/2026-07-09-humrpferftc/00-path.jpg" alt="" loading="lazy" decoding="async"></div>
           <div class="cap">
             <span class="kicker">Past</span>
             <h3>H.U.M.R.P.F.E.R.F.T.C.</h3>
           </div>
         </a>
-        <a class="slide" href="/events/2026-06-27-train-aboard.html" data-kind="past" data-date="2026-06-27" data-desc="What? Play board games on the train.&#10;Why? There’s no way of knowing.">
-          <div class="ph"><img src="/assets/photos/2026-06-27-train-aboard/thumbs/01.jpg" alt="" loading="lazy" decoding="async"></div>
+        <a class="slide" href="/events/2026-06-27-train-aboard.html" data-kind="past" data-date="2026-06-27" data-desc="Playing board games on the train.">
+          <div class="ph"><img src="/assets/photos/2026-06-27-train-aboard/00-chess.jpg" alt="" loading="lazy" decoding="async"></div>
           <div class="cap">
             <span class="kicker">Past</span>
             <h3>Train A’Boarddd</h3>
@@ -129,7 +134,6 @@
       <button class="car-nav next" type="button" aria-label="Next event">&#8250;</button>
     </div>
     <div class="wrap">
-      <div class="car-dots" id="car-dots"></div>
       <div class="car-detail" id="car-detail"></div>
       <p class="empty reveal" id="no-events" hidden>Nothing on the calendar right now. <a href="#join">Join the list</a> and you'll hear first.</p>
       <div class="reveal" style="text-align:center"><button class="cal-toggle btn-link" type="button" aria-expanded="false" aria-controls="calendar">Show the calendar</button></div>
@@ -145,6 +149,85 @@
       </div>
       <div class="section-foot reveal"><a class="btn-link" href="#join">Want a heads up on new events? Join the list</a></div>
     </div>
+  </section>
+
+  <!-- Partners: companies, each face opens the event we did together -->
+  <section class="section" id="partners">
+    <div class="wrap">
+      <div class="section-head reveal">
+        <p class="eyebrow">Partners</p>
+        <h2>In good company</h2>
+        <p>Tap a name for the event we did together, and why they have that face.</p>
+      </div>
+      <ul class="partner-list reveal">
+        <!-- partners:start -->
+        <li>
+          <details class="partner">
+            <summary aria-label="Biidaasige Park, good">
+              <span class="partner-copy"><h3>Biidaasige Park</h3><span class="plus"></span></span>
+              <span class="trust"><img src="/assets/trust-good.png" alt="" width="64" height="64"></span>
+            </summary>
+            <div class="answer partner-panel"><p><span class="partner-label">Event</span> <a href="/events/2026-08-29-finger-painting.html">F&#x27;ing the Front</a></p><p><span class="partner-label">Why</span> beautiful park (yumm)</p></div>
+          </details>
+        </li>
+        <li>
+          <details class="partner">
+            <summary aria-label="Nathan Philips Square, good">
+              <span class="partner-copy"><h3>Nathan Philips Square</h3><span class="plus"></span></span>
+              <span class="trust"><img src="/assets/trust-good.png" alt="" width="64" height="64"></span>
+            </summary>
+            <div class="answer partner-panel"><p><span class="partner-label">Event</span> <a href="/events/2026-08-04-footy.html">Footy in Da City</a></p><p><span class="partner-label">Why</span> a fun dirty</p></div>
+          </details>
+        </li>
+        <li>
+          <details class="partner">
+            <summary aria-label="TTC, okay">
+              <span class="partner-copy"><h3>TTC</h3><span class="plus"></span></span>
+              <span class="trust"><img src="/assets/trust-mid.png" alt="" width="64" height="64"></span>
+            </summary>
+            <div class="answer partner-panel"><p><span class="partner-label">Event</span> <a href="/events/2026-06-27-train-aboard.html">Train A’Boarddd</a></p><p><span class="partner-label">Why</span> only one sideye by rush-hour patrons</p></div>
+          </details>
+        </li>
+        <!-- partners:end -->
+      </ul>
+    </div>
+  </section>
+
+  <!-- Bounty board: posters of what we need help with. Email us to take one. -->
+  <section class="section" id="bounty">
+    <div class="wrap">
+      <div class="section-head bounty-head reveal">
+        <p class="eyebrow">Help wanted</p>
+        <h2>Bounty board</h2>
+        <ol class="bounty-how">
+          <li><span class="n">01</span> Tap a flier</li>
+          <li><span class="n">02</span> See what we need</li>
+          <li><span class="n">03</span> Say you can help</li>
+        </ol>
+      </div>
+      <div class="bounty-board reveal">
+        <article class="bounty bounty-blank" style="--x:58%;--y:10%;--tilt:3.4deg;--w:142px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
+        <article class="bounty bounty-blank" style="--x:74%;--y:42%;--tilt:-2.6deg;--w:118px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
+        <article class="bounty bounty-blank" style="--x:40%;--y:48%;--tilt:2.1deg;--w:128px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
+        <article class="bounty bounty-blank" style="--x:6%;--y:52%;--tilt:-3.1deg;--w:110px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
+        <article class="bounty bounty-blank" style="--x:62%;--y:58%;--tilt:1.6deg;--w:124px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
+        <!-- bounties:start -->
+        <article class="bounty" style="--x:15%;--y:14%;--tilt:-3.8deg">
+          <button type="button" class="bounty-flier" data-src="/assets/bounties/five-quebecois/poster.jpg" data-mail="mailto:sillyspacesww@gmail.com?subject=Bounty%3A%20Five%20Quebecois&body=I%20can%20help%20with%3A%20Five%20Quebecois" aria-label="Open bounty: Five Quebecois">
+            <span class="pin" aria-hidden="true"></span>
+            <img src="/assets/bounties/five-quebecois/poster.jpg" alt="Five Quebecois — that play volleyball and live near the ON/QC border">
+          </button>
+        </article>
+        <!-- bounties:end -->
+      </div>
+    </div>
+    <dialog class="bounty-zoom" id="bounty-zoom" aria-label="Bounty">
+      <img alt="">
+      <div class="bounty-zoom-bar">
+        <a class="btn btn-primary bounty-zoom-help" tabindex="-1">I can help</a>
+      </div>
+      <button class="bounty-zoom-close" type="button" aria-label="Close">&times;</button>
+    </dialog>
   </section>
 
   <!-- Join -->
@@ -221,6 +304,8 @@
       <span>&copy; 2026 Silly Spaces</span>
       <ul>
         <li><a href="/#events">Our Silly Spaces</a></li>
+        <li><a href="/#partners">Partners</a></li>
+        <li><a href="/#bounty">Bounty board</a></li>
         <li><a href="/#join">Join</a></li>
         <li><a href="/#faq">FAQ</a></li>
         <li><a href="/about.html">About</a></li>
@@ -230,6 +315,6 @@
   </div>
 </footer>
 
-<script src="/js/main.js?v=343316ac"></script>
+<script src="/js/main.js?v=1db55702"></script>
 </body>
 </html>
