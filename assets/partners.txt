@@ -1,14 +1,23 @@
 TTC
-score: 3.5
+score: 4.1
 event: Train A’Boarddd
 why: only one sideye by rush-hour patrons
+address: Kennedy Station, 2455 Eglinton Ave E, Toronto, ON
+lat: 43.7325
+lng: -79.2636
 
 Biidaasige Park
 score: 4.9
 event: F'ing the Front
 why: beautiful park (yumm)
+address: 51 Commissioners St, Toronto, ON M5A 1A6
+lat: 43.6493
+lng: -79.3472
 
 Nathan Philips Square
 score: 4.5
 event: Footy in Da City
-why: a fun dirty 
+why: a fun dirty
+address: 100 Queen St W, Toronto, ON M5H 2N2
+lat: 43.6526
+lng: -79.3833 

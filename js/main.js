@@ -169,6 +169,80 @@
     });
   }
 
+  /* ---- Place mode (?place=1): drag people around, Shift-drag to rotate. ---- */
+  var placing = /(?:\?|&)place=1(?:&|$)/.test(location.search);
+  if (placing && document.querySelector(".hero")) {
+    root.classList.add("is-placing");
+    var figs = Array.prototype.slice.call(document.querySelectorAll(".scene-fig"));
+    var names = ["surgeon", "quebec", "paddle", "helmet", "grand", "matthew"];
+    function figName(el) {
+      for (var i = 0; i < names.length; i++) {
+        if (el.classList.contains("scene-fig-" + names[i])) return names[i];
+      }
+      return "";
+    }
+    function readVar(el, name, fallback) {
+      var v = getComputedStyle(el).getPropertyValue(name).trim();
+      var n = parseFloat(v);
+      return isNaN(n) ? fallback : n;
+    }
+    function apply(el, x, y, rot) {
+      el.style.setProperty("--fig-x", x.toFixed(0) + "px");
+      el.style.setProperty("--fig-y", y.toFixed(0) + "px");
+      el.style.setProperty("--fig-rot", rot.toFixed(1) + "deg");
+    }
+    function dumpCss() {
+      return figs.map(function (el) {
+        var n = figName(el);
+        if (!n) return "";
+        return ".scene-fig-" + n + " { --fig-x: " + readVar(el, "--fig-x", 0).toFixed(0) + "px; --fig-y: " + readVar(el, "--fig-y", 0).toFixed(0) + "px; --fig-rot: " + readVar(el, "--fig-rot", 0).toFixed(1) + "deg; }";
+      }).filter(Boolean).join("\n");
+    }
+    var hud = document.createElement("div");
+    hud.className = "place-hud";
+    hud.innerHTML = "<p>Drag a person to move. Shift-drag to rotate.</p><button type=\"button\" class=\"btn btn-ghost\">Copy CSS</button><pre></pre>";
+    document.body.appendChild(hud);
+    var pre = hud.querySelector("pre");
+    var copyBtn = hud.querySelector("button");
+    function paintHud() { pre.textContent = dumpCss(); }
+    paintHud();
+    copyBtn.addEventListener("click", function () {
+      var text = dumpCss();
+      if (navigator.clipboard && navigator.clipboard.writeText) {
+        navigator.clipboard.writeText(text).then(function () { copyBtn.textContent = "Copied"; setTimeout(function () { copyBtn.textContent = "Copy CSS"; }, 1400); });
+      }
+    });
+    figs.forEach(function (el) {
+      el.addEventListener("click", function (e) { e.preventDefault(); });
+      el.addEventListener("pointerdown", function (e) {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        e.stopPropagation();
+        var startX = e.clientX, startY = e.clientY;
+        var ox = readVar(el, "--fig-x", 0), oy = readVar(el, "--fig-y", 0), orot = readVar(el, "--fig-rot", 0);
+        var rotate = e.shiftKey;
+        el.classList.add("is-dragging");
+        el.setPointerCapture(e.pointerId);
+        function move(ev) {
+          if (rotate) {
+            apply(el, ox, oy, orot + (ev.clientX - startX) * 0.3);
+          } else {
+            apply(el, ox + (ev.clientX - startX), oy + (ev.clientY - startY), orot);
+          }
+          paintHud();
+        }
+        function up() {
+          el.classList.remove("is-dragging");
+          el.removeEventListener("pointermove", move);
+          el.removeEventListener("pointerup", up);
+          paintHud();
+        }
+        el.addEventListener("pointermove", move);
+        el.addEventListener("pointerup", up);
+      });
+    });
+  }
+
   /* ---- Hero logo: the two letters ease apart a touch as the hero
      scrolls out of view. --p is 0 at the top and 1 once the hero is gone. ---- */
   var heroMark = document.querySelector(".hero .mark");
@@ -256,6 +330,7 @@
     if (!summary || !answer || reduce) return;
     var anim = null;
     summary.addEventListener("click", function (e) {
+      if (e.target.closest("a")) return;
       e.preventDefault();
       if (anim) anim.cancel();
       var opening = !d.open;
@@ -283,9 +358,6 @@
     var dots = lb.querySelector(".lb-dots");
     var imgs = Array.prototype.map.call(grid.querySelectorAll(".photo"), function (b) { return b.getAttribute("data-src"); });
     var idx = 0;
-    lb.querySelector("h3").textContent = lb.getAttribute("data-title") || "";
-    lb.querySelector(".when").textContent = lb.getAttribute("data-when") || "";
-    lb.querySelector("p").textContent = lb.getAttribute("data-desc") || "";
     imgs.forEach(function (src) {
       var im = document.createElement("img"); im.src = src; im.alt = ""; photosWrap.appendChild(im);
       dots.appendChild(document.createElement("i"));
@@ -299,6 +371,11 @@
     grid.querySelectorAll(".photo").forEach(function (b) {
       b.addEventListener("click", function () { show(parseInt(b.getAttribute("data-index"), 10) || 0); lb.showModal(); });
     });
+    var photoParam = /(?:\?|&)photo=(\d+)/.exec(location.search);
+    if (photoParam) {
+      show(parseInt(photoParam[1], 10) || 0);
+      lb.showModal();
+    }
     lb.querySelector(".prev").addEventListener("click", function () { show(idx - 1); });
     lb.querySelector(".next").addEventListener("click", function () { show(idx + 1); });
     lb.querySelector(".lb-close").addEventListener("click", function () { lb.close(); });

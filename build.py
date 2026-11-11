@@ -2,7 +2,8 @@
 """Rebuild index.html and the event pages from the files under assets/.
 
 Upcoming and past events are written as slides between the events markers
-in index.html. The homepage loops them in a row, upcoming in the middle.
+in index.html. The homepage carousel is oldest to newest, undated upcoming
+last, and the loop still opens on the current event.
 
 Past events are one folder each under assets/photos/. Paste photos into it and
 add an event.txt beside them:
@@ -264,6 +265,22 @@ def sort_upcoming(events):
     return sorted(events, key=lambda e: (0, e["iso"], e["slug"]) if e["iso"] else (1, "", e["slug"]))
 
 
+def carousel_items(events, upcoming):
+    """Past and upcoming in one timeline: dated events oldest first, then
+    anything still at ??/??/??. The loop script centers the first upcoming."""
+    items = [("up", u) for u in upcoming] + [("past", e) for e in events]
+    def key(item):
+        kind, ev = item
+        if kind == "up":
+            return (ev["iso"] or "9999-12-31", ev["slug"])
+        return (ev.get("date") or "0000-01-01", ev["slug"])
+    items.sort(key=key)
+    slides = []
+    for i, (kind, ev) in enumerate(items):
+        slides.append(render_upcoming(ev, i) if kind == "up" else render(ev, i))
+    return slides
+
+
 def render_upcoming(ev, i):
     """One slide in the events carousel. A real date gets data-date, which is
     what hides the slide once the day is over."""
@@ -506,18 +523,13 @@ def render_event_page(ev, nav, foot, head):
     </div>
   </section>
 
-  <dialog class="lightbox" id="lightbox" aria-label="Event photos" data-title="{escape(ev['title'])}" data-when="{escape(ev['when'])}" data-desc="{escape(chr(10).join(ev['paras']))}">
+  <dialog class="lightbox" id="lightbox" aria-label="{escape(ev['title'])} photos">
     <div class="lb-inner">
       <div class="lb-photos">
         <button class="lb-arrow prev" type="button" aria-label="Previous photo">&#8249;</button>
         <button class="lb-arrow next" type="button" aria-label="Next photo">&#8250;</button>
-        <div class="lb-dots"></div>
       </div>
-      <div class="lb-text">
-        <h3></h3>
-        <span class="when"></span>
-        <p></p>
-      </div>
+      <div class="lb-dots"></div>
       <button class="lb-close" type="button" aria-label="Close">&times;</button>
     </div>
   </dialog>
@@ -552,7 +564,7 @@ def main():
     events = [e for e in (read_event(d) for d in folders) if e]
     upcoming = sort_upcoming([u for u in (read_upcoming(d) for d in folders_in(UPCOMING)) if u])
     html = INDEX.read_text(encoding="utf-8")
-    slides = [render_upcoming(u, i) for i, u in enumerate(upcoming)] + [render(e, i) for i, e in enumerate(events)]
+    slides = carousel_items(events, upcoming)
     html = fill(html, EV_START, EV_END, slides, "events")
     partners = read_partners()
     partner_lines = [render_partner(p, events, upcoming) for p in partners]
