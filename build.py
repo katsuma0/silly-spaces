@@ -141,7 +141,16 @@ def read_event(folder):
     lines = info.read_text(encoding="utf-8-sig").splitlines()
     title = lines[0].strip() if lines else folder.name
     when = lines[1].strip() if len(lines) > 1 else ""
-    paras = [l.strip() for l in lines[2:] if l.strip()]
+    tags, paras = [], []
+    for line in lines[2:]:
+        s = line.strip()
+        if not s:
+            continue
+        m = re.match(r"tags:\s*(.*)$", s, re.I)
+        if m:
+            tags = [t.strip() for t in m.group(1).split(",") if t.strip()]
+            continue
+        paras.append(s)
     desc = " ".join(paras)
     photos = sorted(
         p for p in folder.iterdir()
@@ -159,10 +168,25 @@ def read_event(folder):
     def small(p):
         t = make_thumb(p)
         return f"/assets/photos/{folder.name}/thumbs/{t.name}" if t else f"/assets/photos/{folder.name}/{p.name}"
-    return {"title": title, "when": when, "desc": desc, "paras": paras, "slug": folder.name,
+    return {"title": title, "when": when, "desc": desc, "paras": paras, "tags": tags, "slug": folder.name,
             "date": m.group(1) if m else "",
             "photos": [f"/assets/photos/{folder.name}/{p.name}" for p in photos],
             "thumbs": [small(p) for p in photos]}
+
+
+def title_tag(t):
+    return " ".join((w[:1].upper() + w[1:]) if w else "" for w in t.split())
+
+
+def tag_pills(tags, past=False):
+    if not tags:
+        return ""
+    bits = []
+    for t in tags:
+        label = title_tag(t)
+        cls = " pink" if past else (" free" if t.lower() == "free" else "")
+        bits.append(f'<span class="tag{cls}">{escape(label)}</span>')
+    return "\n            <div class=\"actions\">" + "".join(bits) + "</div>"
 
 
 def render(ev, i):
@@ -170,11 +194,13 @@ def render(ev, i):
     date = f' data-date="{ev["date"]}"' if ev["date"] else ""
     nophoto = "" if ev["photos"] else " no-photos"
     desc = "&#10;".join(escape(t) for t in ev["paras"])
-    return f"""        <a class="slide{nophoto}" href="/events/{ev['slug']}.html" data-kind="past"{date} data-desc="{desc}">
+    tags = ",".join(ev.get("tags") or [])
+    attr = f' data-tags="{escape(tags)}"' if tags else ""
+    return f"""        <a class="slide{nophoto}" href="/events/{ev['slug']}.html" data-kind="past"{date}{attr} data-desc="{desc}">
           <div class="ph"><img src="{escape(cover)}" alt="" loading="lazy" decoding="async"></div>
           <div class="cap">
             <span class="kicker">Past</span>
-            <h3>{escape(ev['title'])}</h3>
+            <h3>{escape(ev['title'])}</h3>{tag_pills(ev.get("tags") or [], past=True)}
           </div>
         </a>"""
 
@@ -246,11 +272,12 @@ def render_upcoming(ev, i):
     nophoto = "" if ev["poster"] else " no-photos"
     desc = "&#10;".join(escape(t) for t in ev["paras"])
     tags = ",".join(ev["tags"])
+    lede = f"\n            <p>{escape(' '.join(ev['paras']))}</p>" if ev["paras"] else ""
     return f"""        <article class="slide{nophoto}" data-kind="up"{date} data-desc="{desc}" data-tags="{escape(tags)}">
           <div class="ph"><img src="{escape(cover)}" alt="" loading="lazy" decoding="async"></div>
           <div class="cap">
             <span class="kicker">Upcoming</span>
-            <h3>{escape(ev["title"])}</h3>
+            <h3>{escape(ev["title"])}</h3>{lede}{tag_pills(ev["tags"])}
           </div>
         </article>"""
 

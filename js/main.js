@@ -454,40 +454,19 @@
     for (var u = 0; u < n; u++) {
       if (real[u].getAttribute("data-kind") === "up") { upAt = u; break; }
     }
-    var current = n > 1 ? upAt + 1 : 0;
-
-    function esc(s) {
-      return String(s).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/"/g, "&quot;");
-    }
-    function paintDetail(slide) {
-      if (!detail || !slide) return;
-      var kicker = slide.querySelector(".kicker");
-      var title = slide.querySelector("h3");
-      var kind = slide.getAttribute("data-kind") || "";
-      var tags = (slide.getAttribute("data-tags") || "").split(",").filter(function (t) { return t.trim(); });
-      var html = "";
-      if (kicker) html += '<p class="kicker ' + esc(kind) + '">' + esc(kicker.textContent.trim()) + "</p>";
-      if (title) html += "<h3>" + esc(title.textContent.trim()) + "</h3>";
-      if (tags.length) {
-        html += '<div class="actions">' + tags.map(function (t) {
-          var name = t.trim();
-          return '<span class="tag' + (name.toLowerCase() === "free" ? " free" : "") + '">' + esc(name) + "</span>";
-        }).join("") + "</div>";
-      }
-      var href = slide.getAttribute("href");
-      if (href) html += '<a class="btn-link" href="' + esc(href) + '">See this event</a>';
-      detail.innerHTML = html;
-    }
+    // Three copies of the row: clones | real | clones. Stepping off either
+    // end jumps back into the middle copy so the loop never runs out.
+    var current = n > 1 ? n + upAt : 0;
     if (n > 1) {
-      var head = real[n - 1].cloneNode(true);
-      var tail = real[0].cloneNode(true);
-      [head, tail].forEach(function (clone) {
+      function markClone(clone) {
         clone.setAttribute("data-clone", "");
         clone.setAttribute("aria-hidden", "true");
         if (clone.tabIndex >= 0) clone.tabIndex = -1;
-      });
-      track.insertBefore(head, track.firstChild);
-      track.appendChild(tail);
+        return clone;
+      }
+      var i;
+      for (i = 0; i < n; i++) track.appendChild(markClone(real[i].cloneNode(true)));
+      for (i = n - 1; i >= 0; i--) track.insertBefore(markClone(real[i].cloneNode(true)), track.firstChild);
     }
     var glowCache = {};
     function glowFrom(img) {
@@ -539,31 +518,63 @@
     }
     Array.prototype.forEach.call(track.children, paintGlow);
     function slides() { return track.children; }
+    function paintDetail(slide) {
+      if (!detail || !slide) return;
+      var cap = slide.querySelector(".cap");
+      var kind = slide.getAttribute("data-kind") || "";
+      if (!cap) { detail.innerHTML = ""; return; }
+      detail.innerHTML = cap.innerHTML;
+      var kicker = detail.querySelector(".kicker");
+      if (kicker) kicker.classList.add(kind);
+      if (kind === "past") {
+        detail.querySelectorAll(".tag").forEach(function (el) { el.classList.add("pink"); });
+      }
+    }
+    function trackX() {
+      var m = /translate3d\(([-\d.]+)px/.exec(track.style.transform || "");
+      return m ? parseFloat(m[1]) : 0;
+    }
+    var wrapTimer = 0;
+    function wrapIfClone() {
+      if (n < 2) return false;
+      if (current < n) { current += n; move(true); return true; }
+      if (current >= n * 2) { current -= n; move(true); return true; }
+      return false;
+    }
     function move(jump) {
+      if (current < 0) current = 0;
+      if (current > slides().length - 1) current = slides().length - 1;
       var slide = slides()[current];
       if (!slide) return;
       viewport.scrollLeft = 0;
-      var x = slide.offsetLeft - (viewport.clientWidth - slide.offsetWidth) / 2;
       if (jump) track.classList.add("is-jump");
-      track.style.transform = "translate3d(" + (-Math.round(x)) + "px,0,0)";
+      Array.prototype.forEach.call(slides(), function (el, i) {
+        el.classList.toggle("is-active", i === current);
+      });
+      var ph = slide.querySelector(".ph") || slide;
+      var view = viewport.getBoundingClientRect();
+      var box = ph.getBoundingClientRect();
+      var next = trackX() + (view.left + view.width / 2) - (box.left + box.width / 2);
+      track.style.transform = "translate3d(" + Math.round(next) + "px,0,0)";
       if (jump) {
         track.getBoundingClientRect();
         track.classList.remove("is-jump");
       }
-      Array.prototype.forEach.call(slides(), function (el, i) {
-        el.classList.toggle("is-active", i === current);
-      });
       paintDetail(slide);
+      clearTimeout(wrapTimer);
+      if (!jump && n > 1 && (current < n || current >= n * 2)) {
+        wrapTimer = setTimeout(wrapIfClone, reduce ? 0 : 720);
+      }
     }
     function step(dir) {
       if (n < 2) return;
+      wrapIfClone();
       current += dir;
       move(false);
     }
     track.addEventListener("transitionend", function (e) {
       if (e.target !== track || e.propertyName !== "transform") return;
-      if (current === 0) { current = n; move(true); }
-      else if (current === n + 1) { current = 1; move(true); }
+      wrapIfClone();
     });
     var prevBtn = carousel.querySelector(".prev");
     var nextBtn = carousel.querySelector(".next");
@@ -586,11 +597,11 @@
     track.addEventListener("click", function (e) {
       if (dragged) { e.preventDefault(); dragged = false; return; }
       var slide = e.target.closest(".slide");
-      if (!slide || slide.hasAttribute("data-clone")) { e.preventDefault(); return; }
-      if (!slide.classList.contains("is-active")) {
+      if (!slide) return;
+      var idx = Array.prototype.indexOf.call(track.children, slide);
+      if (slide.hasAttribute("data-clone") || !slide.classList.contains("is-active")) {
         e.preventDefault();
-        var idx = real.indexOf(slide);
-        if (idx >= 0) { current = n > 1 ? idx + 1 : 0; move(false); }
+        if (idx >= 0 && idx !== current) { current = idx; move(false); }
       }
     });
     carousel.addEventListener("keydown", function (e) {
@@ -600,7 +611,7 @@
     carousel.goTo = function (el) {
       var idx = real.indexOf(el);
       if (idx < 0) return;
-      current = n > 1 ? idx + 1 : 0;
+      current = n > 1 ? idx + n : 0;
       move(false);
       carousel.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
     };

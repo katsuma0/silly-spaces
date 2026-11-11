@@ -251,7 +251,6 @@ a, button { touch-action: manipulation; }
 .eyebrow { font-size: 13px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0 0 14px; }
 .section h2 { font-size: clamp(30px, 4.6vw, 44px); line-height: 1.12; margin-bottom: 12px; }
 .section-head p { color: var(--muted); font-size: 18px; margin: 0; }
-.section-foot { margin-top: 32px; text-align: center; }
 
 /* ---------- Partners ----------
    Each row opens: the event we did together, and why they have that face.
@@ -292,38 +291,6 @@ a, button { touch-action: manipulation; }
 /* ---------- Bounty board ----------
    A cork bulletin board. Fliers sit a little crooked under a pin.
    Clicking one zooms it off the board; the mail lives on the open flier. */
-.bounty-head { max-width: 640px; margin-bottom: 48px; }
-.bounty-head h2 { margin-bottom: 28px; }
-.bounty-how {
-  list-style: none;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  margin: 0;
-  padding: 22px 0 0;
-  border-top: 1px solid var(--line);
-  text-align: left;
-}
-.bounty-how li {
-  padding: 0 20px;
-  border-left: 1px solid var(--line);
-  font-family: var(--serif);
-  font-size: clamp(17px, 2.2vw, 21px);
-  line-height: 1.28;
-  color: var(--text);
-}
-.bounty-how li:first-child { padding-left: 0; border-left: 0; }
-.bounty-how li:last-child { padding-right: 0; }
-.bounty-how .n {
-  display: block;
-  margin-bottom: 8px;
-  font-family: var(--sans);
-  font-size: 11px;
-  letter-spacing: 0.16em;
-  text-transform: uppercase;
-  color: var(--blue);
-}
-.bounty-how li:nth-child(2) .n { color: var(--pink); }
-.bounty-how li:nth-child(3) .n { color: var(--muted); }
 .bounty-board {
   position: relative;
   min-height: 520px;
@@ -518,14 +485,33 @@ a, button { touch-action: manipulation; }
 
 .tag { font-size: 13px; padding: 4px 12px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); }
 .tag.free { background: var(--tint-blue); border-color: transparent; color: var(--blue); }
-.tag.pink { background: var(--tint-pink); border-color: transparent; color: var(--pink); }
+.tag.pink,
+.slide[data-kind="past"] .tag,
+.car-detail:has(.kicker.past) .tag {
+  background: var(--tint-pink);
+  border-color: transparent;
+  color: var(--pink);
+}
 
 .empty { color: var(--muted); padding: 32px 24px; border: 1px dashed var(--line-strong); border-radius: var(--radius); margin: 0 auto; max-width: 560px; text-align: center; }
 .empty a { text-decoration: underline; text-underline-offset: 3px; }
 
 /* ---------- Calendar ---------- */
-.cal-toggle { margin-top: 24px; margin-bottom: 0; background: none; border: 0; border-bottom: 1px solid var(--line-strong); padding: 0 0 2px; cursor: pointer; font: inherit; font-size: 16px; color: var(--text); transition: border-color var(--mid) var(--ease); }
-.cal-toggle:hover { border-color: var(--text); }
+.cal-toggle {
+  display: block;
+  margin: 16px auto 0;
+  background: none;
+  border: 0;
+  padding: 0;
+  cursor: pointer;
+  font: inherit;
+  font-size: 13px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  transition: color var(--mid) var(--ease);
+}
+.cal-toggle:hover { color: var(--text); }
 .cal-toggle::after { content: " \2193"; }
 .cal-toggle[aria-expanded="true"]::after { content: " \2191"; }
 .calendar[hidden] { display: none; }
@@ -614,47 +600,39 @@ a, button { touch-action: manipulation; }
 .honey { position: absolute; left: -9999px; }
 
 /* ---------- Event carousel ----------
-   A looping row of square covers, all on one line. Upcoming starts
-   in the middle. The current cover is larger; the others shrink and fade. */
-.carousel { position: relative; max-width: 1080px; margin: 0 auto; }
+   A looping row of square covers across the screen. The current cover
+   sits in the middle; the others shrink and fade beside it. */
+.events-stage { display: flex; flex-direction: column; }
+.carousel { position: relative; width: 100%; max-width: none; margin: 0; }
 .car-viewport { overflow: hidden; touch-action: pan-y; padding: 8px 0; }
-.car-track { display: flex; align-items: center; gap: 16px; transition: transform 0.7s var(--ease); will-change: transform; }
+.car-track { position: relative; display: flex; align-items: center; gap: 16px; transition: transform 0.7s var(--ease); will-change: transform; }
 .car-track.is-jump { transition: none; }
 .car-track.is-jump .slide,
-.car-track.is-jump .slide::before { transition: none; }
+.car-track.is-jump .slide .ph { transition: none; }
 .slide {
   --glow: transparent;
   position: relative;
-  flex: 0 0 min(280px, 62vw); text-decoration: none; color: inherit;
+  flex: 0 0 min(400px, 48vw); text-decoration: none; color: inherit;
   cursor: pointer;
   transform: scale(0.78);
   transform-origin: center center;
   transition: transform 0.7s var(--ease);
 }
-.slide::before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  border-radius: 8px;
-  box-shadow: none;
-  pointer-events: none;
-  z-index: -1;
-  transition: box-shadow 0.7s var(--ease);
-}
 .slide.is-active { cursor: default; transform: scale(1); z-index: 1; }
-.slide.is-active::before { box-shadow: none; }
 [data-theme="dark"] .car-viewport { padding: 36px 0; }
-[data-theme="dark"] .slide::before { box-shadow: 0 0 22px 5px var(--glow); }
-[data-theme="dark"] .slide.is-active::before { box-shadow: 0 0 28px 8px var(--glow); }
+[data-theme="dark"] .slide .ph { box-shadow: 0 0 22px 5px var(--glow); }
+[data-theme="dark"] .slide.is-active .ph { box-shadow: 0 0 28px 8px var(--glow); }
 @media (prefers-color-scheme: dark) {
   :root:not([data-theme="light"]) .car-viewport { padding: 36px 0; }
-  :root:not([data-theme="light"]) .slide::before { box-shadow: 0 0 22px 5px var(--glow); }
-  :root:not([data-theme="light"]) .slide.is-active::before { box-shadow: 0 0 28px 8px var(--glow); }
+  :root:not([data-theme="light"]) .slide .ph { box-shadow: 0 0 22px 5px var(--glow); }
+  :root:not([data-theme="light"]) .slide.is-active .ph { box-shadow: 0 0 28px 8px var(--glow); }
 }
 .slide[href].is-active { cursor: pointer; }
 .slide .ph {
   position: relative; aspect-ratio: 1; overflow: hidden; border-radius: 8px;
   background: var(--surface); border: 1px solid var(--line);
+  box-shadow: none;
+  transition: box-shadow 0.7s var(--ease);
 }
 .slide img {
   position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover;
@@ -667,8 +645,31 @@ a, button { touch-action: manipulation; }
   position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px;
   overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0;
 }
+.car-detail { max-width: 560px; margin: 16px auto 0; text-align: center; }
+.car-detail .kicker {
+  display: block;
+  font-size: 12px;
+  letter-spacing: 0.12em;
+  text-transform: uppercase;
+  color: var(--muted);
+  margin: 0 0 8px;
+}
+.car-detail .kicker.up { color: var(--blue); }
+.car-detail .kicker.past { color: var(--pink); }
+.car-detail h3 { font-size: clamp(24px, 3.4vw, 34px); line-height: 1.2; }
+.car-detail p {
+  max-width: 26em;
+  margin: 18px auto 22px;
+  color: var(--muted);
+  font-size: 18px;
+  line-height: 1.55;
+}
+.car-detail .actions { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
+.car-detail:has(p) .actions { margin-top: 0; }
 .car-nav {
-  position: absolute; top: 0; bottom: 0; margin: auto 0; z-index: 2;
+  position: absolute;
+  top: 0; bottom: 0; margin: auto 0;
+  z-index: 2;
   width: 42px; height: 42px; border-radius: 50%;
   border: 1px solid var(--line); background: var(--surface); color: var(--text); cursor: pointer;
   font-size: 22px; display: grid; place-items: center;
@@ -677,15 +678,6 @@ a, button { touch-action: manipulation; }
 .car-nav:hover { border-color: var(--text); }
 .car-nav.prev { left: 8px; }
 .car-nav.next { right: 8px; }
-.car-detail { max-width: 560px; margin: 18px auto 0; text-align: center; }
-.car-detail .kicker { font-size: 12px; letter-spacing: 0.12em; text-transform: uppercase; color: var(--muted); margin: 0 0 8px; }
-.car-detail .kicker.up { color: var(--blue); }
-.car-detail .kicker.past { color: var(--pink); }
-.car-detail h3 { font-size: clamp(28px, 4vw, 36px); }
-.car-detail .when { display: block; margin-top: 6px; color: var(--muted); font-size: 15px; }
-.car-detail p { margin: 12px 0 0; color: var(--muted); }
-.car-detail .actions { display: flex; justify-content: center; gap: 8px; flex-wrap: wrap; margin-top: 14px; }
-.car-detail .btn-link { margin-top: 8px; }
 
 /* ---------- Gallery ---------- */
 .gallery { display: flex; flex-wrap: wrap; justify-content: center; gap: 20px; }
@@ -904,19 +896,6 @@ a, button { touch-action: manipulation; }
   .social small { font-size: 11px; overflow-wrap: anywhere; }
   .social.mail { grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 12px; padding: 14px; text-align: left; }
   .social.mail small { font-size: 12px; }
-  .bounty-head { margin-bottom: 32px; }
-  .bounty-how {
-    grid-template-columns: 1fr;
-    padding-top: 4px;
-    text-align: center;
-  }
-  .bounty-how li {
-    padding: 14px 0;
-    border-left: 0;
-    border-top: 1px solid var(--line);
-    font-size: 18px;
-  }
-  .bounty-how li:first-child { border-top: 0; padding-top: 16px; }
   .bounty-board { min-height: 340px; padding: 22px 14px 28px; border-width: 10px; }
   .bounty {
     top: clamp(12px, var(--y, 14%), calc(100% - 180px));
