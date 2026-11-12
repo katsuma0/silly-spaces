@@ -374,7 +374,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 .partner-cols p {
   margin: 0;
   font-size: 12px;
-  letter-spacing: 0.1em;
+  letter-spacing: 0.08em;
   text-transform: uppercase;
   color: var(--muted);
   line-height: 1.35;
@@ -1191,14 +1191,14 @@ a.partner-ad:hover strong { border-color: var(--text); }
   .partner-find { margin: 0 auto 22px; }
   .partner-search input { padding: 12px 14px; }
   .partner-cols {
-    grid-template-columns: 1fr auto;
-    grid-template-areas: "partners sat" "fresh fresh";
+    grid-template-columns: repeat(3, minmax(0, 1fr));
     padding: 0 0 8px;
-    gap: 6px 16px;
+    gap: 6px 12px;
   }
-  .partner-cols p:nth-child(1) { grid-area: partners; }
-  .partner-cols p:nth-child(2) { grid-area: fresh; text-align: left; }
-  .partner-cols p:nth-child(3) { grid-area: sat; text-align: right; }
+  .partner-cols p { letter-spacing: 0.04em; font-size: 11px; }
+  .partner-cols p:nth-child(1) { text-align: left; }
+  .partner-cols p:nth-child(2) { text-align: center; }
+  .partner-cols p:nth-child(3) { text-align: center; }
   .partner summary {
     grid-template-columns: 1fr auto;
     grid-template-areas: "copy trust" "ad ad";
