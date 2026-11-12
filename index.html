@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&display=optional">
-  <link rel="stylesheet" href="/css/style.css?v=099cb215">
+  <link rel="stylesheet" href="/css/style.css?v=183f891b">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -179,37 +179,79 @@
         <h2>In good company</h2>
         <p>We trust these guys.</p>
       </div>
+      <div class="partner-find reveal">
+        <label class="partner-search" for="partner-q">
+          <span class="sr">Search partners</span>
+          <input type="search" id="partner-q" placeholder="Who do you need to connect with?" autocomplete="off" enterkeyhint="search">
+        </label>
+        <div class="partner-kinds" role="group" aria-label="Filter partners">
+          <button type="button" class="tag" data-kind="place" aria-pressed="false">Places</button>
+          <button type="button" class="tag" data-kind="business" aria-pressed="false">Businesses</button>
+          <button type="button" class="tag" data-kind="person" aria-pressed="false">People</button>
+        </div>
+      </div>
+      <div class="partner-cols reveal">
+        <p>Partners</p>
+        <p>What’s new with them</p>
+        <p>Satisfaction</p>
+      </div>
       <ul class="partner-list reveal">
         <!-- partners:start -->
-        <li>
+        <li data-kind="place" data-q="CN Tower Places place place Edge Walk CN Tower The world s highest hands free walk 116 storeys above Toronto From 199 The Greatest Tower in the World H U M R P F E R F T C 290 Bremner Blvd Toronto ON M5V 3L9 https www cntower ca brave the edgewalk tower edgewalk skyline observation downtown heights walk view landmark">
+          <details class="partner">
+            <summary aria-label="CN Tower, S">
+              <span class="partner-copy"><img class="partner-logo" src="/assets/partners/cntower.jpg" alt="" width="72" height="72" decoding="async"><h3>CN Tower<span class="plus"></span></h3></span>
+              <a class="partner-ad" href="https://www.cntower.ca/brave-the-edgewalk" rel="noopener noreferrer" target="_blank"><strong>Edge Walk CN Tower</strong><span>The world’s highest hands-free walk. 116 storeys above Toronto. From $199.</span></a>
+              <span class="trust"><img src="/assets/trust-s.png" alt="" width="64" height="64"></span>
+            </summary>
+            <div class="answer partner-panel"><p><span class="partner-label">Event</span> <a href="/events/2026-07-09-humrpferftc.html">H.U.M.R.P.F.E.R.F.T.C.</a></p><p><span class="partner-label">Why</span> The Greatest Tower in the World</p></div>
+          </details>
+        </li>
+        <li data-kind="place" data-q="Biidaasige Park Places place place Lassonde Trail Nature Tour Saturdays at 12 and 2 Drop in free Meet at Old Fire Hall 30 beautiful park yumm F ing the Front 51 Commissioners St Toronto ON M5A 1A6 https lassondearttrail org events lat art nature tour nature trail park outdoors art waterfront tour trees port lands hike">
           <details class="partner">
             <summary aria-label="Biidaasige Park, good">
-              <span class="partner-copy"><h3>Biidaasige Park</h3><span class="plus"></span></span>
+              <span class="partner-copy"><img class="partner-logo" src="/assets/partners/biidaasige.jpg?v=2" alt="" width="72" height="72" decoding="async"><h3>Biidaasige Park<span class="plus"></span></h3></span>
+              <a class="partner-ad" href="https://lassondearttrail.org/events/lat-art-nature-tour/" rel="noopener noreferrer" target="_blank"><strong>Lassonde Trail Nature Tour</strong><span>Saturdays at 12 and 2. Drop-in, free. Meet at Old Fire Hall 30.</span></a>
               <span class="trust"><img src="/assets/trust-good.png" alt="" width="64" height="64"></span>
             </summary>
             <div class="answer partner-panel"><p><span class="partner-label">Event</span> <a href="/events/2026-08-29-finger-painting.html">F&#x27;ing the Front</a></p><p><span class="partner-label">Why</span> beautiful park (yumm)</p></div>
           </details>
         </li>
-        <li>
-          <details class="partner">
-            <summary aria-label="Nathan Philips Square, good">
-              <span class="partner-copy"><h3>Nathan Philips Square</h3><span class="plus"></span></span>
-              <span class="trust"><img src="/assets/trust-good.png" alt="" width="64" height="64"></span>
-            </summary>
-            <div class="answer partner-panel"><p><span class="partner-label">Event</span> <a href="/events/2026-08-04-footy.html">Footy in Da City</a></p><p><span class="partner-label">Why</span> a fun dirty</p></div>
-          </details>
-        </li>
-        <li>
+        <li data-kind="business" data-q="TTC Businesses business business PRESTO Day Pass Unlimited TTC for a calendar day 13 50 at any station only one sideye by rush hour patrons Train A Boarddd Kennedy Station 2455 Eglinton Ave E Toronto ON https www ttc ca en Fares and passes transit train subway bus streetcar fare presto pass station commute rush hour">
           <details class="partner">
             <summary aria-label="TTC, good">
-              <span class="partner-copy"><h3>TTC</h3><span class="plus"></span></span>
+              <span class="partner-copy"><img class="partner-logo" src="/assets/partners/ttc.png?v=2" alt="" width="72" height="72" decoding="async"><h3>TTC<span class="plus"></span></h3></span>
+              <a class="partner-ad" href="https://www.ttc.ca/en/Fares-and-passes" rel="noopener noreferrer" target="_blank"><strong>PRESTO Day Pass</strong><span>Unlimited TTC for a calendar day. $13.50 at any station.</span></a>
               <span class="trust"><img src="/assets/trust-good.png" alt="" width="64" height="64"></span>
             </summary>
             <div class="answer partner-panel"><p><span class="partner-label">Event</span> <a href="/events/2026-06-27-train-aboard.html">Train A’Boarddd</a></p><p><span class="partner-label">Why</span> only one sideye by rush-hour patrons</p></div>
           </details>
         </li>
+        <li data-kind="place" data-q="Nathan Philips Square Places place place Cavalcade of Lights The square lights up Nov 28 Free skating through the season a fun dirty Footy in Da City 100 Queen St W Toronto ON M5H 2N2 https www toronto ca explore enjoy festivals events cavalcade of lights lights skating ice rink downtown city hall square festival volleyball christmas">
+          <details class="partner">
+            <summary aria-label="Nathan Philips Square, okay">
+              <span class="partner-copy"><img class="partner-logo" src="/assets/partners/nathan.jpg?v=2" alt="" width="72" height="72" decoding="async"><h3>Nathan Philips Square<span class="plus"></span></h3></span>
+              <a class="partner-ad" href="https://www.toronto.ca/explore-enjoy/festivals-events/cavalcade-of-lights/" rel="noopener noreferrer" target="_blank"><strong>Cavalcade of Lights</strong><span>The square lights up Nov 28. Free skating through the season.</span></a>
+              <span class="trust"><img src="/assets/trust-mid.png" alt="" width="64" height="64"></span>
+            </summary>
+            <div class="answer partner-panel"><p><span class="partner-label">Event</span> <a href="/events/2026-08-04-footy.html">Footy in Da City</a></p><p><span class="partner-label">Why</span> a fun dirty</p></div>
+          </details>
+        </li>
         <!-- partners:end -->
       </ul>
+      <div class="partner-ghosts" aria-hidden="true">
+        <div class="partner-ghost">
+          <span class="partner-copy"><span class="partner-logo"></span><span class="partner-skel skel-name"></span></span>
+          <span class="partner-ad-skel"><span class="partner-skel skel-ad"></span><span class="partner-skel skel-line"></span></span>
+          <span class="partner-skel skel-face"></span>
+        </div>
+        <div class="partner-ghost">
+          <span class="partner-copy"><span class="partner-logo"></span><span class="partner-skel skel-name"></span></span>
+          <span class="partner-ad-skel"><span class="partner-skel skel-ad"></span><span class="partner-skel skel-line"></span></span>
+          <span class="partner-skel skel-face"></span>
+        </div>
+      </div>
+      <p class="partner-none" hidden>Nothing matches.</p>
     </div>
   </section>
 
@@ -229,7 +271,7 @@
         <article class="bounty bounty-blank" style="--x:62%;--y:58%;--tilt:1.6deg;--w:124px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
         <!-- bounties:start -->
         <article class="bounty" style="--x:15%;--y:14%;--tilt:-3.8deg">
-          <button type="button" class="bounty-flier" data-src="/assets/bounties/five-quebecois/poster.jpg" data-mail="mailto:sillyspacesww@gmail.com?subject=Bounty%3A%20Five%20Quebecois&body=I%20can%20help%20with%3A%20Five%20Quebecois" aria-label="Open bounty: Five Quebecois">
+          <button type="button" class="bounty-flier" data-src="/assets/bounties/five-quebecois/poster.jpg" data-mail="mailto:sillyspacesww@gmail.com?subject=Bounty%3A%20Five%20Quebecois&body=I%20can%20help%20and%20now%20you%20owe%20me%20a%20reasonable%20favour%20%3A%29%0A%0ABounty%3A%20Five%20Quebecois" aria-label="Open bounty: Five Quebecois">
             <span class="pin" aria-hidden="true"></span>
             <img src="/assets/bounties/five-quebecois/poster.jpg" alt="Five Quebecois — that play volleyball and live near the ON/QC border">
           </button>
@@ -240,7 +282,7 @@
     <dialog class="bounty-zoom" id="bounty-zoom" aria-label="Bounty">
       <img alt="">
       <div class="bounty-zoom-bar">
-        <a class="btn btn-primary bounty-zoom-help" tabindex="-1">I can help</a>
+        <a class="btn btn-primary bounty-zoom-help" tabindex="-1">I can help and now you owe me a reasonable favour :)</a>
       </div>
       <button class="bounty-zoom-close" type="button" aria-label="Close">&times;</button>
     </dialog>
@@ -331,6 +373,6 @@
   </div>
 </footer>
 
-<script src="/js/main.js?v=b1ac9d33"></script>
+<script src="/js/main.js?v=85d9c1b5"></script>
 </body>
 </html>

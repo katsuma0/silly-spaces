@@ -43,11 +43,18 @@ as they are.
 Partners are listed in assets/partners.txt, one company per block:
 
     line 1   company name
-    then     score: 4.9
+    then     kind: place, business, or person
+             score: S, A, B, or a number (S the star face, A green, B yellow)
              event: title or folder slug of the event you did together
              why: why they have that face
+             logo: image next to the name
+             ad: what they're plugging right now
+             adline: one-line pitch
+             adurl: where the ad should go
+             tags: extra search words, comma separated
 
 The homepage ranks them by score. Tap a name for the event and the why.
+The ad sits on the row itself so it still shows when the row is closed.
 
 Bounties are one folder each under assets/bounties/, with a bounty.txt
 and a poster image (poster.jpg, or the first image in the folder):
@@ -56,7 +63,7 @@ and a poster image (poster.jpg, or the first image in the folder):
     rest     what we need, as many lines as you want
 
 The poster is a flier pinned to the board. Clicking it zooms in;
-"I can help" on the open flier mails us with that title.
+"I can help and now you owe me a reasonable favour :)" on the open flier mails us with that title.
 
 Nothing outside the markers in index.html is touched.
 """
@@ -330,17 +337,43 @@ def read_partners():
                 fields[m.group(1).lower()] = m.group(2).strip()
         out.append({
             "name": name,
+            "kind": partner_kind(fields.get("kind", "")),
             "score": fields.get("score", ""),
             "event": fields.get("event", ""),
             "why": fields.get("why", ""),
+            "logo": fields.get("logo", ""),
+            "ad": fields.get("ad", ""),
+            "adline": fields.get("adline", ""),
+            "adurl": fields.get("adurl", ""),
+            "address": fields.get("address", ""),
+            "tags": fields.get("tags", ""),
         })
     def rank(p):
+        key = (p["score"] or "").strip().lower()
+        if key in LETTER_RANK:
+            return LETTER_RANK[key]
         try:
             return float(p["score"])
         except (TypeError, ValueError):
             return float("-inf")
     out.sort(key=rank, reverse=True)
     return out
+
+
+KIND_ALIASES = {
+    "place": "place", "places": "place",
+    "business": "business", "businesses": "business",
+    "person": "person", "people": "person",
+}
+KIND_SEARCH = {
+    "place": "Places place",
+    "business": "Businesses business",
+    "person": "People person",
+}
+
+
+def partner_kind(raw):
+    return KIND_ALIASES.get((raw or "").strip().lower(), "")
 
 
 def _fold(s):
@@ -361,12 +394,28 @@ def find_collab(ref, events, upcoming):
     return ref, "/#events"
 
 
+LETTER_RANK = {"s": 6, "a": 4.5, "b": 3.5, "c": 1, "d": 0.5, "f": 0}
+LETTER_FACE = {
+    "s": ("s", "S"),
+    "a": ("good", "good"),
+    "b": ("mid", "okay"),
+    "c": ("bad", "poor"),
+    "d": ("bad", "poor"),
+    "f": ("bad", "poor"),
+}
+
+
 def trust_face(raw):
-    """Green over 4, red under 2, yellow in between."""
+    """S the star face, A green, B yellow, C red. Numbers: 5+ S, over 4 green, under 2 red."""
+    key = (raw or "").strip().lower()
+    if key in LETTER_FACE:
+        return LETTER_FACE[key]
     try:
         n = float(raw)
     except (TypeError, ValueError):
         n = 3
+    if n >= 5:
+        return "s", "S"
     if n > 4:
         return "good", "good"
     if n < 2:
@@ -377,6 +426,13 @@ def trust_face(raw):
 def render_partner(p, events, upcoming):
     face, rating = trust_face(p["score"])
     label = f"{p['name']}, {rating}"
+    kind = p.get("kind") or ""
+    hay = " ".join(bit for bit in [
+        p["name"], KIND_SEARCH.get(kind, kind), kind,
+        p.get("ad"), p.get("adline"), p.get("why"), p.get("event"),
+        p.get("address"), p.get("adurl"), p.get("tags"),
+    ] if bit)
+    hay = re.sub(r"[^A-Za-z0-9]+", " ", hay)
     rows = []
     found = find_collab(p["event"], events, upcoming) if p["event"] else None
     if found:
@@ -385,14 +441,37 @@ def render_partner(p, events, upcoming):
     if p["why"]:
         rows.append(f'<p><span class="partner-label">Why</span> {escape(p["why"])}</p>')
     panel = "".join(rows)
+    ad = ""
+    if p.get("ad"):
+        body = f'<strong>{escape(p["ad"])}</strong>'
+        if p.get("adline"):
+            body += f'<span>{escape(p["adline"])}</span>'
+        if p.get("adurl"):
+            ad = (
+                f'<a class="partner-ad" href="{escape(p["adurl"])}" '
+                f'rel="noopener noreferrer" target="_blank">{body}</a>'
+            )
+        else:
+            ad = f'<div class="partner-ad">{body}</div>'
+    panel_html = f'            <div class="answer partner-panel">{panel}</div>\n' if panel else ""
+    mark = ""
+    if p.get("logo"):
+        mark = (
+            f'<img class="partner-logo" src="{escape(p["logo"])}" alt="" '
+            f'width="72" height="72" decoding="async">'
+        )
+    ad_html = f'\n              {ad}' if ad else ""
+    kind_attr = f' data-kind="{escape(kind)}"' if kind else ""
+    q_attr = f' data-q="{escape(hay)}"' if hay else ""
     return (
-        f'        <li>\n'
+        f'        <li{kind_attr}{q_attr}>\n'
         f'          <details class="partner">\n'
         f'            <summary aria-label="{escape(label)}">\n'
-        f'              <span class="partner-copy"><h3>{escape(p["name"])}</h3><span class="plus"></span></span>\n'
+        f'              <span class="partner-copy">{mark}<h3>{escape(p["name"])}<span class="plus"></span></h3></span>'
+        f'{ad_html}\n'
         f'              <span class="trust"><img src="/assets/trust-{face}.png" alt="" width="64" height="64"></span>\n'
         f'            </summary>\n'
-            f'            <div class="answer partner-panel">{panel}</div>\n'
+        f'{panel_html}'
         f'          </details>\n'
         f'        </li>'
     )
@@ -437,7 +516,7 @@ def bounty_spot(slug, i):
 def render_bounty(b, i):
     """A flier pinned to the board. Clicking it zooms in; the mail is on the open flier."""
     subject = quote(f"Bounty: {b['title']}")
-    body = quote(f"I can help with: {b['title']}")
+    body = quote(f"I can help and now you owe me a reasonable favour :)\n\nBounty: {b['title']}")
     href = f"mailto:{MAIL}?subject={subject}&body={body}"
     alt = b["title"]
     if b["paras"]:
