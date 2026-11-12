@@ -382,6 +382,26 @@
       });
     });
     apply();
+
+    function openAd(ad) {
+      var href = ad && (ad.getAttribute("data-href") || ad.getAttribute("href"));
+      if (href) window.open(href, "_blank", "noopener,noreferrer");
+    }
+    list.addEventListener("click", function (e) {
+      var ad = e.target.closest(".partner-ad");
+      if (!ad) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openAd(ad);
+    });
+    list.addEventListener("keydown", function (e) {
+      if (e.key !== "Enter" && e.key !== " ") return;
+      var ad = e.target.closest(".partner-ad");
+      if (!ad) return;
+      e.preventDefault();
+      e.stopPropagation();
+      openAd(ad);
+    });
   })();
 
   /* ---- FAQ: animate open and close instead of snapping ---- */
@@ -391,11 +411,19 @@
     if (!summary || !answer || reduce) return;
     var anim = null;
     summary.addEventListener("click", function (e) {
+      var ad = e.target.closest(".partner-ad");
+      var href = ad && (ad.getAttribute("data-href") || ad.getAttribute("href"));
+      if (href) {
+        e.preventDefault();
+        e.stopPropagation();
+        window.open(href, "_blank", "noopener,noreferrer");
+        return;
+      }
       var link = e.target.closest("a");
       if (link) {
         e.preventDefault();
         e.stopPropagation();
-        var href = link.getAttribute("href");
+        href = link.getAttribute("href");
         if (!href) return;
         if (link.target === "_blank") window.open(href, "_blank", "noopener,noreferrer");
         else location.href = href;
