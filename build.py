@@ -129,9 +129,9 @@ def prepare_photo(p):
 
 def make_thumb(p):
     """Write thumbs/<name>.jpg for a photo when it is missing or older than the photo."""
-    if Image is None or p.suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp"}:
-        return None
     t = p.parent / "thumbs" / (p.stem + ".jpg")
+    if Image is None or p.suffix.lower() not in {".jpg", ".jpeg", ".png", ".webp"}:
+        return t if t.exists() else None
     if not t.exists() or t.stat().st_mtime < p.stat().st_mtime:
         t.parent.mkdir(exist_ok=True)
         im = ImageOps.exif_transpose(Image.open(p))
@@ -447,12 +447,14 @@ def render_partner(p, events, upcoming):
         if p.get("adline"):
             body += f'<span>{escape(p["adline"])}</span>'
         if p.get("adurl"):
+            # A real <a> inside <summary> is dropped by Safari, so the face
+            # slides into the middle column. A span with data-href stays put.
             ad = (
-                f'<a class="partner-ad" href="{escape(p["adurl"])}" '
-                f'rel="noopener noreferrer" target="_blank">{body}</a>'
+                f'<span class="partner-ad" role="link" tabindex="0" '
+                f'data-href="{escape(p["adurl"])}">{body}</span>'
             )
         else:
-            ad = f'<div class="partner-ad">{body}</div>'
+            ad = f'<span class="partner-ad">{body}</span>'
     panel_html = f'            <div class="answer partner-panel">{panel}</div>\n' if panel else ""
     mark = ""
     if p.get("logo"):
@@ -467,9 +469,11 @@ def render_partner(p, events, upcoming):
         f'        <li{kind_attr}{q_attr}>\n'
         f'          <details class="partner">\n'
         f'            <summary aria-label="{escape(label)}">\n'
-        f'              <span class="partner-copy">{mark}<h3>{escape(p["name"])}<span class="plus"></span></h3></span>'
+        f'              <span class="partner-row">'
+        f'<span class="partner-copy">{mark}<h3>{escape(p["name"])}<span class="plus"></span></h3></span>'
         f'{ad_html}\n'
-        f'              <span class="trust"><img src="/assets/trust-{face}.png" alt="" width="64" height="64"></span>\n'
+        f'              <span class="trust"><img src="/assets/trust-{face}.png" alt="" width="64" height="64"></span>'
+        f'</span>\n'
         f'            </summary>\n'
         f'{panel_html}'
         f'          </details>\n'

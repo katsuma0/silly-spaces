@@ -456,12 +456,17 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 }
 .partner summary {
   list-style: none; cursor: pointer;
-  display: grid;
-  grid-template-columns: repeat(3, minmax(0, 1fr));
-  gap: 12px 32px; align-items: center;
+  display: block;
   padding: 20px 4px;
 }
-.partner summary::-webkit-details-marker { display: none; }
+.partner summary::-webkit-details-marker,
+.partner summary::marker { display: none; content: none; }
+.partner-row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 32px;
+  align-items: center;
+}
 .partner-copy {
   display: flex;
   align-items: center;
@@ -524,6 +529,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   text-decoration: none;
   color: inherit;
   text-align: center;
+  cursor: pointer;
 }
 .partner-ad strong {
   display: inline;
@@ -541,7 +547,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   font-size: 14px;
   line-height: 1.4;
 }
-a.partner-ad:hover strong { border-color: var(--text); }
+.partner-ad:hover strong { border-color: var(--text); }
 
 /* ---------- Bounty board ----------
    A cork bulletin board. Fliers sit a little crooked under a pin.
@@ -1199,26 +1205,12 @@ a.partner-ad:hover strong { border-color: var(--text); }
   .partner-cols p:nth-child(1) { text-align: left; }
   .partner-cols p:nth-child(2) { text-align: center; }
   .partner-cols p:nth-child(3) { text-align: center; }
-  .partner summary {
-    grid-template-columns: 1fr auto;
-    grid-template-areas: "copy trust" "ad ad";
-    padding: 18px 0;
-    gap: 10px 16px;
-  }
-  .partner-copy { grid-area: copy; gap: 10px; justify-self: start; }
-  .partner-ad { grid-area: ad; padding: 0; width: 100%; text-align: center; }
-  .trust { grid-area: trust; justify-self: end; width: 52px; height: 52px; }
-  .partner-ghost {
-    grid-template-columns: 1fr auto;
-    grid-template-areas: "copy face" "ad ad";
-    padding: 12px 0;
-    gap: 10px 16px;
-  }
+  .partner summary { padding: 18px 0; }
+  .partner-row { gap: 10px 12px; }
+  .trust { width: 52px; height: 52px; }
+  .partner-ghost { gap: 10px 12px; padding: 12px 0; }
   .partner-ghosts { max-height: 44px; }
   .partner-list li.is-faded { max-height: 96px; }
-  .partner-ghost .partner-copy { grid-area: copy; }
-  .partner-ghost .partner-ad-skel { grid-area: ad; }
-  .partner-ghost .skel-face { grid-area: face; justify-self: end; }
   .partner-logo { width: 48px; height: 48px; border-radius: 8px; }
   .partner-copy h3 { font-size: 24px; }
   .trust img { width: 44px; height: 44px; }
