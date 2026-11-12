@@ -323,6 +323,67 @@
     });
   }
 
+  /* ---- Partners: search box plus Places / Businesses / People labels ---- */
+  (function () {
+    var box = document.getElementById("partners");
+    if (!box) return;
+    var q = document.getElementById("partner-q");
+    var list = box.querySelector(".partner-list");
+    var none = box.querySelector(".partner-none");
+    var ghosts = box.querySelector(".partner-ghosts");
+    var chips = box.querySelectorAll(".partner-kinds [data-kind]");
+    if (!q || !list) return;
+    var items = list.querySelectorAll(":scope > li");
+    var TOP = 3;
+
+    function fold(s) {
+      return (s || "").toLowerCase()
+        .replace(/['’`]/g, "'")
+        .replace(/[^a-z0-9]+/g, " ")
+        .replace(/\s+/g, " ")
+        .trim();
+    }
+
+    function apply() {
+      var query = fold(q.value).split(" ").filter(Boolean);
+      var kinds = [];
+      chips.forEach(function (c) {
+        if (c.getAttribute("aria-pressed") === "true") kinds.push(c.getAttribute("data-kind"));
+      });
+      var filtering = query.length > 0 || kinds.length > 0;
+      var shown = 0;
+      items.forEach(function (li) {
+        var kind = li.getAttribute("data-kind") || "";
+        var hay = fold(li.getAttribute("data-q") || li.textContent);
+        var okKind = !kinds.length || kinds.indexOf(kind) !== -1;
+        var okQ = !query.length || query.every(function (w) { return hay.indexOf(w) !== -1; });
+        var on = okKind && okQ;
+        li.hidden = !on;
+        li.classList.remove("is-faded");
+        if (on) {
+          shown += 1;
+          if (!filtering && shown > TOP) li.classList.add("is-faded");
+        }
+      });
+      var cap = !filtering && shown > TOP;
+      list.classList.toggle("is-empty", shown === 0);
+      list.classList.toggle("is-capped", cap);
+      list.style.maxHeight = "";
+      if (ghosts) ghosts.hidden = cap;
+      if (none) none.hidden = shown !== 0;
+    }
+
+    q.addEventListener("input", apply);
+    chips.forEach(function (c) {
+      c.addEventListener("click", function () {
+        var on = c.getAttribute("aria-pressed") !== "true";
+        c.setAttribute("aria-pressed", on ? "true" : "false");
+        apply();
+      });
+    });
+    apply();
+  })();
+
   /* ---- FAQ: animate open and close instead of snapping ---- */
   document.querySelectorAll(".faq details, .partner-list details").forEach(function (d) {
     var summary = d.querySelector("summary");
@@ -330,7 +391,16 @@
     if (!summary || !answer || reduce) return;
     var anim = null;
     summary.addEventListener("click", function (e) {
-      if (e.target.closest("a")) return;
+      var link = e.target.closest("a");
+      if (link) {
+        e.preventDefault();
+        e.stopPropagation();
+        var href = link.getAttribute("href");
+        if (!href) return;
+        if (link.target === "_blank") window.open(href, "_blank", "noopener,noreferrer");
+        else location.href = href;
+        return;
+      }
       e.preventDefault();
       if (anim) anim.cancel();
       var opening = !d.open;

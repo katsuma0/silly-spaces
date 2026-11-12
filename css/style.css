@@ -185,6 +185,8 @@ a, button { touch-action: manipulation; }
 .hero-cta { display: flex; gap: 22px; justify-content: center; align-items: center; flex-wrap: wrap; }
 .prose-cta { margin-top: 36px; }
 
+.sr { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0, 0, 0, 0); white-space: nowrap; border: 0; }
+
 .btn {
   display: inline-flex; align-items: center; justify-content: center; gap: 8px;
   padding: 13px 26px; border-radius: 999px; border: 1px solid transparent; cursor: pointer;
@@ -328,27 +330,165 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 .section-head p { color: var(--muted); font-size: 18px; margin: 0; }
 
 /* ---------- Partners ----------
-   Each row opens: the event we did together, and why they have that face.
+   Each row: the business, its ad in the middle, the face on the right.
    Green over 4, yellow 2–4, red under 2. */
-.partner-list { list-style: none; margin: 0 auto; padding: 0; max-width: 640px; }
+#partners .wrap { width: min(1120px, calc(100% - 48px)); }
+.partner-find {
+  margin: 0 auto 28px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+.partner-search { display: block; }
+.partner-search input {
+  width: 100%;
+  font: inherit;
+  padding: 13px 16px;
+  border-radius: 12px;
+  border: 1px solid var(--line-strong);
+  background: transparent;
+  color: var(--text);
+  transition: border-color var(--mid) var(--ease), box-shadow var(--mid) var(--ease);
+}
+.partner-search input::placeholder { color: var(--muted); opacity: 0.7; }
+.partner-search input:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 4px var(--line); }
+.partner-kinds { display: flex; flex-wrap: wrap; gap: 8px; justify-content: center; }
+.partner-kinds .tag {
+  font: inherit;
+  cursor: pointer;
+  background: transparent;
+  transition: background-color var(--mid) var(--ease), color var(--mid) var(--ease), border-color var(--mid) var(--ease);
+}
+.partner-kinds .tag[aria-pressed="true"] {
+  background: var(--tint-blue);
+  border-color: transparent;
+  color: var(--blue);
+}
+.partner-cols {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 32px;
+  margin: 0 auto 4px;
+  padding: 0 4px 8px;
+}
+.partner-cols p {
+  margin: 0;
+  font-size: 12px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--muted);
+  line-height: 1.35;
+}
+.partner-cols p:nth-child(2),
+.partner-cols p:nth-child(3) { text-align: center; }
+.partner-cols:has(+ .partner-list.is-empty) { display: none; }
+.partner-list { list-style: none; margin: 0 auto; padding: 0; position: relative; }
 .partner-list li { border-top: 1px solid var(--line); }
-.partner-list li:last-child { border-bottom: 1px solid var(--line); }
+.partner-list li.is-faded {
+  max-height: 88px;
+  overflow: hidden;
+  opacity: 0.55;
+  pointer-events: none;
+  user-select: none;
+}
+.partner-list li.is-faded ~ li.is-faded { display: none; }
+.partner-list.is-capped::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  height: 72px;
+  background: linear-gradient(to bottom, transparent 10%, var(--bg) 88%);
+  pointer-events: none;
+}
+.partner-list.is-empty { display: none; }
+.partner-list.is-empty + .partner-ghosts { display: none; }
+.partner-none { margin: 0 auto; padding: 28px 8px; text-align: center; color: var(--muted); }
+.partner-ghosts {
+  position: relative;
+  max-height: 52px;
+  overflow: hidden;
+  pointer-events: none;
+  user-select: none;
+}
+.partner-ghosts::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  background: linear-gradient(to bottom, transparent 0%, var(--bg) 72%);
+}
+.partner-ghost {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 32px;
+  align-items: center;
+  padding: 14px 4px;
+  border-top: 1px solid var(--line);
+}
+.partner-ghost:nth-child(1) { opacity: 0.42; }
+.partner-ghost:nth-child(2) { opacity: 0.18; }
+.partner-skel {
+  display: block;
+  background: currentColor;
+  color: var(--text);
+  opacity: 0.14;
+  border-radius: 8px;
+}
+.partner-ghost .partner-logo {
+  background: currentColor;
+  color: var(--text);
+  opacity: 0.12;
+}
+.partner-ghost .skel-name { height: 18px; width: 62%; }
+.partner-ghost:nth-child(2) .skel-name { width: 48%; }
+.partner-ad-skel { display: block; min-width: 0; text-align: center; }
+.partner-ghost .skel-ad { height: 14px; width: 68%; margin: 0 auto; }
+.partner-ghost:nth-child(2) .skel-ad { width: 54%; }
+.partner-ghost .skel-line { height: 10px; width: 46%; margin: 8px auto 0; border-radius: 6px; }
+.partner-ghost:nth-child(2) .skel-line { width: 38%; }
+.partner-ghost .skel-face {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  justify-self: center;
+  opacity: 0.12;
+}
 .partner summary {
   list-style: none; cursor: pointer;
-  display: grid; grid-template-columns: 1fr auto; gap: 12px 28px; align-items: center;
-  padding: 18px 4px;
+  display: grid;
+  grid-template-columns: repeat(3, minmax(0, 1fr));
+  gap: 12px 32px; align-items: center;
+  padding: 20px 4px;
 }
 .partner summary::-webkit-details-marker { display: none; }
 .partner-copy {
   display: flex;
   align-items: center;
-  gap: 10px;
+  gap: 12px;
   min-width: 0;
 }
-.partner-copy h3 { font-size: clamp(24px, 3vw, 30px); line-height: 1.15; }
+.partner-logo {
+  width: 56px;
+  height: 56px;
+  flex: none;
+  border-radius: 10px;
+  object-fit: cover;
+  object-position: center 40%;
+  background: var(--surface);
+}
+.partner-logo[src*="cntower"] { object-position: 18% 12%; }
+.partner-copy h3 {
+  min-width: 0;
+  font-size: clamp(22px, 2.6vw, 28px);
+  line-height: 1.15;
+}
 .partner summary .plus {
-  width: 20px; height: 20px; flex: none; border-radius: 50%; border: 1px solid var(--line-strong);
-  display: grid; place-items: center; position: relative; color: var(--muted);
+  display: inline-grid;
+  vertical-align: middle;
+  margin-left: 0.4em;
+  width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line-strong);
+  place-items: center; position: relative; color: var(--muted);
   transition: transform var(--slow) var(--ease);
 }
 .partner summary .plus::before, .partner summary .plus::after { content: ""; position: absolute; background: currentColor; }
@@ -356,8 +496,16 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 .partner summary .plus::after { width: 1.4px; height: 8px; transition: transform var(--slow) var(--ease); }
 .partner[open] summary .plus { transform: rotate(180deg); }
 .partner[open] summary .plus::after { transform: scaleY(0); }
-.trust { display: flex; align-items: center; justify-content: center; width: 64px; height: 64px; }
+.trust {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  justify-self: center;
+  width: 64px;
+  height: 64px;
+}
 .trust img { display: block; width: 56px; height: 56px; object-fit: contain; }
+.trust img[src*="trust-s"] { width: 64px; height: 64px; }
 .partner-panel { padding: 2px 4px 18px; }
 .partner-panel p { margin: 0 0 8px; color: var(--muted); font-size: 16px; }
 .partner-panel p:last-child { margin-bottom: 0; }
@@ -367,6 +515,33 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 }
 .partner-panel a { color: var(--text); border-bottom: 1px solid var(--line-strong); }
 .partner-panel a:hover { border-color: var(--text); }
+.partner-ad {
+  display: block;
+  min-width: 0;
+  width: 100%;
+  padding: 0;
+  margin: 0;
+  text-decoration: none;
+  color: inherit;
+  text-align: center;
+}
+.partner-ad strong {
+  display: inline;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 17px;
+  color: var(--text);
+  border-bottom: 1px solid var(--line-strong);
+  transition: border-color var(--mid) var(--ease);
+}
+.partner-ad span {
+  display: block;
+  margin-top: 5px;
+  color: var(--muted);
+  font-size: 14px;
+  line-height: 1.4;
+}
+a.partner-ad:hover strong { border-color: var(--text); }
 
 /* ---------- Bounty board ----------
    A cork bulletin board. Fliers sit a little crooked under a pin.
@@ -509,6 +684,11 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 .bounty-zoom-bar .btn:active {
   width: auto;
   min-width: 168px;
+  max-width: min(540px, calc(100vw - 40px));
+  padding: 13px 22px;
+  white-space: normal;
+  text-align: center;
+  line-height: 1.3;
   transform: none;
 }
 .bounty-zoom-close {
@@ -1008,10 +1188,41 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   .bounty-flier { width: min(128px, 38vw); }
   .bounty-blank .sheet { width: min(var(--w, 110px), 30vw); }
   .bounty-zoom-bar { bottom: 16px; }
-  .partner summary { padding: 18px 0; gap: 10px 16px; }
+  .partner-find { margin: 0 auto 22px; }
+  .partner-search input { padding: 12px 14px; }
+  .partner-cols {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "partners sat" "fresh fresh";
+    padding: 0 0 8px;
+    gap: 6px 16px;
+  }
+  .partner-cols p:nth-child(1) { grid-area: partners; }
+  .partner-cols p:nth-child(2) { grid-area: fresh; text-align: left; }
+  .partner-cols p:nth-child(3) { grid-area: sat; text-align: right; }
+  .partner summary {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "copy trust" "ad ad";
+    padding: 18px 0;
+    gap: 10px 16px;
+  }
+  .partner-copy { grid-area: copy; gap: 10px; justify-self: start; }
+  .partner-ad { grid-area: ad; padding: 0; width: 100%; text-align: center; }
+  .trust { grid-area: trust; justify-self: end; width: 52px; height: 52px; }
+  .partner-ghost {
+    grid-template-columns: 1fr auto;
+    grid-template-areas: "copy face" "ad ad";
+    padding: 12px 0;
+    gap: 10px 16px;
+  }
+  .partner-ghosts { max-height: 44px; }
+  .partner-list li.is-faded { max-height: 96px; }
+  .partner-ghost .partner-copy { grid-area: copy; }
+  .partner-ghost .partner-ad-skel { grid-area: ad; }
+  .partner-ghost .skel-face { grid-area: face; justify-self: end; }
+  .partner-logo { width: 48px; height: 48px; border-radius: 8px; }
   .partner-copy h3 { font-size: 24px; }
-  .trust { width: 52px; height: 52px; }
   .trust img { width: 44px; height: 44px; }
+  .trust img[src*="trust-s"] { width: 52px; height: 52px; }
   .member { flex-basis: calc(50% - 6px); }
   .member { padding: 14px; gap: 10px; }
   .member strong { font-size: 17px; }

@@ -1,23 +1,55 @@
+CN Tower
+kind: place
+score: S
+event: H.U.M.R.P.F.E.R.F.T.C.
+why: The Greatest Tower in the World
+logo: /assets/partners/cntower.jpg
+ad: Edge Walk CN Tower
+adline: The world’s highest hands-free walk. 116 storeys above Toronto. From $199.
+adurl: https://www.cntower.ca/brave-the-edgewalk
+address: 290 Bremner Blvd, Toronto, ON M5V 3L9
+tags: tower, edgewalk, skyline, observation, downtown, heights, walk, view, landmark
+lat: 43.6426
+lng: -79.3871
+
 TTC
+kind: business
 score: 4.1
 event: Train A’Boarddd
 why: only one sideye by rush-hour patrons
+logo: /assets/partners/ttc.png?v=2
+ad: PRESTO Day Pass
+adline: Unlimited TTC for a calendar day. $13.50 at any station.
+adurl: https://www.ttc.ca/en/Fares-and-passes
 address: Kennedy Station, 2455 Eglinton Ave E, Toronto, ON
+tags: transit, train, subway, bus, streetcar, fare, presto, pass, station, commute, rush hour
 lat: 43.7325
 lng: -79.2636
 
 Biidaasige Park
+kind: place
 score: 4.9
 event: F'ing the Front
 why: beautiful park (yumm)
+logo: /assets/partners/biidaasige.jpg?v=2
+ad: Lassonde Trail Nature Tour
+adline: Saturdays at 12 and 2. Drop-in, free. Meet at Old Fire Hall 30.
+adurl: https://lassondearttrail.org/events/lat-art-nature-tour/
 address: 51 Commissioners St, Toronto, ON M5A 1A6
+tags: nature, trail, park, outdoors, art, waterfront, tour, trees, port lands, hike
 lat: 43.6493
 lng: -79.3472
 
 Nathan Philips Square
-score: 4.5
+kind: place
+score: B
 event: Footy in Da City
 why: a fun dirty
+logo: /assets/partners/nathan.jpg?v=2
+ad: Cavalcade of Lights
+adline: The square lights up Nov 28. Free skating through the season.
+adurl: https://www.toronto.ca/explore-enjoy/festivals-events/cavalcade-of-lights/
 address: 100 Queen St W, Toronto, ON M5H 2N2
+tags: lights, skating, ice, rink, downtown, city hall, square, festival, volleyball, christmas
 lat: 43.6526
-lng: -79.3833 
+lng: -79.3833
