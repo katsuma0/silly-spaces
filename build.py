@@ -446,7 +446,13 @@ def render_partner(p, events, upcoming):
         body = f'<strong>{escape(p["ad"])}</strong>'
         if p.get("adline"):
             body += f'<span>{escape(p["adline"])}</span>'
-        ad = f'<span class="partner-ad">{body}</span>'
+        if p.get("adurl"):
+            ad = (
+                f'<a class="partner-news" href="{escape(p["adurl"])}" '
+                f'rel="noopener noreferrer" target="_blank">{body}</a>'
+            )
+        else:
+            ad = f'<span class="partner-news">{body}</span>'
     panel_html = f'            <div class="answer partner-panel">{panel}</div>\n' if panel else ""
     mark = ""
     if p.get("logo"):

@@ -369,6 +369,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 .partner-cols {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas: "copy news trust";
   gap: 12px 32px;
   margin: 0 auto 4px;
   padding: 0 4px 8px;
@@ -381,8 +382,9 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   color: var(--muted);
   line-height: 1.35;
 }
-.partner-cols p:nth-child(2),
-.partner-cols p:nth-child(3) { text-align: center; }
+.partner-cols p:nth-child(1) { grid-area: copy; }
+.partner-cols p:nth-child(2) { grid-area: news; text-align: center; }
+.partner-cols p:nth-child(3) { grid-area: trust; text-align: center; }
 .partner-cols:has(+ .partner-list.is-empty) { display: none; }
 .partner-list { list-style: none; margin: 0 auto; padding: 0; position: relative; }
 .partner-list li { border-top: 1px solid var(--line); }
@@ -423,11 +425,14 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 .partner-ghost {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas: "copy news trust";
   gap: 12px 32px;
   align-items: center;
   padding: 14px 4px;
   border-top: 1px solid var(--line);
 }
+.partner-ghost .partner-copy { grid-area: copy; }
+.partner-ghost .skel-face { grid-area: trust; }
 .partner-ghost:nth-child(1) { opacity: 0.42; }
 .partner-ghost:nth-child(2) { opacity: 0.18; }
 .partner-skel {
@@ -444,9 +449,9 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 }
 .partner-ghost .skel-name { height: 18px; width: 62%; }
 .partner-ghost:nth-child(2) .skel-name { width: 48%; }
-.partner-ad-skel { display: block; min-width: 0; text-align: center; }
-.partner-ghost .skel-ad { height: 14px; width: 68%; margin: 0 auto; }
-.partner-ghost:nth-child(2) .skel-ad { width: 54%; }
+.partner-news-skel { display: block; min-width: 0; text-align: center; grid-area: news; }
+.partner-ghost .skel-news { height: 14px; width: 68%; margin: 0 auto; }
+.partner-ghost:nth-child(2) .skel-news { width: 54%; }
 .partner-ghost .skel-line { height: 10px; width: 46%; margin: 8px auto 0; border-radius: 6px; }
 .partner-ghost:nth-child(2) .skel-line { width: 38%; }
 .partner-ghost .skel-face {
@@ -466,6 +471,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 .partner-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
+  grid-template-areas: "copy news trust";
   gap: 12px 32px;
   align-items: center;
 }
@@ -474,6 +480,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   align-items: center;
   gap: 12px;
   min-width: 0;
+  grid-area: copy;
 }
 .partner-logo {
   width: 56px;
@@ -510,6 +517,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   justify-self: center;
   width: 64px;
   height: 64px;
+  grid-area: trust;
 }
 .trust img { display: block; width: 56px; height: 56px; object-fit: contain; }
 .trust img[src*="trust-s"] { width: 64px; height: 64px; }
@@ -522,29 +530,34 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 }
 .partner-panel a { color: var(--text); border-bottom: 1px solid var(--line-strong); }
 .partner-panel a:hover { border-color: var(--text); }
-.partner-ad {
+.partner-news {
   display: block;
   min-width: 0;
   padding: 0;
   margin: 0;
+  text-decoration: none;
   color: inherit;
   text-align: center;
-  cursor: inherit;
+  cursor: pointer;
+  grid-area: news;
 }
-.partner-ad strong {
+.partner-news strong {
   display: inline;
   font-family: var(--serif);
   font-weight: 400;
   font-size: 17px;
   color: var(--text);
+  border-bottom: 1px solid var(--line-strong);
+  transition: border-color var(--mid) var(--ease);
 }
-.partner-ad span {
+.partner-news span {
   display: block;
   margin-top: 5px;
   color: var(--muted);
   font-size: 14px;
   line-height: 1.4;
 }
+.partner-news:hover strong { border-color: var(--text); }
 
 /* ---------- Bounty board ----------
    A cork bulletin board. Fliers sit a little crooked under a pin.
