@@ -455,7 +455,7 @@ def render_partner(p, events, upcoming):
             )
         else:
             ad = f'<span class="partner-ad">{body}</span>'
-    panel_html = f'            <div class="answer partner-panel">{panel}</div>\n' if panel else ""
+    panel_html = f'            <div class="answer partner-panel" hidden>{panel}</div>\n' if panel else ""
     mark = ""
     if p.get("logo"):
         mark = (
@@ -465,18 +465,22 @@ def render_partner(p, events, upcoming):
     ad_html = f'\n              {ad}' if ad else ""
     kind_attr = f' data-kind="{escape(kind)}"' if kind else ""
     q_attr = f' data-q="{escape(hay)}"' if hay else ""
+    # Ads and faces stay outside the toggle. Putting them in <summary>
+    # hid the middle column on desktop Safari.
+    plus = (
+        f'<button type="button" class="plus" aria-expanded="false" '
+        f'aria-label="{escape(label)}"></button>'
+    )
     return (
         f'        <li{kind_attr}{q_attr}>\n'
-        f'          <details class="partner">\n'
-        f'            <summary aria-label="{escape(label)}">\n'
-        f'              <span class="partner-row">'
-        f'<span class="partner-copy">{mark}<h3>{escape(p["name"])}<span class="plus"></span></h3></span>'
+        f'          <div class="partner">\n'
+        f'            <div class="partner-row">\n'
+        f'              <span class="partner-copy">{mark}<h3>{escape(p["name"])}{plus}</h3></span>'
         f'{ad_html}\n'
-        f'              <span class="trust"><img src="/assets/trust-{face}.png" alt="" width="64" height="64"></span>'
-        f'</span>\n'
-        f'            </summary>\n'
+        f'              <span class="trust"><img src="/assets/trust-{face}.png" alt="" width="64" height="64"></span>\n'
+        f'            </div>\n'
         f'{panel_html}'
-        f'          </details>\n'
+        f'          </div>\n'
         f'        </li>'
     )
 

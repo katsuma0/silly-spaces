@@ -456,18 +456,12 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   justify-self: center;
   opacity: 0.12;
 }
-.partner summary {
-  list-style: none; cursor: pointer;
-  display: block;
-  padding: 20px 4px;
-}
-.partner summary::-webkit-details-marker,
-.partner summary::marker { display: none; content: none; }
 .partner-row {
   display: grid;
   grid-template-columns: repeat(3, minmax(0, 1fr));
   gap: 12px 32px;
   align-items: center;
+  padding: 20px 4px;
 }
 .partner-copy {
   display: flex;
@@ -490,19 +484,20 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   font-size: clamp(22px, 2.6vw, 28px);
   line-height: 1.15;
 }
-.partner summary .plus {
+.partner .plus {
   display: inline-grid;
   vertical-align: middle;
   margin-left: 0.4em;
   width: 20px; height: 20px; border-radius: 50%; border: 1px solid var(--line-strong);
   place-items: center; position: relative; color: var(--muted);
+  background: transparent; padding: 0; font: inherit; cursor: pointer;
   transition: transform var(--slow) var(--ease);
 }
-.partner summary .plus::before, .partner summary .plus::after { content: ""; position: absolute; background: currentColor; }
-.partner summary .plus::before { width: 8px; height: 1.4px; }
-.partner summary .plus::after { width: 1.4px; height: 8px; transition: transform var(--slow) var(--ease); }
-.partner[open] summary .plus { transform: rotate(180deg); }
-.partner[open] summary .plus::after { transform: scaleY(0); }
+.partner .plus::before, .partner .plus::after { content: ""; position: absolute; background: currentColor; }
+.partner .plus::before { width: 8px; height: 1.4px; }
+.partner .plus::after { width: 1.4px; height: 8px; transition: transform var(--slow) var(--ease); }
+.partner.is-open .plus { transform: rotate(180deg); }
+.partner.is-open .plus::after { transform: scaleY(0); }
 .trust {
   display: flex;
   align-items: center;
@@ -1209,8 +1204,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   .partner-cols p:nth-child(1) { text-align: left; }
   .partner-cols p:nth-child(2) { text-align: center; }
   .partner-cols p:nth-child(3) { text-align: center; }
-  .partner summary { padding: 18px 0; }
-  .partner-row { gap: 10px 12px; }
+  .partner-row { gap: 10px 12px; padding: 18px 0; }
   .trust { width: 52px; height: 52px; }
   .partner-ghost { gap: 10px 12px; padding: 12px 0; }
   .partner-ghosts { max-height: 44px; }
