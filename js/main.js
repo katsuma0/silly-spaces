@@ -64,6 +64,33 @@
     document.addEventListener("keydown", function (e) { if (e.key === "Escape") closeMenu(); });
   }
 
+  /* ---- Hero people: wait for the logo to settle, then fade in one by
+     one in a shuffled order (phone and desktop). ---- */
+  var placing = /(?:\?|&)place=1(?:&|$)/.test(location.search);
+  function revealPeople() {
+    if (revealPeople.done) return;
+    revealPeople.done = true;
+    var figs = Array.prototype.slice.call(document.querySelectorAll(".hero .scene-fig"));
+    if (!figs.length) return;
+    if (reduce || placing) {
+      figs.forEach(function (el) { el.classList.add("is-in"); });
+      return;
+    }
+    var i, j, tmp;
+    for (i = figs.length - 1; i > 0; i--) {
+      j = Math.floor(Math.random() * (i + 1));
+      tmp = figs[i]; figs[i] = figs[j]; figs[j] = tmp;
+    }
+    figs.forEach(function (el, n) {
+      setTimeout(function () { el.classList.add("is-in"); }, 160 + n * 240 + Math.random() * 80);
+    });
+  }
+  if (reduce || placing || !document.querySelector(".hero .logo-anim")) {
+    revealPeople();
+  } else {
+    setTimeout(revealPeople, 5600);
+  }
+
   /* ---- Filmed logo: play once, drop the black, and hold the settled
      mark once the last heartbeat has finished. ---- */
   if (!reduce) {
@@ -133,6 +160,7 @@
               video.playbackRate = 1;
               video.pause();
               draw();
+              if (mark.closest(".hero")) revealPeople();
               return;
             }
             video.playbackRate = Math.max(0.07, rate);
@@ -170,9 +198,12 @@
   }
 
   /* ---- Place mode (?place=1): drag people around, Shift-drag to rotate. ---- */
-  var placing = /(?:\?|&)place=1(?:&|$)/.test(location.search);
   if (placing && document.querySelector(".hero")) {
     root.classList.add("is-placing");
+    var viewport = document.querySelector('meta[name="viewport"]');
+    if (viewport) {
+      viewport.setAttribute("content", "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover");
+    }
     var figs = Array.prototype.slice.call(document.querySelectorAll(".scene-fig"));
     var names = ["surgeon", "quebec", "paddle", "helmet", "grand", "matthew"];
     function figName(el) {
@@ -186,26 +217,45 @@
       var n = parseFloat(v);
       return isNaN(n) ? fallback : n;
     }
-    function apply(el, x, y, rot) {
+    function apply(el, x, y, rot, s) {
       el.style.setProperty("--fig-x", x.toFixed(0) + "px");
       el.style.setProperty("--fig-y", y.toFixed(0) + "px");
       el.style.setProperty("--fig-rot", rot.toFixed(1) + "deg");
+      el.style.setProperty("--fig-s", Math.max(0.35, Math.min(1.6, s)).toFixed(2));
     }
     function dumpCss() {
-      return figs.map(function (el) {
+      var rules = figs.map(function (el) {
         var n = figName(el);
         if (!n) return "";
-        return ".scene-fig-" + n + " { --fig-x: " + readVar(el, "--fig-x", 0).toFixed(0) + "px; --fig-y: " + readVar(el, "--fig-y", 0).toFixed(0) + "px; --fig-rot: " + readVar(el, "--fig-rot", 0).toFixed(1) + "deg; }";
+        return ".scene-fig-" + n + " { --fig-x: " + readVar(el, "--fig-x", 0).toFixed(0) + "px; --fig-y: " + readVar(el, "--fig-y", 0).toFixed(0) + "px; --fig-rot: " + readVar(el, "--fig-rot", 0).toFixed(1) + "deg; --fig-s: " + readVar(el, "--fig-s", 1).toFixed(2) + "; }";
       }).filter(Boolean).join("\n");
+      if (window.matchMedia("(max-width: 734px)").matches) {
+        return "@media (max-width: 734px) {\n  " + rules.replace(/\n/g, "\n  ") + "\n}";
+      }
+      return rules;
     }
+    var rotateMode = false;
+    var sizeMode = false;
     var hud = document.createElement("div");
     hud.className = "place-hud";
-    hud.innerHTML = "<p>Drag a person to move. Shift-drag to rotate.</p><button type=\"button\" class=\"btn btn-ghost\">Copy CSS</button><pre></pre>";
+    hud.innerHTML = "<p>Drag a person to move.</p><button type=\"button\" class=\"btn btn-ghost place-rotate\" aria-pressed=\"false\">Rotate</button><button type=\"button\" class=\"btn btn-ghost place-size\" aria-pressed=\"false\">Size</button><button type=\"button\" class=\"btn btn-ghost place-copy\">Copy CSS</button><pre></pre>";
     document.body.appendChild(hud);
     var pre = hud.querySelector("pre");
-    var copyBtn = hud.querySelector("button");
+    var copyBtn = hud.querySelector(".place-copy");
+    var rotateBtn = hud.querySelector(".place-rotate");
+    var sizeBtn = hud.querySelector(".place-size");
     function paintHud() { pre.textContent = dumpCss(); }
     paintHud();
+    function setMode(mode) {
+      rotateMode = mode === "rotate" ? !rotateMode : false;
+      sizeMode = mode === "size" ? !sizeMode : false;
+      rotateBtn.setAttribute("aria-pressed", rotateMode ? "true" : "false");
+      sizeBtn.setAttribute("aria-pressed", sizeMode ? "true" : "false");
+      rotateBtn.textContent = rotateMode ? "Rotating" : "Rotate";
+      sizeBtn.textContent = sizeMode ? "Sizing" : "Size";
+    }
+    rotateBtn.addEventListener("click", function () { setMode("rotate"); });
+    sizeBtn.addEventListener("click", function () { setMode("size"); });
     copyBtn.addEventListener("click", function () {
       var text = dumpCss();
       if (navigator.clipboard && navigator.clipboard.writeText) {
@@ -219,15 +269,18 @@
         e.preventDefault();
         e.stopPropagation();
         var startX = e.clientX, startY = e.clientY;
-        var ox = readVar(el, "--fig-x", 0), oy = readVar(el, "--fig-y", 0), orot = readVar(el, "--fig-rot", 0);
-        var rotate = e.shiftKey;
+        var ox = readVar(el, "--fig-x", 0), oy = readVar(el, "--fig-y", 0), orot = readVar(el, "--fig-rot", 0), os = readVar(el, "--fig-s", 1);
+        var rotate = e.shiftKey || rotateMode;
+        var sizing = sizeMode;
         el.classList.add("is-dragging");
         el.setPointerCapture(e.pointerId);
         function move(ev) {
-          if (rotate) {
-            apply(el, ox, oy, orot + (ev.clientX - startX) * 0.3);
+          if (sizing) {
+            apply(el, ox, oy, orot, os + (startY - ev.clientY) * 0.008);
+          } else if (rotate) {
+            apply(el, ox, oy, orot + (ev.clientX - startX) * 0.3, os);
           } else {
-            apply(el, ox + (ev.clientX - startX), oy + (ev.clientY - startY), orot);
+            apply(el, ox + (ev.clientX - startX), oy + (ev.clientY - startY), orot, os);
           }
           paintHud();
         }

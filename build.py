@@ -457,8 +457,13 @@ def render_partner(p, events, upcoming):
     mark = ""
     if p.get("logo"):
         mark = (
+            f'<span class="partner-mark">'
             f'<img class="partner-logo" src="{escape(p["logo"])}" alt="" '
             f'width="72" height="72" decoding="async">'
+            f'<span class="trust-on-logo" aria-hidden="true">'
+            f'<img src="/assets/trust-{face}.png" alt="" width="64" height="64">'
+            f'</span>'
+            f'</span>'
         )
     ad_html = f'\n              {ad}' if ad else ""
     kind_attr = f' data-kind="{escape(kind)}"' if kind else ""
