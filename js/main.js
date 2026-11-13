@@ -405,25 +405,17 @@
   })();
 
   /* ---- FAQ: animate open and close instead of snapping ---- */
-  document.querySelectorAll(".faq details, .partner-list details").forEach(function (d) {
+  document.querySelectorAll(".faq details").forEach(function (d) {
     var summary = d.querySelector("summary");
     var answer = d.querySelector(".answer");
     if (!summary || !answer || reduce) return;
     var anim = null;
     summary.addEventListener("click", function (e) {
-      var ad = e.target.closest(".partner-ad");
-      var href = ad && (ad.getAttribute("data-href") || ad.getAttribute("href"));
-      if (href) {
-        e.preventDefault();
-        e.stopPropagation();
-        window.open(href, "_blank", "noopener,noreferrer");
-        return;
-      }
       var link = e.target.closest("a");
       if (link) {
         e.preventDefault();
         e.stopPropagation();
-        href = link.getAttribute("href");
+        var href = link.getAttribute("href");
         if (!href) return;
         if (link.target === "_blank") window.open(href, "_blank", "noopener,noreferrer");
         else location.href = href;
@@ -445,6 +437,51 @@
         if (!opening) d.open = false;
         anim = null;
       };
+    });
+  });
+
+  /* ---- Partners: plus opens the why/event line; ads are not inside that toggle ---- */
+  document.querySelectorAll(".partner-list .partner").forEach(function (box) {
+    var copy = box.querySelector(".partner-copy");
+    var btn = box.querySelector(".plus");
+    var answer = box.querySelector(".answer");
+    if (!copy || !btn || !answer) return;
+    answer.hidden = true;
+    var anim = null;
+    function toggle() {
+      var opening = !box.classList.contains("is-open");
+      btn.setAttribute("aria-expanded", opening ? "true" : "false");
+      if (reduce) {
+        box.classList.toggle("is-open", opening);
+        answer.hidden = !opening;
+        return;
+      }
+      if (anim) anim.cancel();
+      if (opening) {
+        box.classList.add("is-open");
+        answer.hidden = false;
+      }
+      var start = opening ? 0 : answer.offsetHeight;
+      var end = opening ? answer.scrollHeight : 0;
+      answer.style.height = start + "px";
+      answer.style.overflow = "hidden";
+      anim = answer.animate(
+        [{ height: start + "px", opacity: opening ? 0 : 1 }, { height: end + "px", opacity: opening ? 1 : 0 }],
+        { duration: 560, easing: "cubic-bezier(0.22, 1, 0.36, 1)" }
+      );
+      anim.onfinish = function () {
+        answer.style.height = "";
+        answer.style.overflow = "";
+        if (!opening) {
+          box.classList.remove("is-open");
+          answer.hidden = true;
+        }
+        anim = null;
+      };
+    }
+    copy.addEventListener("click", function (e) {
+      e.preventDefault();
+      toggle();
     });
   });
 
