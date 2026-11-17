@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&display=optional">
-  <link rel="stylesheet" href="/css/style.css?v=457096a0">
+  <link rel="stylesheet" href="/css/style.css?v=a6bf7b80">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -41,9 +41,9 @@
     <ul class="nav-links" id="nav-links">
       <li><a href="/#events">Our Silly Spaces</a></li>
       <li><a href="/#partners">Partners</a></li>
-      <li><a href="/#bounty">Bounty Board</a></li>
       <li><a href="/#join">Join</a></li>
       <li><a href="/#faq">FAQ</a></li>
+      <li><a href="/#bounty">Bounty Board</a></li>
       <li><a href="/about.html">About</a></li>
       <li class="nav-theme">
         <button class="theme-toggle" type="button" aria-label="Switch to dark mode">
@@ -96,13 +96,39 @@
   <!-- Events: looping strip, the current cover sits in the middle of the screen -->
   <section class="section" id="events">
     <div class="events-stage">
+    <img class="scene-fig scene-fig-aidan" src="/assets/ss-aidan.png" alt="" width="179" height="307" decoding="async" aria-hidden="true">
+    <a class="scene-fig scene-fig-kolbe has-met" href="/events/2026-08-04-footy.html?photo=0" aria-label="See the photo we took">
+      <img class="scene-fig-person" src="/assets/ss-kolbe.png" alt="" width="194" height="300" decoding="async">
+    </a>
+    <span class="scene-fig scene-fig-amari has-thought">
+      <img class="scene-fig-person" src="/assets/ss-amari.png" alt="" width="153" height="317" decoding="async" aria-hidden="true">
+      <span class="fig-thought" aria-hidden="true">
+        <img class="thought-puff thought-puff-1" src="/assets/thought-cloud-small.png" alt="" width="432" height="359" decoding="async">
+        <img class="thought-puff thought-puff-2" src="/assets/thought-cloud-small.png" alt="" width="432" height="359" decoding="async">
+        <span class="thought-cloud">
+          <img src="/assets/thought-cloud-big.png" alt="" width="707" height="589" decoding="async">
+          <span class="thought-cloud-text">Everyone wins!</span>
+        </span>
+      </span>
+    </span>
+    <a class="scene-fig scene-fig-julie has-met has-thought" href="/events/2026-08-29-finger-painting.html?photo=0" aria-label="See the photo we took">
+      <img class="scene-fig-person" src="/assets/ss-julie.png" alt="" width="228" height="319" decoding="async">
+      <span class="fig-thought" aria-hidden="true">
+        <img class="thought-puff thought-puff-1" src="/assets/thought-cloud-small.png" alt="" width="432" height="359" decoding="async">
+        <img class="thought-puff thought-puff-2" src="/assets/thought-cloud-small.png" alt="" width="432" height="359" decoding="async">
+        <span class="thought-cloud">
+          <img src="/assets/thought-cloud-big.png" alt="" width="707" height="589" decoding="async">
+          <span class="thought-cloud-text">Do the silly thing.</span>
+        </span>
+      </span>
+    </a>
     <div class="wrap">
       <div class="section-head reveal">
-        <p class="eyebrow">Events</p>
+        <p class="eyebrow">Hangouts</p>
         <h2>Silly Spaces</h2>
       </div>
     </div>
-    <div class="carousel reveal" id="event-carousel" aria-roledescription="carousel" aria-label="Events">
+    <div class="carousel reveal" id="event-carousel" aria-roledescription="carousel" aria-label="Hangouts">
       <button class="car-nav prev" type="button" aria-label="Previous event">&#8249;</button>
       <div class="car-viewport">
         <div class="car-track">
@@ -155,7 +181,7 @@
     </div>
     <div class="wrap">
       <div class="car-detail" id="car-detail"></div>
-      <p class="empty reveal" id="no-events" hidden>Nothing on the calendar right now. <a href="#join">Join the list</a> and you'll hear first.</p>
+      <p class="empty reveal" id="no-events" hidden>Nothing on the calendar right now. <a href="#join">Join The Silly Space Network</a> and you'll hear first.</p>
       <button class="cal-toggle reveal" type="button" aria-expanded="false" aria-controls="calendar">Show the calendar</button>
       <div class="calendar" id="calendar" aria-label="Event calendar" hidden>
         <div class="cal-head">
@@ -192,7 +218,7 @@
       </div>
       <div class="partner-cols">
         <p>Partners</p>
-        <p>What’s new<br>with them</p>
+        <p>What’s new with them</p>
         <p>Satisfaction</p>
       </div>
       <ul class="partner-list reveal">
@@ -255,60 +281,34 @@
     </div>
   </section>
 
-  <!-- Bounty Board: posters of what we need help with. Email us to take one. -->
-  <section class="section" id="bounty">
-    <div class="wrap">
-      <div class="section-head reveal">
-        <p class="eyebrow">Help wanted</p>
-        <h2>Bounty Board</h2>
-        <p>A favour for a favour!</p>
-      </div>
-      <div class="bounty-board reveal">
-        <article class="bounty bounty-blank" style="--x:58%;--y:10%;--tilt:3.4deg;--w:142px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
-        <article class="bounty bounty-blank" style="--x:74%;--y:42%;--tilt:-2.6deg;--w:118px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
-        <article class="bounty bounty-blank" style="--x:40%;--y:48%;--tilt:2.1deg;--w:128px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
-        <article class="bounty bounty-blank" style="--x:6%;--y:52%;--tilt:-3.1deg;--w:110px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
-        <article class="bounty bounty-blank" style="--x:62%;--y:58%;--tilt:1.6deg;--w:124px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
-        <!-- bounties:start -->
-        <article class="bounty" style="--x:15%;--y:14%;--tilt:-3.8deg">
-          <button type="button" class="bounty-flier" data-src="/assets/bounties/five-quebecois/poster.jpg" data-mail="mailto:sillyspacesww@gmail.com?subject=Bounty%3A%20Five%20Quebecois&body=I%20can%20help%20and%20now%20you%20owe%20me%20a%20reasonable%20favour%20%3A%29%0A%0ABounty%3A%20Five%20Quebecois" aria-label="Open bounty: Five Quebecois">
-            <span class="pin" aria-hidden="true"></span>
-            <img src="/assets/bounties/five-quebecois/poster.jpg" alt="Five Quebecois — that play volleyball and live near the ON/QC border">
-          </button>
-        </article>
-        <!-- bounties:end -->
-      </div>
-    </div>
-    <dialog class="bounty-zoom" id="bounty-zoom" aria-label="Bounty">
-      <img alt="">
-      <div class="bounty-zoom-bar">
-        <a class="btn btn-primary bounty-zoom-help" tabindex="-1">I can help and now you owe me a reasonable favour :)</a>
-      </div>
-      <button class="bounty-zoom-close" type="button" aria-label="Close">&times;</button>
-    </dialog>
-  </section>
-
   <!-- Join -->
   <section class="section" id="join">
     <div class="wrap">
       <div class="section-head reveal">
         <p class="eyebrow">Join</p>
-        <h2>Join the list</h2>
-        <p>One email when the next event has a date.</p>
+        <h2>The Silly Space Network</h2>
+        <p>One day, I’ll get you a metal card if you fill this out and swing by the spaces a couple times.</p>
       </div>
-      <!-- The action is the Google Apps Script web app URL, see sheet/Code.gs for the setup. -->
-      <form class="join-box reveal" id="join-form" action="https://script.google.com/macros/s/PASTE_YOUR_ID/exec" method="POST">
+      <form class="join-box reveal" id="join-form" action="https://docs.google.com/forms/d/e/1FAIpQLSduNueIhu_vV0TZPLxF0hxtZ26TMj40Pc4doNe0KVIPYaIk5Q/formResponse" method="POST">
         <input class="honey" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="field">
-          <label for="name">Name</label>
-          <input id="name" name="name" type="text" required autocomplete="name" autocapitalize="words" enterkeyhint="next" placeholder="What should we call you">
+          <label for="join-name">Name</label>
+          <input id="join-name" name="entry.2005620554" type="text" required autocomplete="name" autocapitalize="words" enterkeyhint="next" placeholder="What should we call you">
         </div>
         <div class="field">
-          <label for="email">Email</label>
-          <input id="email" name="email" type="email" required pattern="[^\s@]+@[^\s@]+\.[^\s@]+" title="Something like you@example.com" autocomplete="email" autocapitalize="none" inputmode="email" enterkeyhint="done" placeholder="you@example.com">
+          <label for="join-email">Email</label>
+          <input id="join-email" name="entry.1045781291" type="email" required pattern="[^\s@]+@[^\s@]+\.[^\s@]+" title="Something like you@example.com" autocomplete="email" autocapitalize="none" inputmode="email" enterkeyhint="next" placeholder="you@example.com">
+        </div>
+        <div class="field is-silly">
+          <p class="silly-kicker">Silly question of the month</p>
+          <label for="join-snow">How do you feel about snow?</label>
+          <textarea id="join-snow" name="entry.839337160" required rows="3" enterkeyhint="next" placeholder="Honestly…"></textarea>
+        </div>
+        <div class="field">
+          <label for="join-meet">Where did we meet?</label>
+          <textarea id="join-meet" name="entry.1974083101" required rows="2" enterkeyhint="done" placeholder="silly space ..."></textarea>
         </div>
         <button class="btn btn-primary" type="submit" style="width:100%">Join</button>
-        <p class="form-note">Reply stop to any email and you are off the list.</p>
       </form>
     </div>
   </section>
@@ -329,6 +329,39 @@
         -->
       </div>
     </div>
+  </section>
+
+  <!-- Bounty Board: the cork fills the section. Email us to take a flier. -->
+  <section class="section" id="bounty">
+    <div class="bounty-board">
+      <div class="wrap">
+        <div class="section-head reveal">
+          <p class="eyebrow">Help wanted</p>
+          <h2>Bounty Board</h2>
+          <p>A favour for a favour!</p>
+        </div>
+      </div>
+        <article class="bounty bounty-blank" style="--x:58%;--y:18%;--tilt:3.4deg;--w:128px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
+        <article class="bounty bounty-blank" style="--x:78%;--y:48%;--tilt:-2.6deg;--w:110px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
+        <article class="bounty bounty-blank" style="--x:40%;--y:52%;--tilt:2.1deg;--w:118px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
+        <article class="bounty bounty-blank" style="--x:8%;--y:46%;--tilt:-3.1deg;--w:104px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
+        <article class="bounty bounty-blank" style="--x:62%;--y:58%;--tilt:1.6deg;--w:114px" aria-hidden="true"><div class="sheet"><span class="pin"></span></div></article>
+        <!-- bounties:start -->
+        <article class="bounty" style="--x:15%;--y:14%;--tilt:-3.8deg">
+          <button type="button" class="bounty-flier" data-src="/assets/bounties/five-quebecois/poster.jpg" data-mail="mailto:sillyspacesww@gmail.com?subject=Bounty%3A%20Five%20Quebecois&body=I%20can%20help%20and%20now%20you%20owe%20me%20a%20reasonable%20favour%20%3A%29%0A%0ABounty%3A%20Five%20Quebecois" aria-label="Open bounty: Five Quebecois">
+            <span class="pin" aria-hidden="true"></span>
+            <img src="/assets/bounties/five-quebecois/poster.jpg" alt="Five Quebecois — that play volleyball and live near the ON/QC border">
+          </button>
+        </article>
+        <!-- bounties:end -->
+    </div>
+    <dialog class="bounty-zoom" id="bounty-zoom" aria-label="Bounty">
+      <img alt="">
+      <div class="bounty-zoom-bar">
+        <a class="btn btn-primary bounty-zoom-help" tabindex="-1">I can help and now you owe me a reasonable favour :)</a>
+      </div>
+      <button class="bounty-zoom-close" type="button" aria-label="Close">&times;</button>
+    </dialog>
   </section>
 
 </main>
@@ -363,9 +396,9 @@
       <ul>
         <li><a href="/#events">Our Silly Spaces</a></li>
         <li><a href="/#partners">Partners</a></li>
-        <li><a href="/#bounty">Bounty Board</a></li>
         <li><a href="/#join">Join</a></li>
         <li><a href="/#faq">FAQ</a></li>
+        <li><a href="/#bounty">Bounty Board</a></li>
         <li><a href="/about.html">About</a></li>
         <li><a href="/#contact">Contact</a></li>
       </ul>
@@ -373,6 +406,6 @@
   </div>
 </footer>
 
-<script src="/js/main.js?v=d096f67f"></script>
+<script src="/js/main.js?v=8864465c"></script>
 </body>
 </html>
