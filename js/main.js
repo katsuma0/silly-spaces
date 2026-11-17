@@ -70,7 +70,7 @@
   function revealPeople() {
     if (revealPeople.done) return;
     revealPeople.done = true;
-    var figs = Array.prototype.slice.call(document.querySelectorAll(".hero .scene-fig"));
+    var figs = Array.prototype.slice.call(document.querySelectorAll(".scene-fig"));
     if (!figs.length) return;
     if (reduce || placing) {
       figs.forEach(function (el) { el.classList.add("is-in"); });
@@ -198,14 +198,14 @@
   }
 
   /* ---- Place mode (?place=1): drag people around, Shift-drag to rotate. ---- */
-  if (placing && document.querySelector(".hero")) {
+  if (placing && document.querySelector(".scene-fig")) {
     root.classList.add("is-placing");
     var viewport = document.querySelector('meta[name="viewport"]');
     if (viewport) {
       viewport.setAttribute("content", "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover");
     }
     var figs = Array.prototype.slice.call(document.querySelectorAll(".scene-fig"));
-    var names = ["surgeon", "quebec", "paddle", "helmet", "grand", "matthew"];
+    var names = ["surgeon", "quebec", "paddle", "helmet", "grand", "matthew", "aidan", "kolbe", "amari", "julie"];
     function figName(el) {
       for (var i = 0; i < names.length; i++) {
         if (el.classList.contains("scene-fig-" + names[i])) return names[i];
@@ -223,11 +223,32 @@
       el.style.setProperty("--fig-rot", rot.toFixed(1) + "deg");
       el.style.setProperty("--fig-s", Math.max(0.35, Math.min(1.6, s)).toFixed(2));
     }
+    function dumpThought(fig) {
+      var n = figName(fig);
+      var thought = fig.querySelector(".fig-thought");
+      if (!n || !thought) return "";
+      var sel = (fig.closest("#events") ? "#events " : "") + ".scene-fig-" + n;
+      var p1 = thought.querySelector(".thought-puff-1");
+      var p2 = thought.querySelector(".thought-puff-2");
+      var cloud = thought.querySelector(".thought-cloud");
+      var words = thought.querySelector(".thought-cloud-text");
+      var lines = [
+        sel + " .fig-thought { --thought-x: " + readVar(thought, "--thought-x", 0).toFixed(0) + "px; --thought-y: " + readVar(thought, "--thought-y", 0).toFixed(0) + "px; }",
+        p1 ? sel + " .thought-puff-1 { --puff-x: " + readVar(p1, "--puff-x", 0).toFixed(0) + "px; --puff-y: " + readVar(p1, "--puff-y", 0).toFixed(0) + "px; --puff-w: " + readVar(p1, "--puff-w", 30).toFixed(0) + "px; }" : "",
+        p2 ? sel + " .thought-puff-2 { --puff-x: " + readVar(p2, "--puff-x", 0).toFixed(0) + "px; --puff-y: " + readVar(p2, "--puff-y", 0).toFixed(0) + "px; --puff-w: " + readVar(p2, "--puff-w", 54).toFixed(0) + "px; }" : "",
+        cloud ? sel + " .thought-cloud { --cloud-x: " + readVar(cloud, "--cloud-x", 0).toFixed(0) + "px; --cloud-y: " + readVar(cloud, "--cloud-y", 0).toFixed(0) + "px; --cloud-w: " + readVar(cloud, "--cloud-w", 220).toFixed(0) + "px; }" : "",
+        words ? sel + " .thought-cloud-text { --text-x: " + readVar(words, "--text-x", 0).toFixed(0) + "px; --text-y: " + readVar(words, "--text-y", 0).toFixed(0) + "px; }" : ""
+      ];
+      return lines.filter(Boolean).join("\n");
+    }
     function dumpCss() {
       var rules = figs.map(function (el) {
         var n = figName(el);
         if (!n) return "";
-        return ".scene-fig-" + n + " { --fig-x: " + readVar(el, "--fig-x", 0).toFixed(0) + "px; --fig-y: " + readVar(el, "--fig-y", 0).toFixed(0) + "px; --fig-rot: " + readVar(el, "--fig-rot", 0).toFixed(1) + "deg; --fig-s: " + readVar(el, "--fig-s", 1).toFixed(2) + "; }";
+        var sel = (el.closest("#events") ? "#events " : "") + ".scene-fig-" + n;
+        var line = sel + " { --fig-x: " + readVar(el, "--fig-x", 0).toFixed(0) + "px; --fig-y: " + readVar(el, "--fig-y", 0).toFixed(0) + "px; --fig-rot: " + readVar(el, "--fig-rot", 0).toFixed(1) + "deg; --fig-s: " + readVar(el, "--fig-s", 1).toFixed(2) + "; }";
+        var thought = dumpThought(el);
+        return thought ? line + "\n" + thought : line;
       }).filter(Boolean).join("\n");
       if (window.matchMedia("(max-width: 734px)").matches) {
         return "@media (max-width: 734px) {\n  " + rules.replace(/\n/g, "\n  ") + "\n}";
@@ -238,7 +259,7 @@
     var sizeMode = false;
     var hud = document.createElement("div");
     hud.className = "place-hud";
-    hud.innerHTML = "<p>Drag a person to move.</p><button type=\"button\" class=\"btn btn-ghost place-rotate\" aria-pressed=\"false\">Rotate</button><button type=\"button\" class=\"btn btn-ghost place-size\" aria-pressed=\"false\">Size</button><button type=\"button\" class=\"btn btn-ghost place-copy\">Copy CSS</button><pre></pre>";
+    hud.innerHTML = "<p>Drag a person, a cloud, or the words.</p><button type=\"button\" class=\"btn btn-ghost place-rotate\" aria-pressed=\"false\">Rotate</button><button type=\"button\" class=\"btn btn-ghost place-size\" aria-pressed=\"false\">Size</button><button type=\"button\" class=\"btn btn-ghost place-copy\">Copy CSS</button><pre></pre>";
     document.body.appendChild(hud);
     var pre = hud.querySelector("pre");
     var copyBtn = hud.querySelector(".place-copy");
@@ -262,10 +283,28 @@
         navigator.clipboard.writeText(text).then(function () { copyBtn.textContent = "Copied"; setTimeout(function () { copyBtn.textContent = "Copy CSS"; }, 1400); });
       }
     });
+    function isCloud(piece) { return piece.classList.contains("thought-cloud"); }
+    function applyPiece(piece, x, y, w) {
+      if (isCloud(piece)) {
+        piece.style.setProperty("--cloud-x", x.toFixed(0) + "px");
+        piece.style.setProperty("--cloud-y", y.toFixed(0) + "px");
+        piece.style.setProperty("--cloud-w", Math.max(80, Math.min(360, w)).toFixed(0) + "px");
+      } else {
+        piece.style.setProperty("--puff-x", x.toFixed(0) + "px");
+        piece.style.setProperty("--puff-y", y.toFixed(0) + "px");
+        piece.style.setProperty("--puff-w", Math.max(16, Math.min(140, w)).toFixed(0) + "px");
+      }
+    }
     figs.forEach(function (el) {
+      var thought = el.querySelector(".fig-thought");
+      if (thought) {
+        el.classList.add("is-in");
+        thought.classList.add("is-on");
+      }
       el.addEventListener("click", function (e) { e.preventDefault(); });
       el.addEventListener("pointerdown", function (e) {
         if (e.button !== 0) return;
+        if (e.target.closest(".fig-thought")) return;
         e.preventDefault();
         e.stopPropagation();
         var startX = e.clientX, startY = e.clientY;
@@ -293,8 +332,107 @@
         el.addEventListener("pointermove", move);
         el.addEventListener("pointerup", up);
       });
+      if (!thought) return;
+      Array.prototype.forEach.call(thought.querySelectorAll(".thought-puff, .thought-cloud"), function (piece) {
+        piece.addEventListener("pointerdown", function (e) {
+          if (e.button !== 0) return;
+          if (e.target.closest(".thought-cloud-text")) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var startX = e.clientX, startY = e.clientY;
+          var cloud = isCloud(piece);
+          var ox = readVar(piece, cloud ? "--cloud-x" : "--puff-x", 0);
+          var oy = readVar(piece, cloud ? "--cloud-y" : "--puff-y", 0);
+          var ow = readVar(piece, cloud ? "--cloud-w" : "--puff-w", cloud ? 220 : 30);
+          var s = readVar(el, "--fig-s", 1);
+          var sizing = sizeMode;
+          piece.classList.add("is-dragging");
+          piece.setPointerCapture(e.pointerId);
+          function move(ev) {
+            if (sizing) {
+              applyPiece(piece, ox, oy, ow + (startY - ev.clientY) * 0.45);
+            } else {
+              applyPiece(piece, ox + (ev.clientX - startX) * s, oy + (ev.clientY - startY) * s, ow);
+            }
+            paintHud();
+          }
+          function up() {
+            piece.classList.remove("is-dragging");
+            piece.removeEventListener("pointermove", move);
+            piece.removeEventListener("pointerup", up);
+            paintHud();
+          }
+          piece.addEventListener("pointermove", move);
+          piece.addEventListener("pointerup", up);
+        });
+      });
+      var words = thought.querySelector(".thought-cloud-text");
+      if (words) {
+        words.addEventListener("pointerdown", function (e) {
+          if (e.button !== 0) return;
+          e.preventDefault();
+          e.stopPropagation();
+          var startX = e.clientX, startY = e.clientY;
+          var ox = readVar(words, "--text-x", 0);
+          var oy = readVar(words, "--text-y", 0);
+          var s = readVar(el, "--fig-s", 1);
+          words.classList.add("is-dragging");
+          words.setPointerCapture(e.pointerId);
+          function move(ev) {
+            words.style.setProperty("--text-x", (ox + (ev.clientX - startX) * s).toFixed(0) + "px");
+            words.style.setProperty("--text-y", (oy + (ev.clientY - startY) * s).toFixed(0) + "px");
+            paintHud();
+          }
+          function up() {
+            words.classList.remove("is-dragging");
+            words.removeEventListener("pointermove", move);
+            words.removeEventListener("pointerup", up);
+            paintHud();
+          }
+          words.addEventListener("pointermove", move);
+          words.addEventListener("pointerup", up);
+        });
+      }
     });
   }
+
+  /* ---- Hangouts people speak once they scroll into view. ---- */
+  (function () {
+    if (placing) return;
+    var figs = document.querySelectorAll("#events .scene-fig.has-thought");
+    Array.prototype.forEach.call(figs, function (fig, i) {
+      var thought = fig.querySelector(".fig-thought");
+      if (!thought) return;
+      var shown = false;
+      function speak() {
+        if (shown) return;
+        shown = true;
+        fig.classList.add("is-in");
+        thought.classList.add("is-on");
+        setTimeout(function () { thought.classList.remove("is-on"); }, reduce ? 2400 : 4700);
+      }
+      function inView() {
+        var r = fig.getBoundingClientRect();
+        return r.bottom > 50 && r.top < window.innerHeight - 40;
+      }
+      function figVisible() {
+        return fig.classList.contains("is-in") && parseFloat(getComputedStyle(fig).opacity) > 0.05;
+      }
+      function maybeSpeak() {
+        if (shown) return;
+        if (!inView() || !figVisible()) return;
+        window.removeEventListener("scroll", maybeSpeak);
+        setTimeout(speak, reduce ? 0 : 280 + i * 420);
+      }
+      window.addEventListener("scroll", maybeSpeak, { passive: true });
+      maybeSpeak();
+      var tries = 0;
+      var poll = setInterval(function () {
+        maybeSpeak();
+        if (shown || ++tries > 50) clearInterval(poll);
+      }, 200);
+    });
+  })();
 
   /* ---- Hero logo: the two letters ease apart a touch as the hero
      scrolls out of view. --p is 0 at the top and 1 once the hero is gone. ---- */
@@ -339,7 +477,8 @@
     revealEls.forEach(function (el) { el.classList.add("in"); });
   }
 
-  /* ---- Join form: one email field, posted to the sheet without leaving the page ---- */
+  /* ---- Join form: posts into the Silly Space Friend Forum Google Form
+     without leaving the site. ---- */
   var form = document.getElementById("join-form");
   if (form) {
     function formNote(html) {
@@ -349,16 +488,11 @@
     }
     var sending = false;
     form.addEventListener("submit", function (e) {
-      var action = form.getAttribute("action") || "";
-      if (/PASTE_YOUR_ID/.test(action)) {
+      var honey = form.querySelector(".honey");
+      if (honey && honey.value) {
         e.preventDefault();
-        formNote('Sign-up isn\u2019t connected yet. Message <a href="https://instagram.com/silly.spaces" target="_blank" rel="noopener">@silly.spaces</a> to join.');
         return;
       }
-      /* The action is a Google Apps Script web app that appends a row to a
-         sheet. Posting from here (no-cors, so its redirect never shows) keeps
-         people on sillyspaces.com and lands them on the thanks page. Without
-         fetch the plain form post still works, it just ends on a Google page. */
       if (!window.fetch || !window.URLSearchParams) return;
       e.preventDefault();
       if (sending) return;
@@ -366,7 +500,9 @@
       var btn = form.querySelector('button[type="submit"]');
       var label = btn ? btn.textContent : "";
       if (btn) { btn.disabled = true; btn.textContent = "Sending\u2026"; }
-      fetch(action, { method: "POST", mode: "no-cors", body: new URLSearchParams(new FormData(form)) })
+      var data = new FormData(form);
+      data.delete("company");
+      fetch(form.getAttribute("action"), { method: "POST", mode: "no-cors", body: new URLSearchParams(data) })
         .then(function () { window.location.href = "/thanks.html"; })
         .catch(function () {
           sending = false;
@@ -808,11 +944,14 @@
       if (e.key === "ArrowLeft") { e.preventDefault(); step(-1); }
       if (e.key === "ArrowRight") { e.preventDefault(); step(1); }
     });
-    carousel.goTo = function (el) {
+    carousel.goToQuiet = function (el) {
       var idx = real.indexOf(el);
       if (idx < 0) return;
       current = n > 1 ? idx + n : 0;
       move(false);
+    };
+    carousel.goTo = function (el) {
+      carousel.goToQuiet(el);
       carousel.scrollIntoView({ behavior: reduce ? "auto" : "smooth", block: "center" });
     };
     window.addEventListener("resize", function () { move(true); });

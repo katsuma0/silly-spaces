@@ -21,7 +21,7 @@
   --slow: 0.9s;
   --mid: 0.6s;
   --nav-h: 64px;
-  --max: 860px;
+  --max: 560px;
   --serif: "Fraunces", "Iowan Old Style", "Palatino Linotype", Georgia, serif;
   --sans: -apple-system, BlinkMacSystemFont, "Segoe UI", Inter, Roboto, Helvetica, Arial, sans-serif;
   color-scheme: light;
@@ -346,7 +346,6 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
    Each row: the business, its ad in the middle, the face on the right.
    Green over 4, yellow 2–4, red under 2. */
 #partners { padding: clamp(56px, 9vw, 80px) 0; }
-#partners .wrap { width: min(1120px, calc(100% - 48px)); }
 #partners .section-head { margin-bottom: 24px; }
 .partner-find {
   margin: 0 auto 18px;
@@ -384,8 +383,9 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   grid-template-columns: repeat(3, minmax(0, 1fr));
   grid-template-areas: "copy news trust";
   gap: 12px 32px;
-  margin: 0 auto 4px;
-  padding: 0 4px 8px;
+  margin: 0 auto 0;
+  padding: 0 0 8px;
+  border-bottom: 1px solid var(--line);
 }
 .partner-cols p {
   margin: 0;
@@ -400,7 +400,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 .partner-cols p:nth-child(3) { grid-area: trust; text-align: center; }
 .partner-cols:has(+ .partner-list.is-empty) { display: none; }
 .partner-list { list-style: none; margin: 0 auto; padding: 0; position: relative; }
-.partner-list li { border-top: 1px solid var(--line); }
+.partner-list li { border-top: none; border-bottom: 1px solid var(--line); }
 .partner-list li.is-faded {
   max-height: 88px;
   overflow: hidden;
@@ -441,8 +441,9 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   grid-template-areas: "copy news trust";
   gap: 12px 32px;
   align-items: center;
-  padding: 14px 4px;
-  border-top: 1px solid var(--line);
+  padding: 14px 0;
+  border-top: none;
+  border-bottom: 1px solid var(--line);
 }
 .partner-ghost .partner-copy { grid-area: copy; }
 .partner-ghost .skel-face { grid-area: trust; }
@@ -477,7 +478,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 .partner summary {
   list-style: none; cursor: pointer;
   display: block;
-  padding: 20px 4px;
+  padding: 20px 0;
 }
 .partner summary::-webkit-details-marker,
 .partner summary::marker { display: none; content: none; }
@@ -591,10 +592,33 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 /* ---------- Bounty board ----------
    A cork bulletin board. Fliers sit a little crooked under a pin.
    Clicking one zooms it off the board; the mail lives on the open flier. */
+#bounty {
+  padding: 0;
+  border-top: 0;
+}
+#bounty .section-head {
+  position: relative;
+  z-index: 4;
+  margin-bottom: 0;
+  padding: clamp(72px, 12vw, 120px) 0 28px;
+  pointer-events: none;
+}
+#bounty .eyebrow { color: rgba(255, 252, 247, 0.78); }
+#bounty h2 { color: #fff; }
+#bounty .section-head p { color: rgba(255, 252, 247, 0.9); }
+#bounty .section-head h2,
+#bounty .section-head p,
+#bounty .eyebrow {
+  text-shadow: 0 1px 2px rgba(62, 36, 18, 0.35);
+}
 .bounty-board {
   position: relative;
-  min-height: 520px;
-  padding: 28px 24px 36px;
+  overflow: hidden;
+  width: 100%;
+  max-width: none;
+  min-height: 640px;
+  margin: 0;
+  padding: 0 0 80px;
   background-color: #c4a06a;
   background-image:
     radial-gradient(ellipse 2.5px 2px at 18% 22%, rgba(92, 56, 24, 0.38), transparent 60%),
@@ -603,18 +627,18 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
     radial-gradient(ellipse 3px 2px at 36% 78%, rgba(140, 88, 40, 0.28), transparent 60%),
     linear-gradient(165deg, rgba(255, 228, 180, 0.16), rgba(90, 52, 20, 0.14));
   background-size: 22px 20px, 18px 22px, 26px 18px, 20px 24px, 100% 100%;
-  border: 16px solid #6e4524;
-  outline: 1px solid #3e2412;
+  border: 0;
+  outline: 0;
   box-shadow:
-    inset 0 0 0 4px #8d5d32,
-    inset 0 0 48px rgba(70, 40, 16, 0.28),
-    0 14px 32px rgba(42, 41, 38, 0.14);
+    inset 0 0 0 14px #6e4524,
+    inset 0 0 0 18px #8d5d32,
+    inset 0 0 64px rgba(70, 40, 16, 0.28);
 }
 .bounty {
   position: absolute;
   z-index: 1;
-  top: clamp(14px, var(--y, 16%), calc(100% - 210px));
-  left: clamp(12px, var(--x, 16%), calc(100% - 176px));
+  top: clamp(210px, calc(28% + var(--y, 16%) * 0.5), calc(100% - 180px));
+  left: clamp(28px, var(--x, 16%), calc(100% - 180px));
 }
 .bounty-blank { z-index: 0; pointer-events: none; }
 .bounty-blank .sheet {
@@ -648,7 +672,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 .bounty-flier {
   position: relative;
   display: block;
-  width: min(164px, 42vw);
+  width: min(164px, 28vw);
   margin: 0;
   padding: 0;
   border: 0;
@@ -670,9 +694,9 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   top: 8px;
   left: 50%;
   z-index: 2;
-  width: 18px;
-  height: 18px;
-  margin-left: -9px;
+  width: 16px;
+  height: 16px;
+  margin-left: -8px;
   border-radius: 50%;
   background: radial-gradient(circle at 32% 28%, #ff9aa8, var(--pink) 55%, #7a1838);
   box-shadow: 0 3px 5px rgba(40, 16, 8, 0.45), inset 0 1px 1px rgba(255, 255, 255, 0.55);
@@ -683,7 +707,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   left: 50%;
   top: 72%;
   width: 3px;
-  height: 9px;
+  height: 8px;
   margin-left: -1.5px;
   background: linear-gradient(#b8b0a4, #6a645c);
   border-radius: 1px;
@@ -874,10 +898,16 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 .field label { font-size: 14px; color: var(--muted); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 /* "optional" sits at the right edge of the label line */
 .field label small { font-size: 12px; color: var(--muted); opacity: 0.8; }
-.field input {
+.field input,
+.field textarea {
   font: inherit; padding: 13px 16px; border-radius: 12px; border: 1px solid var(--line-strong);
   background: transparent; color: var(--text);
   transition: border-color var(--mid) var(--ease), box-shadow var(--mid) var(--ease);
+}
+.field textarea {
+  min-height: 88px;
+  resize: vertical;
+  line-height: 1.4;
 }
 .field select {
   font: inherit; padding: 13px 16px; border-radius: 12px; border: 1px solid var(--line-strong);
@@ -888,9 +918,36 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 }
 .field select:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 4px var(--line); }
 .field select option { color: initial; background: initial; }
-.field input::placeholder { color: var(--muted); opacity: 0.7; }
-.field input:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 4px var(--line); }
-.field input:user-invalid { border-color: var(--pink); }
+.field input::placeholder,
+.field textarea::placeholder { color: var(--muted); opacity: 0.7; }
+.field input:focus,
+.field textarea:focus { outline: none; border-color: var(--text); box-shadow: 0 0 0 4px var(--line); }
+.field input:user-invalid,
+.field textarea:user-invalid { border-color: var(--pink); }
+.field.is-silly {
+  margin-bottom: 22px;
+  padding: 16px 16px 18px;
+  border-radius: 16px;
+  background: linear-gradient(165deg, var(--tint-pink), var(--tint-blue));
+  border: 1px solid var(--line);
+}
+.silly-kicker {
+  margin: 0 0 8px;
+  font-size: 11px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--pink);
+}
+.field.is-silly label {
+  justify-content: flex-start;
+  color: var(--text);
+  font-family: var(--serif);
+  font-size: 20px;
+  line-height: 1.25;
+}
+.field.is-silly textarea {
+  background: var(--surface);
+}
 .check {
   display: flex; align-items: flex-start; gap: 12px; padding: 0 16px; border-radius: 12px;
   background: var(--tint-blue); font-size: 15px;
@@ -907,7 +964,184 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 /* ---------- Event carousel ----------
    A looping row of square covers across the screen. The current cover
    sits in the middle; the others shrink and fade beside it. */
-.events-stage { display: flex; flex-direction: column; }
+.events-stage { position: relative; display: flex; flex-direction: column; overflow: visible; }
+#events .scene-fig-aidan,
+#events .scene-fig-kolbe,
+#events .scene-fig-amari,
+#events .scene-fig-julie {
+  position: absolute;
+  left: 50%;
+  right: auto;
+  top: 0;
+  z-index: 2;
+}
+#events .scene-fig-aidan { --fig-x: 511px; --fig-y: -361px; --fig-rot: -3.1deg; --fig-s: 0.93; }
+#events .scene-fig-kolbe { --fig-x: -660px; --fig-y: -316px; --fig-rot: 18.8deg; --fig-s: 0.90; }
+#events .scene-fig-amari { --fig-x: 522px; --fig-y: 690px; --fig-rot: 0.1deg; --fig-s: 1.02; z-index: 6; overflow: visible; }
+#events .scene-fig-julie { --fig-x: -592px; --fig-y: 389px; --fig-rot: -2.4deg; --fig-s: 1.09; z-index: 6; overflow: visible; }
+#events .scene-fig.has-thought {
+  display: block;
+  width: fit-content;
+  line-height: 0;
+  -webkit-mask-image: none;
+  mask-image: none;
+}
+#events .scene-fig.has-thought.is-in { opacity: 1; }
+#events .scene-fig.has-thought.is-in .scene-fig-person { opacity: 0.5; }
+#events .scene-fig.has-thought.is-in:hover .scene-fig-person,
+#events .scene-fig.has-thought.is-in:focus-visible .scene-fig-person { opacity: 1; }
+.fig-thought {
+  --thought-beat: 0.48s;
+  --thought-x: 0px;
+  --thought-y: 0px;
+  --wisp-x: 12px;
+  --cloud-ink: #2a7a3c;
+  position: absolute;
+  left: 58%;
+  top: -6px;
+  z-index: 7;
+  width: 0;
+  height: 0;
+  pointer-events: none;
+  transform: translate(var(--thought-x), var(--thought-y)) rotate(calc(var(--fig-rot) * -1)) scale(calc(1 / var(--fig-s)));
+  transform-origin: left bottom;
+}
+.scene-fig-amari .fig-thought {
+  left: auto;
+  right: 58%;
+  --wisp-x: -12px;
+  --cloud-ink: #1a1a1a;
+  transform-origin: right bottom;
+}
+.thought-puff {
+  position: absolute;
+  display: block;
+  left: var(--puff-x);
+  top: var(--puff-y);
+  width: var(--puff-w);
+  max-width: none;
+  height: auto;
+  object-fit: contain;
+  opacity: 0;
+  transform: scale(0.2);
+  filter:
+    drop-shadow(2px 0 0 var(--cloud-ink))
+    drop-shadow(-2px 0 0 var(--cloud-ink))
+    drop-shadow(0 2px 0 var(--cloud-ink))
+    drop-shadow(0 -2px 0 var(--cloud-ink))
+    drop-shadow(1.5px 1.5px 0 var(--cloud-ink))
+    drop-shadow(-1.5px 1.5px 0 var(--cloud-ink));
+}
+.thought-puff-1 { --puff-x: 36px; --puff-y: -5px; --puff-w: 30px; }
+.thought-puff-2 { --puff-x: 57px; --puff-y: -63px; --puff-w: 54px; }
+.scene-fig-amari .thought-puff-1 { --puff-x: -77px; --puff-y: 38px; --puff-w: 20px; }
+.scene-fig-amari .thought-puff-2 { --puff-x: -136px; --puff-y: 23px; --puff-w: 37px; }
+.thought-cloud {
+  position: absolute;
+  left: var(--cloud-x);
+  top: var(--cloud-y);
+  width: var(--cloud-w);
+  opacity: 0;
+  transform: scale(0.4);
+  transform-origin: 8% 100%;
+  --cloud-x: 83px;
+  --cloud-y: -239px;
+  --cloud-w: 220px;
+}
+.scene-fig-amari .thought-cloud {
+  --cloud-x: -312px;
+  --cloud-y: -115px;
+  --cloud-w: 173px;
+  transform-origin: 92% 100%;
+}
+.thought-cloud img {
+  display: block;
+  width: 100%;
+  height: auto;
+  max-width: none;
+  filter:
+    drop-shadow(2px 0 0 var(--cloud-ink))
+    drop-shadow(-2px 0 0 var(--cloud-ink))
+    drop-shadow(0 2px 0 var(--cloud-ink))
+    drop-shadow(0 -2px 0 var(--cloud-ink))
+    drop-shadow(1.5px 1.5px 0 var(--cloud-ink))
+    drop-shadow(-1.5px 1.5px 0 var(--cloud-ink));
+}
+.thought-cloud-text {
+  --text-x: 0px;
+  --text-y: 11px;
+  position: absolute;
+  left: 50%;
+  top: 46%;
+  transform: translate(calc(-50% + var(--text-x)), calc(-50% + var(--text-y)));
+  width: max-content;
+  margin: 0;
+  text-align: center;
+  font-family: var(--serif);
+  font-weight: 400;
+  font-size: 15px;
+  letter-spacing: -0.015em;
+  line-height: 1;
+  white-space: nowrap;
+  color: var(--text);
+  user-select: none;
+}
+.scene-fig-amari .thought-cloud-text {
+  --text-x: -1px;
+  --text-y: 7px;
+  font-size: 13px;
+}
+@keyframes thought-pop {
+  0% { opacity: 0; transform: scale(0.2); }
+  38% { opacity: 1; transform: scale(1.14); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes thought-cloud-pop {
+  0% { opacity: 0; transform: scale(0.35); }
+  42% { opacity: 1; transform: scale(1.08); }
+  100% { opacity: 1; transform: scale(1); }
+}
+@keyframes thought-poof {
+  0% { opacity: 1; transform: scale(1); }
+  40% { opacity: 0.72; transform: scale(1.05); }
+  100% { opacity: 0; transform: scale(1.12); }
+}
+.fig-thought.is-on .thought-puff-1 {
+  animation: thought-pop 0.38s var(--ease) both, thought-poof 1.15s cubic-bezier(0.33, 0, 0.2, 1) 3.4s forwards;
+}
+.fig-thought.is-on .thought-puff-2 {
+  animation: thought-pop 0.38s var(--ease) var(--thought-beat) both, thought-poof 1.15s cubic-bezier(0.33, 0, 0.2, 1) 3.4s forwards;
+}
+.fig-thought.is-on .thought-cloud {
+  animation: thought-cloud-pop 0.5s var(--ease) calc(var(--thought-beat) * 2) both, thought-poof 1.15s cubic-bezier(0.33, 0, 0.2, 1) 3.4s forwards;
+}
+html.is-placing .scene-fig.has-thought { opacity: 1; }
+html.is-placing .scene-fig.has-thought .scene-fig-person { opacity: 0.5; }
+html.is-placing .fig-thought {
+  display: block;
+  pointer-events: none;
+}
+html.is-placing .fig-thought.is-on .thought-puff-1,
+html.is-placing .fig-thought.is-on .thought-puff-2,
+html.is-placing .fig-thought.is-on .thought-cloud,
+html.is-placing .fig-thought.is-on .thought-puff,
+html.is-placing .thought-puff,
+html.is-placing .thought-cloud {
+  opacity: 1;
+  transform: none;
+  animation: none;
+  pointer-events: auto;
+  cursor: grab;
+}
+html.is-placing .thought-cloud-text {
+  pointer-events: auto;
+  cursor: grab;
+  opacity: 1;
+  animation: none;
+}
+html.is-placing .thought-puff.is-dragging,
+html.is-placing .thought-cloud.is-dragging,
+html.is-placing .thought-cloud-text.is-dragging { cursor: grabbing; z-index: 8; }
 .carousel { position: relative; width: 100%; max-width: none; margin: 0; }
 .car-viewport { overflow: hidden; touch-action: pan-y; padding: 8px 0; }
 .car-track { position: relative; display: flex; align-items: center; gap: 16px; transition: transform 0.7s var(--ease); will-change: transform; }
@@ -984,6 +1218,10 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 .car-nav.prev { left: 8px; }
 .car-nav.next { right: 8px; }
 @media (min-width: 735px) {
+  .nav .wrap {
+    width: calc(100% - 48px);
+    max-width: none;
+  }
   .hero {
     min-height: 0;
     padding: 28px 0 40px;
@@ -994,7 +1232,19 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   #events { padding: 52px 0 60px; }
   #events .section-head { margin-bottom: 16px; }
   #partners { padding: 52px 0 60px; }
+  #partners .wrap { width: min(880px, calc(100% - 80px)); }
   #partners .section-head { margin-bottom: 16px; }
+  .partner-cols,
+  .partner-row,
+  .partner-ghost {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+    gap: 16px 32px;
+  }
+  .partner-cols p:nth-child(1) { text-align: left; }
+  .partner-cols p:nth-child(2),
+  .partner-cols p:nth-child(3) { text-align: center; }
+  .trust,
+  .partner-ghost .skel-face { justify-self: center; }
   .slide { flex: 0 0 min(240px, 28vw); }
   .car-detail { margin-top: 8px; }
   .car-detail h3 { font-size: clamp(22px, 2.6vw, 28px); }
@@ -1143,8 +1393,9 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 
 /* ---------- Footer / socials ---------- */
 .socials { padding: clamp(56px, 8vw, 96px) 0 36px; border-top: 1px solid var(--line); }
+.socials .wrap { width: min(920px, calc(100% - 48px)); }
 /* Three socials plus a wider email tile, so the address stays on one line. */
-.social-grid { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)) minmax(max-content, 1.4fr); gap: 12px; }
+.social-grid { display: grid; grid-template-columns: repeat(3, minmax(160px, 1fr)) minmax(220px, 1.5fr); gap: 12px; }
 .social {
   display: flex; align-items: center; gap: 12px; padding: 16px 18px; border-radius: 14px;
   background: var(--surface); border: 1px solid var(--line);
@@ -1235,13 +1486,14 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   .social small { font-size: 11px; overflow-wrap: anywhere; }
   .social.mail { grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 12px; padding: 14px; text-align: left; }
   .social.mail small { font-size: 12px; }
-  .bounty-board { min-height: 340px; padding: 22px 14px 28px; border-width: 10px; }
+  .bounty-board { min-height: 480px; padding: 0 0 56px; box-shadow: inset 0 0 0 10px #6e4524, inset 0 0 0 13px #8d5d32, inset 0 0 48px rgba(70, 40, 16, 0.28); }
   .bounty {
-    top: clamp(12px, var(--y, 14%), calc(100% - 180px));
-    left: clamp(10px, var(--x, 10%), calc(100% - 138px));
+    top: clamp(170px, calc(30% + var(--y, 14%) * 0.45), calc(100% - 140px));
+    left: clamp(16px, var(--x, 10%), calc(100% - 120px));
   }
-  .bounty-flier { width: min(128px, 38vw); }
-  .bounty-blank .sheet { width: min(var(--w, 110px), 30vw); }
+  .bounty-flier { width: min(120px, 34vw); }
+  .bounty-blank .sheet { width: min(var(--w, 96px), 28vw); }
+  #bounty .section-head { padding: 56px 0 20px; }
   .bounty-zoom-bar { bottom: 16px; }
   .partner-find { margin: 0 auto 16px; }
   .partner-search input { padding: 12px 14px; }
