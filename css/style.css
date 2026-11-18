@@ -889,11 +889,204 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 .member.you strong { color: var(--muted); }
 
 /* ---------- Join form ---------- */
+.join-stage {
+  --peek: 80px;
+  --card-peek: 40px;
+  position: relative;
+  width: min(1080px, calc(100% - 32px));
+  margin: 0 auto;
+  outline: none;
+  overflow: visible;
+}
+#join .scene-fig-paintbrush {
+  position: absolute;
+  left: max(0px, calc(50% - 260px - 92px));
+  top: 28px;
+  z-index: 0;
+  height: 220px;
+  width: auto;
+  max-width: none;
+  --fig-x: -78px;
+  --fig-y: -330px;
+  --fig-rot: 5.9deg;
+  --fig-s: 0.94;
+}
+.join-now {
+  margin: 0 0 8px;
+  text-align: center;
+  font-size: 12px;
+  letter-spacing: 0.14em;
+  text-transform: uppercase;
+  color: var(--muted);
+}
+.join-pager {
+  display: flex;
+  justify-content: center;
+  gap: 7px;
+  margin: 0 0 16px;
+}
+.join-pager span {
+  width: 7px;
+  height: 7px;
+  border-radius: 50%;
+  background: var(--line-strong);
+  opacity: 0.45;
+  cursor: pointer;
+  transition: opacity var(--mid) var(--ease), transform var(--mid) var(--ease);
+}
+.join-pager span.is-on {
+  opacity: 1;
+  background: var(--text);
+  transform: scale(1.15);
+}
+.join-rail {
+  position: relative;
+}
+.join-cards {
+  position: absolute;
+  left: max(0px, calc(50% - 260px - 50px));
+  top: 0;
+  bottom: 0;
+  z-index: 1;
+  width: 88px;
+  pointer-events: none;
+}
+.join-card {
+  position: absolute;
+  left: 0;
+  top: calc(var(--i) * 100% / 8);
+  width: 100%;
+  padding: 0;
+  border: 0;
+  background: none;
+  cursor: pointer;
+  pointer-events: auto;
+  transform: translateY(calc(var(--i) * -100% / 8)) rotate(var(--tilt));
+  transform-origin: right center;
+  filter: drop-shadow(0 6px 10px rgba(42, 41, 38, 0.18));
+  transition: transform 0.45s var(--ease), filter 0.45s var(--ease);
+  z-index: 0;
+}
+.join-card img {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 10px;
+  pointer-events: none;
+}
+.join-card:hover,
+.join-card:focus-visible {
+  transform: translateY(calc(var(--i) * -100% / 8)) translateX(-10px) rotate(var(--tilt));
+  z-index: 3;
+}
+.join-card.is-open {
+  transform: translateY(calc(var(--i) * -100% / 8)) translateX(-22px) rotate(0deg) scale(1.18);
+  filter: drop-shadow(0 14px 20px rgba(42, 41, 38, 0.28));
+  z-index: 4;
+}
+.join-viewport {
+  position: relative;
+  z-index: 2;
+  container-type: inline-size;
+  overflow-x: auto;
+  overflow-y: hidden;
+  overscroll-behavior-x: contain;
+  scroll-snap-type: x mandatory;
+  scrollbar-width: none;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-x;
+  cursor: grab;
+}
+.join-viewport::-webkit-scrollbar { display: none; }
+.join-viewport.is-drag { cursor: grabbing; scroll-snap-type: none; }
+.join-track {
+  display: flex;
+  align-items: stretch;
+  gap: 0;
+  width: max-content;
+  padding-inline: var(--peek);
+}
+.join-panel {
+  position: relative;
+  flex: 0 0 calc(100cqw - var(--peek) * 2);
+  width: calc(100cqw - var(--peek) * 2);
+  min-width: 0;
+  scroll-snap-align: center;
+  scroll-snap-stop: always;
+  opacity: 0.22;
+}
+#join-panel-form {
+  padding-block: var(--card-peek);
+}
+.join-arrow {
+  position: absolute;
+  z-index: 3;
+  top: 50%;
+  width: var(--peek);
+  height: 88px;
+  display: grid;
+  place-items: center;
+  padding: 0;
+  border: 0;
+  background: none;
+  color: var(--text);
+  cursor: pointer;
+  transform: translateY(-50%);
+  transition: opacity var(--mid) var(--ease), color var(--mid) var(--ease);
+}
+.join-arrow svg {
+  width: 28px;
+  height: 42px;
+  overflow: visible;
+  fill: currentColor;
+  stroke: currentColor;
+  stroke-width: 2.6;
+  stroke-linejoin: round;
+  stroke-linecap: round;
+}
+.join-arrow:hover { opacity: 0.72; }
+.join-arrow-next { right: 0; }
+.join-arrow-prev { left: 0; opacity: 0; pointer-events: none; }
+.join-arrow-prev svg { transform: scaleX(-1); }
+#join.is-sphere .join-arrow-next { opacity: 0; pointer-events: none; }
+#join.is-sphere .join-arrow-prev { opacity: 1; pointer-events: auto; }
+@media (prefers-reduced-motion: no-preference) {
+  .join-arrow-next { animation: join-arrow-nudge 1.8s var(--ease) infinite; }
+  .join-arrow-prev { animation: join-arrow-nudge-left 1.8s var(--ease) infinite; }
+}
+@keyframes join-arrow-nudge {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(5px); }
+}
+@keyframes join-arrow-nudge-left {
+  0%, 100% { transform: translateY(-50%) translateX(0); }
+  50% { transform: translateY(-50%) translateX(-5px); }
+}
 .join-box {
+  position: relative;
+  z-index: 2;
   max-width: 520px; margin: 0 auto; background: var(--surface); border-radius: 20px;
   padding: clamp(24px, 5vw, 40px); border: 1px solid var(--line);
   transition: background-color var(--slow) var(--ease);
 }
+.join-sphere {
+  position: relative;
+  height: min(78vh, 820px);
+  min-height: 420px;
+  background: var(--surface);
+  border-radius: 20px;
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+.join-sphere iframe {
+  display: block;
+  width: 100%;
+  height: 100%;
+  border: 0;
+  background: var(--bg);
+  pointer-events: none;
+}
+#join.is-sphere .join-sphere iframe { pointer-events: auto; }
 .field { display: flex; flex-direction: column; gap: 8px; margin-bottom: 18px; }
 .field label { font-size: 14px; color: var(--muted); display: flex; justify-content: space-between; align-items: baseline; gap: 12px; }
 /* "optional" sits at the right edge of the label line */
@@ -1497,6 +1690,10 @@ html.is-placing .thought-cloud-text.is-dragging { cursor: grabbing; z-index: 8; 
   .bounty-zoom-bar { bottom: 16px; }
   .partner-find { margin: 0 auto 16px; }
   .partner-search input { padding: 12px 14px; }
+  .join-stage { width: calc(100% - 16px); --peek: 56px; --card-peek: 28px; }
+  .join-sphere { height: min(70vh, 640px); min-height: 360px; }
+  .join-cards { --card-peek: 28px; width: 72px; left: max(0px, calc(50% - 260px - 40px)); }
+  #join .scene-fig-paintbrush { height: 150px; left: max(0px, calc(50% - 260px - 64px)); top: 18px; }
   .partner-cols {
     grid-template-columns: repeat(2, minmax(0, 1fr));
     grid-template-areas: "copy news";

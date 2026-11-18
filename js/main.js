@@ -205,12 +205,18 @@
       viewport.setAttribute("content", "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover");
     }
     var figs = Array.prototype.slice.call(document.querySelectorAll(".scene-fig"));
-    var names = ["surgeon", "quebec", "paddle", "helmet", "grand", "matthew", "aidan", "kolbe", "amari", "julie"];
+    var names = ["surgeon", "quebec", "paddle", "helmet", "grand", "matthew", "aidan", "kolbe", "amari", "julie", "paintbrush"];
     function figName(el) {
       for (var i = 0; i < names.length; i++) {
         if (el.classList.contains("scene-fig-" + names[i])) return names[i];
       }
       return "";
+    }
+    function figSel(el) {
+      var n = figName(el);
+      if (!n) return "";
+      var section = el.closest("section[id]");
+      return (section ? "#" + section.id + " " : "") + ".scene-fig-" + n;
     }
     function readVar(el, name, fallback) {
       var v = getComputedStyle(el).getPropertyValue(name).trim();
@@ -227,7 +233,7 @@
       var n = figName(fig);
       var thought = fig.querySelector(".fig-thought");
       if (!n || !thought) return "";
-      var sel = (fig.closest("#events") ? "#events " : "") + ".scene-fig-" + n;
+      var sel = figSel(fig);
       var p1 = thought.querySelector(".thought-puff-1");
       var p2 = thought.querySelector(".thought-puff-2");
       var cloud = thought.querySelector(".thought-cloud");
@@ -243,9 +249,8 @@
     }
     function dumpCss() {
       var rules = figs.map(function (el) {
-        var n = figName(el);
-        if (!n) return "";
-        var sel = (el.closest("#events") ? "#events " : "") + ".scene-fig-" + n;
+        var sel = figSel(el);
+        if (!sel) return "";
         var line = sel + " { --fig-x: " + readVar(el, "--fig-x", 0).toFixed(0) + "px; --fig-y: " + readVar(el, "--fig-y", 0).toFixed(0) + "px; --fig-rot: " + readVar(el, "--fig-rot", 0).toFixed(1) + "deg; --fig-s: " + readVar(el, "--fig-s", 1).toFixed(2) + "; }";
         var thought = dumpThought(el);
         return thought ? line + "\n" + thought : line;
@@ -476,6 +481,147 @@
   } else {
     revealEls.forEach(function (el) { el.classList.add("in"); });
   }
+
+  /* ---- Join: swipe the form and sphere pages, with the next one peeking. ---- */
+  (function () {
+    var section = document.getElementById("join");
+    var viewport = document.getElementById("join-viewport");
+    if (!section || !viewport) return;
+    var panels = [
+      document.getElementById("join-panel-form"),
+      document.getElementById("join-panel-sphere")
+    ];
+    var label = section.querySelector(".join-now");
+    var dots = section.querySelectorAll(".join-pager span");
+    var page = 0;
+    var dragging = false;
+    var pid = 0;
+    var startX = 0;
+    var startScroll = 0;
+    var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+    function snapLeft(el) {
+      return Math.round(el.offsetLeft - (viewport.clientWidth - el.offsetWidth) / 2);
+    }
+    function go(p, instant) {
+      p = p < 0 ? 0 : p > 1 ? 1 : p;
+      var el = panels[p];
+      if (!el) return;
+      viewport.scrollTo({ left: snapLeft(el), behavior: instant || reduceMotion ? "auto" : "smooth" });
+    }
+    function sync() {
+      var view = viewport.getBoundingClientRect();
+      var mid = view.left + view.width / 2;
+      var next = 0;
+      var best = Infinity;
+      panels.forEach(function (el, i) {
+        var box = el.getBoundingClientRect();
+        var elMid = box.left + box.width / 2;
+        var dist = Math.abs(elMid - mid);
+        if (dist < best) { best = dist; next = i; }
+        var t = 1 - Math.min(1, dist / Math.max(1, view.width * 0.62));
+        t = t * t;
+        el.style.opacity = String(0.18 + t * 0.82);
+        el.classList.toggle("is-on", t > 0.55);
+      });
+      page = next;
+      section.classList.toggle("is-sphere", page === 1);
+      if (label) label.textContent = page === 1 ? "Sphere" : "Form";
+      dots.forEach(function (dot, i) { dot.classList.toggle("is-on", i === page); });
+    }
+    viewport.addEventListener("scroll", sync, { passive: true });
+    viewport.addEventListener("pointerdown", function (e) {
+      if (e.pointerType !== "mouse" || e.button !== 0) return;
+      if (e.target.closest && e.target.closest("input, textarea, select, button, .join-card")) return;
+      dragging = true;
+      pid = e.pointerId;
+      startX = e.clientX;
+      startScroll = viewport.scrollLeft;
+      viewport.classList.add("is-drag");
+      try { viewport.setPointerCapture(pid); } catch (err) {}
+    });
+    viewport.addEventListener("pointermove", function (e) {
+      if (!dragging || e.pointerId !== pid) return;
+      viewport.scrollLeft = startScroll - (e.clientX - startX);
+    });
+    function stop(e) {
+      if (!dragging || (e && e.pointerId !== pid)) return;
+      dragging = false;
+      viewport.classList.remove("is-drag");
+      try { viewport.releasePointerCapture(pid); } catch (err) {}
+      var w = viewport.clientWidth || 1;
+      var dx = e.clientX - startX;
+      if (dx < -w * 0.12) go(1, false);
+      else if (dx > w * 0.12) go(0, false);
+      else { sync(); go(page, false); }
+    }
+    viewport.addEventListener("pointerup", stop);
+    viewport.addEventListener("pointercancel", stop);
+    section.addEventListener("keydown", function (e) {
+      if (e.key === "ArrowRight") { e.preventDefault(); go(1, false); }
+      if (e.key === "ArrowLeft") { e.preventDefault(); go(0, false); }
+    });
+    dots.forEach(function (dot, i) {
+      dot.addEventListener("click", function () { go(i, false); });
+    });
+    var nextBtn = section.querySelector(".join-arrow-next");
+    var prevBtn = section.querySelector(".join-arrow-prev");
+    if (nextBtn) nextBtn.addEventListener("click", function () { go(1, false); });
+    if (prevBtn) prevBtn.addEventListener("click", function () { go(0, false); });
+    var cardBtns = section.querySelectorAll(".join-card");
+    var cardList = section.querySelector(".join-cards");
+    function closeCards() {
+      cardBtns.forEach(function (c) {
+        c.classList.remove("is-open");
+        c.setAttribute("aria-selected", "false");
+      });
+    }
+    cardBtns.forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        e.stopPropagation();
+        var open = btn.classList.contains("is-open");
+        closeCards();
+        if (!open) {
+          btn.classList.add("is-open");
+          btn.setAttribute("aria-selected", "true");
+        }
+      });
+    });
+    document.addEventListener("click", function (e) {
+      if (!cardList || cardList.contains(e.target)) return;
+      closeCards();
+    });
+    section.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") closeCards();
+    });
+    window.addEventListener("resize", function () { go(page, true); });
+    requestAnimationFrame(function () {
+      if (location.hash === "#sphere" || location.hash === "#join-sphere") go(1, true);
+      else go(0, true);
+      sync();
+    });
+  })();
+
+  /* ---- Paintbrush man fades in with the other people once Join is in view. ---- */
+  (function () {
+    var el = document.querySelector("#join .scene-fig-paintbrush");
+    if (!el) return;
+    if (reduce || placing) {
+      el.classList.add("is-in");
+      return;
+    }
+    function show() { el.classList.add("is-in"); }
+    function inView() {
+      var r = el.getBoundingClientRect();
+      return r.bottom > 40 && r.top < window.innerHeight - 20;
+    }
+    function check() {
+      if (!inView()) return;
+      show();
+      window.removeEventListener("scroll", check);
+    }
+    window.addEventListener("scroll", check, { passive: true });
+    requestAnimationFrame(check);
+  })();
 
   /* ---- Join form: posts into the Silly Space Friend Forum Google Form
      without leaving the site. ---- */

@@ -30,7 +30,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&display=optional">
-  <link rel="stylesheet" href="/css/style.css?v=a6bf7b80">
+  <link rel="stylesheet" href="/css/style.css?v=d0956e0f">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -289,7 +289,45 @@
         <h2>The Silly Space Network</h2>
         <p>One day, I’ll get you a metal card if you fill this out and swing by the spaces a couple times.</p>
       </div>
-      <form class="join-box reveal" id="join-form" action="https://docs.google.com/forms/d/e/1FAIpQLSduNueIhu_vV0TZPLxF0hxtZ26TMj40Pc4doNe0KVIPYaIk5Q/formResponse" method="POST">
+    </div>
+    <div class="join-stage reveal" tabindex="0">
+      <p class="join-now" aria-live="polite">Form</p>
+      <div class="join-pager" aria-hidden="true"><span class="is-on"></span><span></span></div>
+      <div class="join-rail">
+      <img class="scene-fig scene-fig-paintbrush" src="/assets/ss-paintbrush.png?v=3" alt="" width="194" height="343" decoding="async" aria-hidden="true">
+      <div class="join-viewport" id="join-viewport">
+        <div class="join-track">
+        <div class="join-panel" id="join-panel-form">
+      <div class="join-cards" role="tablist" aria-label="Silly Space portraits">
+        <button class="join-card" type="button" role="tab" aria-selected="false" style="--i:0;--tilt:-7deg" aria-label="Meranda">
+          <img src="/assets/pfpss/meranda.png" alt="" width="528" height="664" decoding="async">
+        </button>
+        <button class="join-card" type="button" role="tab" aria-selected="false" style="--i:1;--tilt:5deg" aria-label="Darren">
+          <img src="/assets/pfpss/darren.png" alt="" width="601" height="821" decoding="async">
+        </button>
+        <button class="join-card" type="button" role="tab" aria-selected="false" style="--i:2;--tilt:-4deg" aria-label="Maya">
+          <img src="/assets/pfpss/maya.png" alt="" width="512" height="801" decoding="async">
+        </button>
+        <button class="join-card" type="button" role="tab" aria-selected="false" style="--i:3;--tilt:6deg" aria-label="Katsuma">
+          <img src="/assets/pfpss/katsuma.png" alt="" width="652" height="955" decoding="async">
+        </button>
+        <button class="join-card" type="button" role="tab" aria-selected="false" style="--i:4;--tilt:-5deg" aria-label="Umen">
+          <img src="/assets/pfpss/umen.png" alt="" width="708" height="778" decoding="async">
+        </button>
+        <button class="join-card" type="button" role="tab" aria-selected="false" style="--i:5;--tilt:4deg" aria-label="Rachel">
+          <img src="/assets/pfpss/rachel.png" alt="" width="563" height="840" decoding="async">
+        </button>
+        <button class="join-card" type="button" role="tab" aria-selected="false" style="--i:6;--tilt:-6deg" aria-label="Julie">
+          <img src="/assets/pfpss/julie.png" alt="" width="580" height="742" decoding="async">
+        </button>
+        <button class="join-card" type="button" role="tab" aria-selected="false" style="--i:7;--tilt:5deg" aria-label="Haran">
+          <img src="/assets/pfpss/haran.png" alt="" width="808" height="927" decoding="async">
+        </button>
+        <button class="join-card" type="button" role="tab" aria-selected="false" style="--i:8;--tilt:-4deg" aria-label="Eric">
+          <img src="/assets/pfpss/eric.png" alt="" width="392" height="672" decoding="async">
+        </button>
+      </div>
+      <form class="join-box" id="join-form" action="https://docs.google.com/forms/d/e/1FAIpQLSduNueIhu_vV0TZPLxF0hxtZ26TMj40Pc4doNe0KVIPYaIk5Q/formResponse" method="POST">
         <input class="honey" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true">
         <div class="field">
           <label for="join-name">Name</label>
@@ -310,6 +348,25 @@
         </div>
         <button class="btn btn-primary" type="submit" style="width:100%">Join</button>
       </form>
+        </div>
+        <div class="join-panel" id="join-panel-sphere">
+          <div class="join-sphere">
+            <iframe title="Silly Spaces Connection Sphere" src="https://sillyspaces-h.onrender.com/" loading="lazy" referrerpolicy="no-referrer-when-downgrade"></iframe>
+          </div>
+        </div>
+        </div>
+      </div>
+      <button class="join-arrow join-arrow-next" type="button" aria-label="Swipe to the sphere">
+        <svg viewBox="0 0 32 48" aria-hidden="true">
+          <path d="M6 8 24 24 6 40z"/>
+        </svg>
+      </button>
+      <button class="join-arrow join-arrow-prev" type="button" aria-label="Swipe to the form">
+        <svg viewBox="0 0 32 48" aria-hidden="true">
+          <path d="M6 8 24 24 6 40z"/>
+        </svg>
+      </button>
+      </div>
     </div>
   </section>
 
@@ -406,6 +463,6 @@
   </div>
 </footer>
 
-<script src="/js/main.js?v=8864465c"></script>
+<script src="/js/main.js?v=1c52e949"></script>
 </body>
 </html>
