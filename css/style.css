@@ -904,12 +904,18 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   top: 28px;
   z-index: 0;
   height: 220px;
-  width: auto;
+  width: fit-content;
   max-width: none;
+  line-height: 0;
   --fig-x: -78px;
   --fig-y: -330px;
   --fig-rot: 5.9deg;
   --fig-s: 0.94;
+}
+#join .scene-fig-paintbrush .scene-fig-person {
+  height: 100%;
+  width: auto;
+  max-width: none;
 }
 .join-now {
   margin: 0 0 8px;
