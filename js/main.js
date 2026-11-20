@@ -67,6 +67,7 @@
   /* ---- Hero people: wait for the logo to settle, then fade in one by
      one in a shuffled order (phone and desktop). ---- */
   var placing = /(?:\?|&)place=1(?:&|$)/.test(location.search);
+  if (!placing && document.querySelector(".scene-fig-cake")) placing = true;
   function revealPeople() {
     if (revealPeople.done) return;
     revealPeople.done = true;
@@ -205,7 +206,7 @@
       viewport.setAttribute("content", "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover");
     }
     var figs = Array.prototype.slice.call(document.querySelectorAll(".scene-fig"));
-    var names = ["surgeon", "quebec", "paddle", "helmet", "grand", "matthew", "aidan", "kolbe", "amari", "julie", "paintbrush"];
+    var names = ["surgeon", "quebec", "paddle", "helmet", "grand", "matthew", "aidan", "kolbe", "amari", "julie", "paintbrush", "cake"];
     function figName(el) {
       for (var i = 0; i < names.length; i++) {
         if (el.classList.contains("scene-fig-" + names[i])) return names[i];
@@ -224,25 +225,22 @@
       return isNaN(n) ? fallback : n;
     }
     function apply(el, x, y, rot, s) {
+      var maxS = el.classList.contains("scene-fig-cake") ? 2.4 : 1.6;
       el.style.setProperty("--fig-x", x.toFixed(0) + "px");
       el.style.setProperty("--fig-y", y.toFixed(0) + "px");
       el.style.setProperty("--fig-rot", rot.toFixed(1) + "deg");
-      el.style.setProperty("--fig-s", Math.max(0.35, Math.min(1.6, s)).toFixed(2));
+      el.style.setProperty("--fig-s", Math.max(0.35, Math.min(maxS, s)).toFixed(2));
     }
     function dumpThought(fig) {
       var n = figName(fig);
       var thought = fig.querySelector(".fig-thought");
       if (!n || !thought) return "";
       var sel = figSel(fig);
-      var p1 = thought.querySelector(".thought-puff-1");
-      var p2 = thought.querySelector(".thought-puff-2");
       var cloud = thought.querySelector(".thought-cloud");
       var words = thought.querySelector(".thought-cloud-text");
       var lines = [
         sel + " .fig-thought { --thought-x: " + readVar(thought, "--thought-x", 0).toFixed(0) + "px; --thought-y: " + readVar(thought, "--thought-y", 0).toFixed(0) + "px; }",
-        p1 ? sel + " .thought-puff-1 { --puff-x: " + readVar(p1, "--puff-x", 0).toFixed(0) + "px; --puff-y: " + readVar(p1, "--puff-y", 0).toFixed(0) + "px; --puff-w: " + readVar(p1, "--puff-w", 30).toFixed(0) + "px; }" : "",
-        p2 ? sel + " .thought-puff-2 { --puff-x: " + readVar(p2, "--puff-x", 0).toFixed(0) + "px; --puff-y: " + readVar(p2, "--puff-y", 0).toFixed(0) + "px; --puff-w: " + readVar(p2, "--puff-w", 54).toFixed(0) + "px; }" : "",
-        cloud ? sel + " .thought-cloud { --cloud-x: " + readVar(cloud, "--cloud-x", 0).toFixed(0) + "px; --cloud-y: " + readVar(cloud, "--cloud-y", 0).toFixed(0) + "px; --cloud-w: " + readVar(cloud, "--cloud-w", 220).toFixed(0) + "px; }" : "",
+        cloud ? sel + " .thought-cloud { --cloud-x: " + readVar(cloud, "--cloud-x", 0).toFixed(0) + "px; --cloud-y: " + readVar(cloud, "--cloud-y", 0).toFixed(0) + "px; --cloud-w: " + readVar(cloud, "--cloud-w", 196).toFixed(0) + "px; }" : "",
         words ? sel + " .thought-cloud-text { --text-x: " + readVar(words, "--text-x", 0).toFixed(0) + "px; --text-y: " + readVar(words, "--text-y", 0).toFixed(0) + "px; }" : ""
       ];
       return lines.filter(Boolean).join("\n");
@@ -264,7 +262,7 @@
     var sizeMode = false;
     var hud = document.createElement("div");
     hud.className = "place-hud";
-    hud.innerHTML = "<p>Drag a person, a cloud, or the words.</p><button type=\"button\" class=\"btn btn-ghost place-rotate\" aria-pressed=\"false\">Rotate</button><button type=\"button\" class=\"btn btn-ghost place-size\" aria-pressed=\"false\">Size</button><button type=\"button\" class=\"btn btn-ghost place-copy\">Copy CSS</button><pre></pre>";
+    hud.innerHTML = "<p>Drag a person, a bubble, or the words.</p><button type=\"button\" class=\"btn btn-ghost place-rotate\" aria-pressed=\"false\">Rotate</button><button type=\"button\" class=\"btn btn-ghost place-size\" aria-pressed=\"false\">Size</button><button type=\"button\" class=\"btn btn-ghost place-copy\">Copy CSS</button><pre></pre>";
     document.body.appendChild(hud);
     var pre = hud.querySelector("pre");
     var copyBtn = hud.querySelector(".place-copy");
@@ -288,17 +286,10 @@
         navigator.clipboard.writeText(text).then(function () { copyBtn.textContent = "Copied"; setTimeout(function () { copyBtn.textContent = "Copy CSS"; }, 1400); });
       }
     });
-    function isCloud(piece) { return piece.classList.contains("thought-cloud"); }
     function applyPiece(piece, x, y, w) {
-      if (isCloud(piece)) {
-        piece.style.setProperty("--cloud-x", x.toFixed(0) + "px");
-        piece.style.setProperty("--cloud-y", y.toFixed(0) + "px");
-        piece.style.setProperty("--cloud-w", Math.max(80, Math.min(360, w)).toFixed(0) + "px");
-      } else {
-        piece.style.setProperty("--puff-x", x.toFixed(0) + "px");
-        piece.style.setProperty("--puff-y", y.toFixed(0) + "px");
-        piece.style.setProperty("--puff-w", Math.max(16, Math.min(140, w)).toFixed(0) + "px");
-      }
+      piece.style.setProperty("--cloud-x", x.toFixed(0) + "px");
+      piece.style.setProperty("--cloud-y", y.toFixed(0) + "px");
+      piece.style.setProperty("--cloud-w", Math.max(80, Math.min(360, w)).toFixed(0) + "px");
     }
     figs.forEach(function (el) {
       var thought = el.querySelector(".fig-thought");
@@ -338,17 +329,16 @@
         el.addEventListener("pointerup", up);
       });
       if (!thought) return;
-      Array.prototype.forEach.call(thought.querySelectorAll(".thought-puff, .thought-cloud"), function (piece) {
+      Array.prototype.forEach.call(thought.querySelectorAll(".thought-cloud"), function (piece) {
         piece.addEventListener("pointerdown", function (e) {
           if (e.button !== 0) return;
           if (e.target.closest(".thought-cloud-text")) return;
           e.preventDefault();
           e.stopPropagation();
           var startX = e.clientX, startY = e.clientY;
-          var cloud = isCloud(piece);
-          var ox = readVar(piece, cloud ? "--cloud-x" : "--puff-x", 0);
-          var oy = readVar(piece, cloud ? "--cloud-y" : "--puff-y", 0);
-          var ow = readVar(piece, cloud ? "--cloud-w" : "--puff-w", cloud ? 220 : 30);
+          var ox = readVar(piece, "--cloud-x", 0);
+          var oy = readVar(piece, "--cloud-y", 0);
+          var ow = readVar(piece, "--cloud-w", 196);
           var s = readVar(el, "--fig-s", 1);
           var sizing = sizeMode;
           piece.classList.add("is-dragging");
@@ -405,37 +395,74 @@
   (function () {
     if (placing) return;
     var figs = document.querySelectorAll("#events .scene-fig.has-thought");
-    Array.prototype.forEach.call(figs, function (fig, i) {
+    Array.prototype.forEach.call(figs, function (fig) {
       var thought = fig.querySelector(".fig-thought");
       if (!thought) return;
       var shown = false;
-      function speak() {
-        if (shown) return;
-        shown = true;
-        fig.classList.add("is-in");
-        thought.classList.add("is-on");
-        setTimeout(function () { thought.classList.remove("is-on"); }, reduce ? 2400 : 4700);
+      var speakTimer = 0;
+      var hideTimer = 0;
+      function viewport() {
+        var vv = window.visualViewport;
+        return {
+          w: (vv && vv.width) || window.innerWidth || 0,
+          h: (vv && vv.height) || window.innerHeight || 0
+        };
+      }
+      function overlap() {
+        var r = fig.getBoundingClientRect();
+        var v = viewport();
+        return {
+          w: Math.min(r.right, v.w) - Math.max(r.left, 0),
+          h: Math.min(r.bottom, v.h) - Math.max(r.top, 0)
+        };
       }
       function inView() {
-        var r = fig.getBoundingClientRect();
-        return r.bottom > 50 && r.top < window.innerHeight - 40;
+        var o = overlap();
+        return shown ? (o.w >= 16 && o.h >= 24) : (o.w >= 48 && o.h >= 80);
       }
-      function figVisible() {
-        return fig.classList.contains("is-in") && parseFloat(getComputedStyle(fig).opacity) > 0.05;
+      function speak() {
+        speakTimer = 0;
+        if (shown || !inView()) return;
+        shown = true;
+        fig.classList.add("is-in");
+        thought.classList.remove("is-on");
+        void thought.offsetWidth;
+        thought.classList.add("is-on");
+        clearTimeout(hideTimer);
+        hideTimer = setTimeout(function () {
+          thought.classList.remove("is-on");
+        }, 4100);
       }
       function maybeSpeak() {
-        if (shown) return;
-        if (!inView() || !figVisible()) return;
-        window.removeEventListener("scroll", maybeSpeak);
-        setTimeout(speak, reduce ? 0 : 280 + i * 420);
+        if (!inView()) {
+          shown = false;
+          if (speakTimer) { clearTimeout(speakTimer); speakTimer = 0; }
+          if (hideTimer) { clearTimeout(hideTimer); hideTimer = 0; }
+          thought.classList.remove("is-on");
+          return;
+        }
+        if (shown || speakTimer) return;
+        speakTimer = setTimeout(speak, reduce ? 0 : 80);
       }
       window.addEventListener("scroll", maybeSpeak, { passive: true });
+      document.addEventListener("scroll", maybeSpeak, { passive: true, capture: true });
+      window.addEventListener("resize", maybeSpeak);
+      window.addEventListener("hashchange", maybeSpeak);
+      if (window.visualViewport) {
+        window.visualViewport.addEventListener("resize", maybeSpeak);
+        window.visualViewport.addEventListener("scroll", maybeSpeak);
+      }
+      if ("IntersectionObserver" in window) {
+        new IntersectionObserver(function (entries) {
+          var i;
+          for (i = 0; i < entries.length; i++) {
+            if (entries[i].isIntersecting) { maybeSpeak(); return; }
+          }
+          maybeSpeak();
+        }, { threshold: [0, 0.15, 0.35, 0.6, 1] }).observe(fig);
+      }
       maybeSpeak();
-      var tries = 0;
-      var poll = setInterval(function () {
-        maybeSpeak();
-        if (shown || ++tries > 50) clearInterval(poll);
-      }, 200);
+      setInterval(maybeSpeak, 200);
     });
   })();
 
@@ -521,6 +548,7 @@
         var t = 1 - Math.min(1, dist / Math.max(1, view.width * 0.62));
         t = t * t;
         el.style.opacity = String(0.18 + t * 0.82);
+        el.style.setProperty("--in", String(t));
         el.classList.toggle("is-on", t > 0.55);
       });
       page = next;
