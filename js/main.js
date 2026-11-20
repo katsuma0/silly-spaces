@@ -67,7 +67,6 @@
   /* ---- Hero people: wait for the logo to settle, then fade in one by
      one in a shuffled order (phone and desktop). ---- */
   var placing = /(?:\?|&)place=1(?:&|$)/.test(location.search);
-  if (!placing && document.querySelector(".scene-fig-cake")) placing = true;
   function revealPeople() {
     if (revealPeople.done) return;
     revealPeople.done = true;
