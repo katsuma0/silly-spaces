@@ -1590,8 +1590,8 @@ html.is-placing .thought-cloud-text.is-dragging { cursor: grabbing; z-index: 8; 
   max-width: none;
   height: auto;
   opacity: 1;
-  pointer-events: auto;
-  cursor: grab;
+  pointer-events: none;
+  cursor: default;
   --fig-x: 0px;
   --fig-y: -5px;
   --fig-rot: 0.0deg;
@@ -1603,6 +1603,8 @@ html.is-placing .thought-cloud-text.is-dragging { cursor: grabbing; z-index: 8; 
 .about-page .goal-progress-emblem .scene-fig-cake.is-in,
 html.is-placing .about-page .goal-progress-emblem .scene-fig-cake {
   opacity: 1;
+  pointer-events: auto;
+  cursor: grab;
 }
 html.is-placing .about-page .goal-progress-emblem .scene-fig-cake.is-dragging {
   cursor: grabbing;
