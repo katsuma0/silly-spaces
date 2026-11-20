@@ -29,7 +29,7 @@
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&display=optional">
-  <link rel="stylesheet" href="/css/style.css?v=c1d6b23f">
+  <link rel="stylesheet" href="/css/style.css?v=d0b095c3">
 </head>
 <body>
 <a class="skip" href="#main">Skip to content</a>
@@ -56,7 +56,7 @@
 </header>
 
 <main id="main">
-  <section class="about-page">
+  <section class="about-page" id="about">
     <div class="wrap">
       <article class="prose">
         <div class="mark hero-logo reveal has-logo-video" role="img" aria-label="Silly Spaces logo">
@@ -69,6 +69,17 @@
         <h1 class="reveal"><span class="blue">Silly</span> <span class="pink">Spaces</span></h1>
         <p class="goal-kicker reveal" data-delay="1">The silly space goal is to</p>
         <p class="lede reveal" data-delay="1">I want to be invited to ten stranger's weddings and the only logical way to complete that goal is to connect everyone.</p>
+        <div class="goal-progress reveal" data-delay="2" style="--goal-now: 0; --goal-max: 10;">
+          <div class="goal-progress-row">
+            <span class="goal-progress-emblem" aria-hidden="true">
+              <img class="scene-fig scene-fig-cake" src="/assets/ss-cake.png?v=5" alt="" width="207" height="189" decoding="async">
+            </span>
+            <div class="goal-progress-track" role="progressbar" aria-valuemin="0" aria-valuemax="10" aria-valuenow="0" aria-label="0 of 10 couples">
+              <span class="goal-progress-fill"></span>
+            </div>
+            <p class="goal-progress-label">0/10 couples</p>
+          </div>
+        </div>
         <p class="goal-cake reveal" data-delay="2">Ten weddings is ten cakes and nothing can stop me from the oppurtunity to eat ten cakes.</p>
         <div class="faq about-more reveal" data-delay="3">
           <details>
@@ -128,6 +139,6 @@
   </div>
 </footer>
 
-<script src="/js/main.js?v=1c52e949"></script>
+<script src="/js/main.js?v=8916825d"></script>
 </body>
 </html>
