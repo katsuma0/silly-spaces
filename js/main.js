@@ -198,7 +198,7 @@
   }
 
   /* ---- Place mode (?place=1): drag people around, Shift-drag to rotate. ---- */
-  if (placing && document.querySelector(".scene-fig")) {
+  if (placing && (document.querySelector(".scene-fig") || document.querySelector(".join-arrow"))) {
     root.classList.add("is-placing");
     var viewport = document.querySelector('meta[name="viewport"]');
     if (viewport) {
@@ -244,6 +244,11 @@
       ];
       return lines.filter(Boolean).join("\n");
     }
+    function dumpArrow(sel) {
+      var el = document.querySelector(sel);
+      if (!el) return "";
+      return sel + " { --arrow-x: " + readVar(el, "--arrow-x", 0).toFixed(0) + "px; --arrow-y: " + readVar(el, "--arrow-y", 0).toFixed(0) + "px; }";
+    }
     function dumpCss() {
       var rules = figs.map(function (el) {
         var sel = figSel(el);
@@ -251,7 +256,12 @@
         var line = sel + " { --fig-x: " + readVar(el, "--fig-x", 0).toFixed(0) + "px; --fig-y: " + readVar(el, "--fig-y", 0).toFixed(0) + "px; --fig-rot: " + readVar(el, "--fig-rot", 0).toFixed(1) + "deg; --fig-s: " + readVar(el, "--fig-s", 1).toFixed(2) + "; }";
         var thought = dumpThought(el);
         return thought ? line + "\n" + thought : line;
-      }).filter(Boolean).join("\n");
+      }).filter(Boolean);
+      var nextArrow = dumpArrow(".join-arrow-next");
+      var prevArrow = dumpArrow(".join-arrow-prev");
+      if (nextArrow) rules.push(nextArrow);
+      if (prevArrow) rules.push(prevArrow);
+      rules = rules.join("\n");
       if (window.matchMedia("(max-width: 734px)").matches) {
         return "@media (max-width: 734px) {\n  " + rules.replace(/\n/g, "\n  ") + "\n}";
       }
@@ -261,7 +271,7 @@
     var sizeMode = false;
     var hud = document.createElement("div");
     hud.className = "place-hud";
-    hud.innerHTML = "<p>Drag a person, a bubble, or the words.</p><button type=\"button\" class=\"btn btn-ghost place-rotate\" aria-pressed=\"false\">Rotate</button><button type=\"button\" class=\"btn btn-ghost place-size\" aria-pressed=\"false\">Size</button><button type=\"button\" class=\"btn btn-ghost place-copy\">Copy CSS</button><pre></pre>";
+    hud.innerHTML = "<p>Drag a person, a bubble, the words, or a join arrow.</p><button type=\"button\" class=\"btn btn-ghost place-rotate\" aria-pressed=\"false\">Rotate</button><button type=\"button\" class=\"btn btn-ghost place-size\" aria-pressed=\"false\">Size</button><button type=\"button\" class=\"btn btn-ghost place-copy\">Copy CSS</button><pre></pre>";
     document.body.appendChild(hud);
     var pre = hud.querySelector("pre");
     var copyBtn = hud.querySelector(".place-copy");
@@ -388,6 +398,31 @@
         });
       }
     });
+    Array.prototype.forEach.call(document.querySelectorAll(".join-arrow"), function (arrow) {
+      arrow.addEventListener("pointerdown", function (e) {
+        if (e.button !== 0) return;
+        e.preventDefault();
+        e.stopPropagation();
+        var startX = e.clientX, startY = e.clientY;
+        var ox = readVar(arrow, "--arrow-x", 0);
+        var oy = readVar(arrow, "--arrow-y", 0);
+        arrow.classList.add("is-dragging");
+        arrow.setPointerCapture(e.pointerId);
+        function move(ev) {
+          arrow.style.setProperty("--arrow-x", (ox + (ev.clientX - startX)).toFixed(0) + "px");
+          arrow.style.setProperty("--arrow-y", (oy + (ev.clientY - startY)).toFixed(0) + "px");
+          paintHud();
+        }
+        function up() {
+          arrow.classList.remove("is-dragging");
+          arrow.removeEventListener("pointermove", move);
+          arrow.removeEventListener("pointerup", up);
+          paintHud();
+        }
+        arrow.addEventListener("pointermove", move);
+        arrow.addEventListener("pointerup", up);
+      });
+    });
   }
 
   /* ---- Hangouts people speak once they scroll into view. ---- */
@@ -399,7 +434,6 @@
       if (!thought) return;
       var shown = false;
       var speakTimer = 0;
-      var hideTimer = 0;
       function viewport() {
         var vv = window.visualViewport;
         return {
@@ -417,7 +451,7 @@
       }
       function inView() {
         var o = overlap();
-        return shown ? (o.w >= 16 && o.h >= 24) : (o.w >= 48 && o.h >= 80);
+        return o.w >= 48 && o.h >= 80;
       }
       function speak() {
         speakTimer = 0;
@@ -427,20 +461,14 @@
         thought.classList.remove("is-on");
         void thought.offsetWidth;
         thought.classList.add("is-on");
-        clearTimeout(hideTimer);
-        hideTimer = setTimeout(function () {
-          thought.classList.remove("is-on");
-        }, 4100);
       }
       function maybeSpeak() {
+        if (shown) return;
         if (!inView()) {
-          shown = false;
           if (speakTimer) { clearTimeout(speakTimer); speakTimer = 0; }
-          if (hideTimer) { clearTimeout(hideTimer); hideTimer = 0; }
-          thought.classList.remove("is-on");
           return;
         }
-        if (shown || speakTimer) return;
+        if (speakTimer) return;
         speakTimer = setTimeout(speak, reduce ? 0 : 80);
       }
       window.addEventListener("scroll", maybeSpeak, { passive: true });
@@ -592,8 +620,14 @@
     });
     var nextBtn = section.querySelector(".join-arrow-next");
     var prevBtn = section.querySelector(".join-arrow-prev");
-    if (nextBtn) nextBtn.addEventListener("click", function () { go(1, false); });
-    if (prevBtn) prevBtn.addEventListener("click", function () { go(0, false); });
+    if (nextBtn) nextBtn.addEventListener("click", function (e) {
+      if (placing) { e.preventDefault(); return; }
+      go(1, false);
+    });
+    if (prevBtn) prevBtn.addEventListener("click", function (e) {
+      if (placing) { e.preventDefault(); return; }
+      go(0, false);
+    });
     var cardBtns = section.querySelectorAll(".join-card");
     var cardList = section.querySelector(".join-cards");
     function closeCards() {
@@ -832,14 +866,14 @@
     document.querySelectorAll('a[href$="#faq"]').forEach(function (a) { var li = a.closest("li"); (li || a).hidden = true; });
   }
 
-  /* ---- Bounty board hides its links when there is nothing up ---- */
+  /* ---- Bounty fliers hide their links when there is nothing up ---- */
   var bounty = document.getElementById("bounty");
   if (bounty && !bounty.querySelector(".bounty-flier")) {
     bounty.hidden = true;
     document.querySelectorAll('a[href$="#bounty"]').forEach(function (a) { var li = a.closest("li"); (li || a).hidden = true; });
   }
 
-  /* ---- Bounty fliers: zoom off the cork board, then mail from the open flier ---- */
+  /* ---- Bounty fliers: zoom off the pin, then mail from the open flier ---- */
   var zoom = document.getElementById("bounty-zoom");
   if (bounty && zoom && typeof zoom.showModal === "function") {
     var zoomImg = zoom.querySelector("img");

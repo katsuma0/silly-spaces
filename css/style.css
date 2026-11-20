@@ -589,90 +589,27 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 }
 .partner-news:hover strong { border-color: var(--text); }
 
-/* ---------- Bounty board ----------
-   A cork bulletin board. Fliers sit a little crooked under a pin.
-   Clicking one zooms it off the board; the mail lives on the open flier. */
-#bounty {
-  padding: 0;
-  border-top: 0;
-}
-#bounty .section-head {
-  position: relative;
-  z-index: 4;
-  margin-bottom: 0;
-  padding: clamp(72px, 12vw, 120px) 0 28px;
+/* ---------- Bounty fliers ----------
+   Pinned around the socials, a little crooked under a pin.
+   Clicking one zooms it; the mail lives on the open flier. */
+.bounty-pins {
+  position: absolute;
+  inset: 0;
+  z-index: 2;
   pointer-events: none;
-}
-#bounty .eyebrow { color: rgba(255, 252, 247, 0.78); }
-#bounty h2 { color: #fff; }
-#bounty .section-head p { color: rgba(255, 252, 247, 0.9); }
-#bounty .section-head h2,
-#bounty .section-head p,
-#bounty .eyebrow {
-  text-shadow: 0 1px 2px rgba(62, 36, 18, 0.35);
-}
-.bounty-board {
-  position: relative;
-  overflow: hidden;
-  width: 100%;
-  max-width: none;
-  min-height: 640px;
-  margin: 0;
-  padding: 0 0 80px;
-  background-color: #c4a06a;
-  background-image:
-    radial-gradient(ellipse 2.5px 2px at 18% 22%, rgba(92, 56, 24, 0.38), transparent 60%),
-    radial-gradient(ellipse 2px 2.5px at 62% 48%, rgba(120, 72, 32, 0.32), transparent 60%),
-    radial-gradient(ellipse 2px 2px at 84% 18%, rgba(70, 40, 16, 0.3), transparent 60%),
-    radial-gradient(ellipse 3px 2px at 36% 78%, rgba(140, 88, 40, 0.28), transparent 60%),
-    linear-gradient(165deg, rgba(255, 228, 180, 0.16), rgba(90, 52, 20, 0.14));
-  background-size: 22px 20px, 18px 22px, 26px 18px, 20px 24px, 100% 100%;
-  border: 0;
-  outline: 0;
-  box-shadow:
-    inset 0 0 0 14px #6e4524,
-    inset 0 0 0 18px #8d5d32,
-    inset 0 0 64px rgba(70, 40, 16, 0.28);
 }
 .bounty {
   position: absolute;
   z-index: 1;
-  top: clamp(210px, calc(28% + var(--y, 16%) * 0.5), calc(100% - 180px));
-  left: clamp(28px, var(--x, 16%), calc(100% - 180px));
-}
-.bounty-blank { z-index: 0; pointer-events: none; }
-.bounty-blank .sheet {
-  position: relative;
-  width: min(var(--w, 128px), 34vw);
-  aspect-ratio: 3 / 4;
-  background:
-    linear-gradient(180deg, rgba(255, 252, 244, 0.35), transparent 42%),
-    #efe3c4;
-  box-shadow: 1px 5px 14px rgba(40, 22, 8, 0.26);
-  transform: rotate(var(--tilt, 2deg));
-}
-.bounty-blank:nth-child(even) .sheet { background:
-  linear-gradient(180deg, rgba(255, 252, 244, 0.28), transparent 42%),
-  #ead9b4;
-}
-.bounty-blank:nth-child(3n) .sheet { background:
-  linear-gradient(180deg, rgba(255, 252, 244, 0.3), transparent 42%),
-  #f3e8ce;
-}
-.bounty-blank .sheet::before {
-  content: "";
-  position: absolute;
-  left: 12%;
-  right: 12%;
-  top: 26%;
-  height: 34%;
-  border: 1px dashed rgba(42, 41, 38, 0.1);
-  background: rgba(255, 255, 255, 0.12);
+  top: clamp(8px, var(--y, 8%), calc(100% - 120px));
+  left: clamp(8px, var(--x, 8%), calc(100% - 96px));
+  margin: 0;
+  pointer-events: auto;
 }
 .bounty-flier {
   position: relative;
   display: block;
-  width: min(164px, 28vw);
+  width: min(120px, 18vw);
   margin: 0;
   padding: 0;
   border: 0;
@@ -714,6 +651,35 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 }
 .bounty:nth-child(even) .pin { background: radial-gradient(circle at 32% 28%, #9ec0ff, var(--blue) 55%, #1e3a78); }
 .bounty:nth-child(3n) .pin { left: 46%; }
+.bounty-blank { z-index: 0; pointer-events: none; }
+.bounty-blank .sheet {
+  position: relative;
+  width: min(var(--w, 108px), 16vw);
+  aspect-ratio: 3 / 4;
+  background:
+    linear-gradient(180deg, rgba(255, 252, 244, 0.35), transparent 42%),
+    #efe3c4;
+  box-shadow: 1px 5px 14px rgba(40, 22, 8, 0.26);
+  transform: rotate(var(--tilt, 2deg));
+}
+.bounty-blank:nth-child(even) .sheet { background:
+  linear-gradient(180deg, rgba(255, 252, 244, 0.28), transparent 42%),
+  #ead9b4;
+}
+.bounty-blank:nth-child(3n) .sheet { background:
+  linear-gradient(180deg, rgba(255, 252, 244, 0.3), transparent 42%),
+  #f3e8ce;
+}
+.bounty-blank .sheet::before {
+  content: "";
+  position: absolute;
+  left: 12%;
+  right: 12%;
+  top: 26%;
+  height: 34%;
+  border: 1px dashed rgba(42, 41, 38, 0.1);
+  background: rgba(255, 255, 255, 0.12);
+}
 
 .bounty-zoom {
   border: 0; padding: 0; margin: 0; background: transparent;
@@ -894,6 +860,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   --card-w: 520px;
   --peek: calc((100vw - var(--panel)) / 2);
   --card-peek: 40px;
+  --arrow-pad: 16px;
   position: relative;
   width: 100%;
   margin: 0 auto;
@@ -909,8 +876,8 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   width: fit-content;
   max-width: none;
   line-height: 0;
-  --fig-x: -78px;
-  --fig-y: -330px;
+  --fig-x: -325px;
+  --fig-y: -667px;
   --fig-rot: 5.9deg;
   --fig-s: 0.94;
 }
@@ -1027,10 +994,12 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   opacity: 0.22;
 }
 .join-arrow {
+  --arrow-x: 0px;
+  --arrow-y: 0px;
   position: absolute;
   z-index: 3;
   top: 50%;
-  width: var(--peek);
+  width: 52px;
   height: 88px;
   display: grid;
   align-items: center;
@@ -1039,7 +1008,8 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   background: none;
   color: var(--text);
   cursor: pointer;
-  transform: translateY(-50%);
+  overflow: visible;
+  transform: translateY(calc(-50% + var(--arrow-y))) translateX(var(--arrow-x));
   transition: opacity var(--mid) var(--ease), color var(--mid) var(--ease);
 }
 .join-arrow svg {
@@ -1053,8 +1023,24 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   stroke-linecap: round;
 }
 .join-arrow:hover { opacity: 0.72; }
-.join-arrow-next { right: 0; justify-items: start; padding-left: 18px; }
-.join-arrow-prev { left: 0; justify-items: end; padding-right: 18px; opacity: 0; pointer-events: none; }
+.join-arrow-next {
+  left: calc(50% + var(--panel) / 2);
+  right: auto;
+  justify-items: start;
+  padding-left: var(--arrow-pad);
+  --arrow-x: 0px;
+  --arrow-y: 0px;
+}
+.join-arrow-prev {
+  left: auto;
+  right: calc(50% + var(--panel) / 2);
+  justify-items: end;
+  padding-right: var(--arrow-pad);
+  opacity: 0;
+  pointer-events: none;
+  --arrow-x: 0px;
+  --arrow-y: 0px;
+}
 .join-arrow-prev svg { transform: scaleX(-1); }
 #join.is-sphere .join-arrow-next { opacity: 0; pointer-events: none; }
 #join.is-sphere .join-arrow-prev { opacity: 1; pointer-events: auto; }
@@ -1063,13 +1049,22 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   .join-arrow-prev { animation: join-arrow-nudge-left 1.8s var(--ease) infinite; }
 }
 @keyframes join-arrow-nudge {
-  0%, 100% { transform: translateY(-50%) translateX(0); }
-  50% { transform: translateY(-50%) translateX(5px); }
+  0%, 100% { transform: translateY(calc(-50% + var(--arrow-y))) translateX(var(--arrow-x)); }
+  50% { transform: translateY(calc(-50% + var(--arrow-y))) translateX(calc(var(--arrow-x) + 5px)); }
 }
 @keyframes join-arrow-nudge-left {
-  0%, 100% { transform: translateY(-50%) translateX(0); }
-  50% { transform: translateY(-50%) translateX(-5px); }
+  0%, 100% { transform: translateY(calc(-50% + var(--arrow-y))) translateX(var(--arrow-x)); }
+  50% { transform: translateY(calc(-50% + var(--arrow-y))) translateX(calc(var(--arrow-x) - 5px)); }
 }
+html.is-placing .join-arrow,
+html.is-placing #join.is-sphere .join-arrow-next,
+html.is-placing #join.is-sphere .join-arrow-prev {
+  opacity: 1;
+  pointer-events: auto;
+  animation: none;
+  cursor: grab;
+}
+html.is-placing .join-arrow.is-dragging { cursor: grabbing; }
 .join-box {
   position: relative;
   z-index: 2;
@@ -1081,7 +1076,8 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   border-radius: 20px;
   padding: clamp(24px, 5vw, 40px);
   border: 1px solid var(--line);
-  transition: background-color var(--slow) var(--ease);
+  transform: translateX(calc((var(--panel) - min(var(--card-w), var(--panel))) / 2 * (1 - var(--in, 1))));
+  transition: background-color var(--slow) var(--ease), transform 0.45s var(--ease);
 }
 .join-sphere {
   position: relative;
@@ -1190,8 +1186,8 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 }
 #events .scene-fig-aidan { --fig-x: 511px; --fig-y: -361px; --fig-rot: -3.1deg; --fig-s: 0.93; }
 #events .scene-fig-kolbe { --fig-x: -681px; --fig-y: -344px; --fig-rot: 3.8deg; --fig-s: 0.90; }
-#events .scene-fig-amari { --fig-x: 522px; --fig-y: 690px; --fig-rot: 0.1deg; --fig-s: 1.02; z-index: 6; overflow: visible; }
-#events .scene-fig-julie { --fig-x: -592px; --fig-y: 389px; --fig-rot: -2.4deg; --fig-s: 1.09; z-index: 6; overflow: visible; }
+#events .scene-fig-amari { --fig-x: 508px; --fig-y: 936px; --fig-rot: 0.1deg; --fig-s: 1.02; z-index: 6; overflow: visible; }
+#events .scene-fig-julie { --fig-x: -618px; --fig-y: 679px; --fig-rot: -2.4deg; --fig-s: 0.91; z-index: 6; overflow: visible; }
 #events .scene-fig.has-thought {
   display: block;
   width: fit-content;
@@ -1233,7 +1229,7 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
 #events .scene-fig-julie .thought-cloud {
   --cloud-x: 21px;
   --cloud-y: -161px;
-  --cloud-w: 184px;
+  --cloud-w: 153px;
 }
 .thought-cloud img {
   display: block;
@@ -1268,24 +1264,17 @@ html.is-placing .scene-fig.is-dragging { cursor: grabbing; opacity: 1; z-index: 
   user-select: none;
 }
 #events .scene-fig-julie .thought-cloud-text { --text-x: -8px; --text-y: 2px; }
-@keyframes speech-pop {
+@keyframes speech {
   0% { opacity: 0; transform: scale(0.02, 0.06) skewX(-28deg) skewY(18deg); }
-  18% { opacity: 1; transform: scale(0.22, 0.55) skewX(-34deg) skewY(12deg); }
-  42% { transform: scale(1.32, 0.58) skewX(18deg) skewY(-10deg); }
-  68% { transform: scale(0.82, 1.22) skewX(-10deg) skewY(6deg); }
-  100% { opacity: 1; transform: scale(1) skewX(0) skewY(0); }
-}
-@keyframes speech-out {
-  0% { opacity: 1; transform: scale(1); }
-  24% { opacity: 1; transform: scale(1.18, 0.76) skewX(-14deg) skewY(8deg); }
-  100% { opacity: 0; transform: scale(0.02, 0.05) skewX(22deg) skewY(-14deg); }
+  2.3% { opacity: 1; transform: scale(0.22, 0.55) skewX(-34deg) skewY(12deg); }
+  5.4% { transform: scale(1.32, 0.58) skewX(18deg) skewY(-10deg); }
+  8.8% { transform: scale(0.82, 1.22) skewX(-10deg) skewY(6deg); }
+  13% { opacity: 1; transform: scale(1) skewX(0) skewY(0); }
+  84% { opacity: 1; transform: scale(1) skewX(0) skewY(0); }
+  100% { opacity: 0; transform: scale(1) skewX(0) skewY(0); }
 }
 .fig-thought.is-on .thought-cloud {
-  animation-name: speech-pop, speech-out;
-  animation-duration: 0.55s, 0.32s;
-  animation-timing-function: var(--ease), cubic-bezier(0.55, 0.06, 0.68, 0.19);
-  animation-delay: 0s, 3.55s;
-  animation-fill-mode: both, forwards;
+  animation: speech 4.25s var(--ease) both;
 }
 html.is-placing .scene-fig.has-thought { opacity: 1; z-index: 8; }
 html.is-placing .scene-fig.has-thought .scene-fig-person { opacity: 0.5; }
@@ -1696,8 +1685,8 @@ html.is-placing .about-page .goal-progress-emblem .scene-fig-cake.is-dragging {
 .about-page .prose-cta { justify-content: center; }
 
 /* ---------- Footer / socials ---------- */
-.socials { padding: clamp(56px, 8vw, 96px) 0 36px; border-top: 1px solid var(--line); }
-.socials .wrap { width: min(920px, calc(100% - 48px)); }
+.socials { position: relative; overflow: visible; padding: clamp(108px, 14vw, 168px) 0 56px; border-top: 1px solid var(--line); }
+.socials .wrap { position: relative; z-index: 1; width: min(920px, calc(100% - 48px)); }
 /* Three socials plus a wider email tile, so the address stays on one line. */
 .social-grid { display: grid; grid-template-columns: repeat(3, minmax(160px, 1fr)) minmax(220px, 1.5fr); gap: 12px; }
 .social {
@@ -1790,14 +1779,10 @@ html.is-placing .about-page .goal-progress-emblem .scene-fig-cake.is-dragging {
   .social small { font-size: 11px; overflow-wrap: anywhere; }
   .social.mail { grid-column: 1 / -1; flex-direction: row; justify-content: center; gap: 12px; padding: 14px; text-align: left; }
   .social.mail small { font-size: 12px; }
-  .bounty-board { min-height: 480px; padding: 0 0 56px; box-shadow: inset 0 0 0 10px #6e4524, inset 0 0 0 13px #8d5d32, inset 0 0 48px rgba(70, 40, 16, 0.28); }
-  .bounty {
-    top: clamp(170px, calc(30% + var(--y, 14%) * 0.45), calc(100% - 140px));
-    left: clamp(16px, var(--x, 10%), calc(100% - 120px));
-  }
-  .bounty-flier { width: min(120px, 34vw); }
-  .bounty-blank .sheet { width: min(var(--w, 96px), 28vw); }
-  #bounty .section-head { padding: 56px 0 20px; }
+  .bounty-flier { width: min(96px, 28vw); }
+  .bounty-blank .sheet { width: min(var(--w, 88px), 24vw); }
+  .bounty-blank:nth-child(3),
+  .bounty-blank:nth-child(4) { display: none; }
   .bounty-zoom-bar { bottom: 16px; }
   .partner-find { margin: 0 auto 16px; }
   .partner-search input { padding: 12px 14px; }
@@ -1806,6 +1791,7 @@ html.is-placing .about-page .goal-progress-emblem .scene-fig-cake.is-dragging {
     --panel: min(680px, calc(100vw - 80px));
     --peek: calc((100vw - var(--panel)) / 2);
     --card-peek: 28px;
+    --arrow-pad: 10px;
   }
   .join-cards { --card-peek: 28px; width: 72px; left: max(0px, calc(50% - 260px - 40px)); }
   #join .scene-fig-paintbrush { height: 150px; left: max(0px, calc(50% - 260px - 64px)); top: 18px; }
@@ -1891,7 +1877,7 @@ html.is-placing .about-page .goal-progress-emblem .scene-fig-cake.is-dragging {
   .scene-fig { opacity: 0.5; }
   .thought-cloud img { filter: drop-shadow(1.5px 0 0 var(--cloud-ink, #2a2926)) drop-shadow(-1.5px 0 0 var(--cloud-ink, #2a2926)) drop-shadow(0 1.5px 0 var(--cloud-ink, #2a2926)) drop-shadow(0 -1.5px 0 var(--cloud-ink, #2a2926)); }
   .fig-thought.is-on .thought-cloud {
-    animation-duration: 0.55s, 0.32s !important;
-    animation-delay: 0s, 3.55s !important;
+    animation-duration: 4.25s !important;
+    animation-delay: 0s !important;
   }
 }

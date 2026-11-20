@@ -503,19 +503,19 @@ def read_bounty(folder):
 
 
 def bounty_spot(slug, i):
-    """A stable off-centre pin so each flier looks dropped on, not lined up."""
+    """A stable pin around the socials, not covering the middle of the grid."""
     h = int(hashlib.md5(f"{slug}:{i}".encode()).hexdigest(), 16)
     slots = (
-        (16, 12, -3.2),
-        (54, 18, 2.4),
-        (8, 46, -1.6),
-        (48, 50, 3.1),
-        (28, 28, -2.8),
-        (62, 40, 1.4),
+        (4, 6, -3.2),
+        (84, 8, 2.4),
+        (2, 36, -1.6),
+        (86, 40, 3.1),
+        (8, 78, -2.8),
+        (80, 76, 1.4),
     )
     x, y, tilt = slots[i % len(slots)]
-    x = max(6, min(68, x + (h % 9) - 4))
-    y = max(8, min(56, y + ((h >> 4) % 9) - 4))
+    x = max(2, min(88, x + (h % 7) - 3))
+    y = max(4, min(82, y + ((h >> 4) % 7) - 3))
     tilt = round(tilt + ((h >> 8) % 17) / 10 - 0.8, 1)
     return x, y, tilt
 
