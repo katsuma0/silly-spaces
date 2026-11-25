@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en-CA">
+<head>
+  <title>Silly question · Silly Spaces</title>
+  <meta name="robots" content="noindex">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#ffffff" media="(prefers-color-scheme: light)">
+  <meta name="theme-color" content="#000000" media="(prefers-color-scheme: dark)">
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Silly Spaces">
+  <meta property="og:title" content="Silly Spaces">
+  <meta property="og:description" content="Invisible strings made visible.">
+  <meta property="og:url" content="https://sillyspaces.com/q.html">
+  <meta property="og:image" content="https://sillyspaces.com/assets/og.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="Silly Spaces logo">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Silly Spaces">
+  <meta name="twitter:image" content="https://sillyspaces.com/assets/og.png">
+  <link rel="icon" href="/assets/logo.svg" type="image/svg+xml">
+  <link rel="icon" href="/assets/icon-512.png" type="image/png" sizes="512x512">
+  <link rel="apple-touch-icon" href="/assets/apple-touch-icon.png">
+  <script>
+    try { var t = localStorage.getItem("ss-theme"); if (t) document.documentElement.setAttribute("data-theme", t); } catch (e) {}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Fraunces:opsz,wght@9..144,400;9..144,500&display=optional">
+  <link rel="stylesheet" href="/css/style.css?v=087872d6">
+</head>
+<body>
+<header class="nav">
+  <div class="wrap">
+    <a class="brand" href="/" aria-label="Silly Spaces home"><img src="/assets/logo.svg" alt="" width="30" height="25" decoding="async"> Silly Spaces</a>
+    <ul class="nav-links" id="nav-links">
+      <li><a href="/#events">Our Silly Spaces</a></li>
+      <li><a href="/#partners">Partners</a></li>
+      <li><a href="/#join">Join</a></li>
+      <li><a href="/#faq">FAQ</a></li>
+      <li><a href="/#bounty">Bounty Board</a></li>
+      <li><a href="/about.html">About</a></li>
+      <li class="nav-theme">
+        <button class="theme-toggle" type="button" aria-label="Switch to dark mode">
+          <svg class="moon" viewBox="0 0 24 24" aria-hidden="true"><path d="M21 12.8A9 9 0 1 1 11.2 3a7 7 0 0 0 9.8 9.8z"/></svg>
+          <svg class="sun" viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="4"/><path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+        </button>
+      </li>
+    </ul>
+    <button class="menu-btn" type="button" aria-label="Open menu" aria-expanded="false" aria-controls="nav-links"><span></span><span></span><span></span></button>
+  </div>
+</header>
+<main id="main">
+  <section class="section q-page">
+    <div class="wrap">
+      <div class="section-head">
+        <p class="eyebrow" id="q-hi">Silly question of the month</p>
+        <h1 id="q-text"></h1>
+      </div>
+
+      <form class="join-box" id="q-form" hidden>
+        <div class="field is-silly">
+          <label for="q-answer">Your answer</label>
+          <textarea id="q-answer" required rows="4" maxlength="500" enterkeyhint="done" placeholder="Honestly…"></textarea>
+        </div>
+        <button class="btn btn-primary" type="submit" style="width:100%">Send</button>
+        <p class="form-note" id="q-note">Answer again any time. The newest one is the one we keep.</p>
+      </form>
+
+      <p class="empty" id="q-nolink" hidden>This page needs your own link. Ask Katsuma for it, or check your card.</p>
+    </div>
+  </section>
+</main>
+<script>
+/* One page, one link per member. The link carries a random code (?k=) that the
+   sheet turns back into a name, so nobody needs an account and nobody can
+   answer for someone else without their link. Answers go to a Google Form,
+   which appends a row per send, so nothing is ever overwritten. */
+(function () {
+  // Change these two lines when the question changes. The sheet matches answers
+  // to a column by this exact text, so the column header must read the same.
+  var QUESTION = "How do you feel about snow?";
+
+  // From the "Silly question answers" Google Form, see README.md.
+  var FORM = "https://docs.google.com/forms/d/e/PASTE_FORM_ID/formResponse";
+  var F_CODE = "entry.PASTE_CODE_ID", F_QUESTION = "entry.PASTE_QUESTION_ID", F_ANSWER = "entry.PASTE_ANSWER_ID";
+
+  var params = new URLSearchParams(location.search);
+  var code = (params.get("k") || "").trim().toLowerCase();
+  var name = (params.get("n") || "").trim().slice(0, 30);
+  var $ = function (id) { return document.getElementById(id); };
+
+  $("q-text").textContent = QUESTION;
+  if (name) $("q-hi").textContent = "Hi " + name + ", here is this month’s question";
+
+  // codes are 8 letters and digits; anything else is a typo or a guess
+  if (!/^[a-z0-9]{8}$/.test(code)) { $("q-nolink").hidden = false; return; }
+  var form = $("q-form"), note = $("q-note"), btn = form.querySelector("button");
+  form.hidden = false;
+
+  var sending = false;
+  form.addEventListener("submit", function (e) {
+    e.preventDefault();
+    if (sending) return;
+    var answer = $("q-answer").value.trim();
+    if (!answer) { $("q-answer").focus(); return; }
+    if (/PASTE_/.test(FORM + F_CODE)) {
+      note.textContent = "Answers aren’t connected yet. Tell Katsuma.";
+      return;
+    }
+    sending = true; btn.disabled = true; btn.textContent = "Sending…";
+    var body = new URLSearchParams();
+    body.append(F_CODE, code); body.append(F_QUESTION, QUESTION); body.append(F_ANSWER, answer);
+    // no-cors: Google Forms never says yes, so a sent request counts as saved
+    fetch(FORM, { method: "POST", mode: "no-cors", body: body }).then(function () {
+      btn.textContent = "Saved";
+      note.textContent = "Got it. Change your mind and send again, the newest one wins.";
+      setTimeout(function () { sending = false; btn.disabled = false; btn.textContent = "Send again"; }, 1500);
+    }).catch(function () {
+      sending = false; btn.disabled = false; btn.textContent = "Send";
+      note.textContent = "That didn’t send. Try again in a minute.";
+    });
+  });
+})();
+</script>
+<footer class="socials" id="contact">
+  <div class="wrap">
+    <div class="footer" style="border-top:0;margin-top:0;padding-top:0">
+      <span>&copy; 2026 Silly Spaces</span>
+      <ul>
+        <li><a href="/#events">Our Silly Spaces</a></li>
+        <li><a href="/#partners">Partners</a></li>
+        <li><a href="/#join">Join</a></li>
+        <li><a href="/#faq">FAQ</a></li>
+        <li><a href="/#bounty">Bounty Board</a></li>
+        <li><a href="/about.html">About</a></li>
+        <li><a href="mailto:sillyspacesww@gmail.com">Email</a></li>
+      </ul>
+    </div>
+  </div>
+</footer>
+<script src="/js/main.js?v=6aba75e0"></script>
+</body>
+</html>

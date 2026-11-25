@@ -73,6 +73,14 @@ Run `python3 build.py` or let the Action do it. Either way `index.html` is regen
 
 The upload page does all of this from a phone. Switch it to Upcoming, pick the event or start a new one, fill in the title, date, time, where, tags and description, add one poster, tap Send. Tick the Done box instead to take the event off the site; the folder is removed and the past-event flow is how it comes back as an archive item.
 
+## The silly question of the month
+
+Members answer at `sillyspaces.com/q.html?k=CODE`. Each member has their own eight-character code, kept in the members sheet and never in this repo, so the link is the only thing that proves who is answering. No accounts. Hand the link out once, by text or on their card; it shows whatever the current question is.
+
+The page posts to a Google Form called "Silly question answers" with three short-answer questions, in this order: Code, Question, Answer. Every send is a new row in its responses tab, so nothing is overwritten and changing your mind just adds a newer row. To connect it: make the form, open its three-dot menu, Get pre-filled link, type `x` in each box, Get link, and copy the three `entry.` numbers from that link into the top of the script in `q.html`, along with the form's ID in place of `PASTE_FORM_ID`.
+
+To change the question, edit the `QUESTION` line in `q.html` and the matching label in the join form in `index.html`. The members sheet pulls each person's newest answer into the column whose header is the same text, so the header has to match the question exactly.
+
 ## Letting a second person edit
 
 On github.com, open the repo, Settings, Collaborators, Add people, and give them the Write role. They open sillyspaces.com/upload.html on their phone and make their own fine-grained token following the steps on the page: Only select repositories, `silly-spaces`; Contents, Read and write; Pull requests, Read and write. From then on every change either of you makes is a pull request that either of you can merge from the GitHub app. Nobody else can change anything.
